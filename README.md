@@ -1,4 +1,7 @@
 # DeviceAddressTweaker
+
+(Android API:32)
+
 (Xposed module)try my best protect privacy locally
 
 designed only for myself
