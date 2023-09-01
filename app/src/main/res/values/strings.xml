@@ -1,0 +1,21 @@
+<resources>
+    <string name="app_name">DeviceAddressTweaker</string>
+    <string-array name="scope">
+<!--        <item>cn.gov.tax.its</item>-->
+        <item>tv.danmaku.bili</item>
+        <item>com.bankofbejing.mobilebanking</item>
+        <item>com.autonavi.minimap</item>
+        <item>com.xunmeng.pinduoduo</item>
+        <item>com.jiuyu.sptcc.cordova</item>
+        <item>com.taobao.taobao</item>
+        <item>com.tencent.wemeet.app</item>
+        <item>com.MobileTicket</item>
+        <item>com.netease.cloudmusic</item>
+        <item>com.tencent.mm</item>
+        <item>com.tencent.tim</item>
+        <item>com.eg.android.AlipayGphone</item>
+        <item>com.greenpoint.android.mc10086.activity</item>
+        <item>com.android.webview</item>
+        <!--        <item>com.flyme.systemuiex</item>-->
+    </string-array>
+</resources>

@@ -1,0 +1,2 @@
+rootProject.name = "DeviceAddressTweaker"
+include ':app'
