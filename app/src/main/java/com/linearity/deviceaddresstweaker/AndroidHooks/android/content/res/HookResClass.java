@@ -25,7 +25,7 @@ import static com.linearity.deviceaddresstweaker.DeviceAddressTweaker.random;
 
 public class HookResClass {
     public static boolean HookRes = true;
-    public static boolean HookResources = true;
+    public static boolean HookResources = false;
     public static void DoHook(XC_LoadPackage.LoadPackageParam lpparam){
         if (HookRes){
             if (HookResources) {
@@ -124,17 +124,17 @@ public class HookResClass {
                                 protected void afterHookedMethod(MethodHookParam param) throws Throwable {
 //                        super.afterHookedMethod(param);
                                     String args = Arrays.toString(param.args).toLowerCase();
-                                    param.setResult(random.nextInt(Integer.MAX_VALUE));
-//                                    if (args.contains("linearity")
-//                                            || args.contains("lineage")
-//                                            || args.contains("magisk")
-//                                            || args.contains("posed")
-//                                            || args.contains("google")
-//                                    ) {
-////                                        LoggerLog(lpparam.packageName + "调用getIdentifier(String,String,String)" + param.getResult());
-////                                        LoggerLog(lpparam.packageName + "调用getIdentifier(String,String,String) args:" + Arrays.toString(param.args));
-//                                        param.setResult(random.nextInt(Integer.MAX_VALUE));
-//                                    }
+//                                    param.setResult(random.nextInt(Integer.MAX_VALUE));
+                                    if (args.contains("linearity")
+                                            || args.contains("lineage")
+                                            || args.contains("magisk")
+                                            || args.contains("posed")
+                                            || args.contains("google")
+                                    ) {
+//                                        LoggerLog(lpparam.packageName + "调用getIdentifier(String,String,String)" + param.getResult());
+//                                        LoggerLog(lpparam.packageName + "调用getIdentifier(String,String,String) args:" + Arrays.toString(param.args));
+                                        param.setResult(random.nextInt(Integer.MAX_VALUE));
+                                    }
                                 }
                             });
                 } catch (Exception e) {

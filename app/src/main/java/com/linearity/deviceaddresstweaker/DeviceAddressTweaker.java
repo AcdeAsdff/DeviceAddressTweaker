@@ -38,14 +38,20 @@ import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
+import de.robv.android.xposed.IXposedHookInitPackageResources;
 import de.robv.android.xposed.IXposedHookLoadPackage;
+import de.robv.android.xposed.IXposedHookZygoteInit;
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
+import de.robv.android.xposed.callbacks.XC_InitPackageResources;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
-public class DeviceAddressTweaker implements IXposedHookLoadPackage {
+public class DeviceAddressTweaker implements IXposedHookLoadPackage, IXposedHookInitPackageResources, IXposedHookZygoteInit {
+    public String modulePath;
     public static boolean useLogger = true;
+    public XC_InitPackageResources.InitPackageResourcesParam resparam;
+    public XC_LoadPackage.LoadPackageParam lpparam;
 
     public static Bundle EmptyBundle = new Bundle();
     public static Parcelable.Creator<AccountAuthenticatorResponse> CREATOR_AccountAuthenticatorResponse =  new Parcelable.Creator<AccountAuthenticatorResponse>() {
@@ -180,7 +186,7 @@ public class DeviceAddressTweaker implements IXposedHookLoadPackage {
         if (lpparam == null) {
             return;
         }
-
+        this.lpparam = lpparam;
         LoggerLog("[linearity]Load app packageName:" + lpparam.packageName);
 //java
         HookJavaNetClass.DoHook(lpparam);//Working......
@@ -290,7 +296,25 @@ public class DeviceAddressTweaker implements IXposedHookLoadPackage {
 
         HookTIMClass.DoHook(lpparam);
 
+//        HookTIMClass.DoColor(this);
     }
+
+    @Override
+    public void handleInitPackageResources(XC_InitPackageResources.InitPackageResourcesParam resparam) throws Throwable {
+        this.resparam = resparam;
+        HookTIMClass.DoColor(this);
+    }
+
+    @Override
+    public void initZygote(StartupParam startupParam) throws Throwable {
+        this.modulePath = startupParam.modulePath;
+    }
+
+//    @Override
+//    public void handleInitPackageResources(XC_InitPackageResources.InitPackageResourcesParam resparam) throws Throwable {
+//        this.resparam = resparam;
+//        HookTIMClass.DoColor(this);
+//    }
 
     //empty,implements AccountManagerFuture
     public static abstract class Future2Task<T>
@@ -335,7 +359,7 @@ public class DeviceAddressTweaker implements IXposedHookLoadPackage {
     }
     public static void LoggerLog(String prefix, Exception e){
         if (useLogger){
-            XposedBridge.log(prefix + e);//not best?
+            XposedBridge.log(e);//not best?
         }
     }
 }

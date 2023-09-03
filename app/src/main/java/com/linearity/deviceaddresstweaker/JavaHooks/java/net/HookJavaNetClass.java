@@ -160,7 +160,7 @@ public class HookJavaNetClass {
                             new XC_MethodReplacement(114514) {
                                 @Override
                                 protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                    return null;
+                                    return "";
                                 }
                             }
                     );

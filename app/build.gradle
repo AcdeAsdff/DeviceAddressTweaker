@@ -6,6 +6,9 @@ android {
     namespace 'com.linearity.deviceaddresstweaker'
     compileSdk 32
 
+//    aaptOptions.cruncherEnabled = false
+//    aaptOptions.useNewCruncher = false
+
     defaultConfig {
         applicationId "com.linearity.deviceaddresstweaker"
         minSdk 32

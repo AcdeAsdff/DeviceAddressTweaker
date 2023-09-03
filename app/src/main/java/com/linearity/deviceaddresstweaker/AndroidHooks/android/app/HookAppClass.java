@@ -1049,6 +1049,7 @@ public class HookAppClass {
                                     List<ActivityManager.RunningAppProcessInfo> result = (List<ActivityManager.RunningAppProcessInfo>) param.getResult();
                                     List<ActivityManager.RunningAppProcessInfo> returnValue = new ArrayList<>();
                                     //LoggerLog(lpparam.packageName + "调用android.app.ActivityManager.class getRunningAppProcesses()" + param.getResult());
+                                    if (result == null){return;}
                                     for (ActivityManager.RunningAppProcessInfo i : result) {
                                         if (i != null) {
                                             for (String str : i.pkgList) {

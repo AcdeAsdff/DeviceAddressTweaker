@@ -340,8 +340,6 @@ public class HookIO {
     };
     @SuppressLint("SdCardPath")
     public static String[] bannedFileHead = new String[]{
-            "/sdcard",
-            "/storage/emulated",
             "/acct",
             "/apex",
             "/bin",
@@ -369,12 +367,12 @@ public class HookIO {
     };
 
     public static String[] tweakPathExact = new String[]{
-            "/sdcard",
-            "/sdcard/",
             "/storage/emulated/0",
             "/storage/emulated/0/",
             "/storage/emulated/0/Android",
             "/storage/emulated/0/Android/",
+            "/storage/emulated/0/Pictures/WeiXin",
+            "/storage/emulated/0/Pictures/WeiXin/",
     };//add processHead after detected
     public static boolean useChecker = true;
 
@@ -393,7 +391,7 @@ public class HookIO {
                 else {
 //                    LoggerLog(path);
                 }
-                if (path.contains("tencent") && processHead.contains("tencent")) {
+                if ((path.contains("WeiXin") || path.contains("tencent")) && processHead.contains("tencent")) {
                     return true;
                 }
                 if (useChecker){
@@ -432,9 +430,9 @@ public class HookIO {
                 path = checkReplaceFile(path, lpparam);
                 if (path.contains(processHead)
                         ||path.contains(lpparam.packageName)){return true;}else {
-                    LoggerLog(path);
+                    //LoggerLog(path);
                 }
-                if (path.contains("tencent") && processHead.contains("tencent")) {
+                if ((path.contains("WeiXin") || path.contains("tencent")) && processHead.contains("tencent")) {
                     return true;
                 }
                 if (useChecker){
@@ -503,7 +501,7 @@ public class HookIO {
             } else {
                 totalPath = parentPath + path;
             }
-            if (totalPath.contains("tencent") && processHead.contains("tencent")) {
+            if ((totalPath.contains("WeiXin") || totalPath.contains("tencent")) && processHead.contains("tencent")) {
                 return true;
             }
             totalPath = checkReplaceFile(totalPath, lpparam);
@@ -571,6 +569,7 @@ public class HookIO {
     }
     public static String checkReplaceFile(String path, XC_LoadPackage.LoadPackageParam lpparam){
         if (path == null){return null;}
+        path.replace("WeiXin","com.tencent.mm");
         if (path.equals("")){return "";}
         if (!path.startsWith("/")){
             path = "/" + path;
@@ -601,7 +600,7 @@ public class HookIO {
         else {
 //                    LoggerLog(path);
         }
-        if (path.contains("tencent") && processHead.contains("tencent")) {
+        if ((path.contains("WeiXin") || path.contains("tencent")) && processHead.contains("tencent")) {
             return true;
         }
         if (useChecker){
@@ -637,7 +636,7 @@ public class HookIO {
         String processHead = lpparam.processName.split(":")[0];
         if (path.contains(processHead)
                 ||path.contains(lpparam.packageName)){return true;}
-        if (path.contains("tencent") && processHead.contains("tencent")) {
+        if ((path.contains("WeiXin") || path.contains("tencent")) && processHead.contains("tencent")) {
             return true;
         }
         return false;
