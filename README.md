@@ -18,3 +18,5 @@ Xposed模块,个人用
 
 STOLE AN IMAGE(_108321692_p0  by: [pixiv] procrastinator)
 (从pixiv盗了图片,作者:[pixiv] procrastinator)
+
+if this is considered to be rude,pull issue, i'll remove it
