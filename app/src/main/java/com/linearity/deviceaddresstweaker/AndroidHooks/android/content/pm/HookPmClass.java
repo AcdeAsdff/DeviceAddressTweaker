@@ -1,5 +1,6 @@
 package com.linearity.deviceaddresstweaker.AndroidHooks.android.content.pm;
 
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 
 import de.robv.android.xposed.XC_MethodReplacement;
@@ -11,7 +12,7 @@ import static com.linearity.deviceaddresstweaker.DeviceAddressTweaker.LoggerLog;
 public class HookPmClass {
     public static boolean HookPm = true;
     public static boolean HookPackageManager = true;
-    public static void DoHook(XC_LoadPackage.LoadPackageParam lpparam){
+    public static void DoHook(XC_LoadPackage.LoadPackageParam lpparam, String procHead, SharedPreferences sharedPreferences){
         if (HookPm){
             if (HookPackageManager){
                 try {

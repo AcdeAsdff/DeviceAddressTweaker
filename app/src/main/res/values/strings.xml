@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name">DeviceAddressTweaker</string>
-    <string-array name="scope">
+    <string name="app_options">DeviceAddressTweaker-Options</string>
+        <string name="refresh">refresh</string>
+        <string-array name="scope">
 <!--        <item>cn.gov.tax.its</item>-->
         <item>tv.danmaku.bili</item>
         <item>com.bankofbejing.mobilebanking</item>

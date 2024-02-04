@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<bitmap
+android:tileMode="disabled"
+android:dither="true"
+android:antialias="true"
+android:src="@drawable/_108321692_p0_by_pixiv_procrastinator_userid_83351375"
+android:gravity="top|left"
+xmlns:android="http://schemas.android.com/apk/res/android"/>
+<!--by:Procrastinator(pixiv id:83351375)-->

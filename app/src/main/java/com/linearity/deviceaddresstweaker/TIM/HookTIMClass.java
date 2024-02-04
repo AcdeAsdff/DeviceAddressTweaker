@@ -19,6 +19,7 @@ import java.util.List;
 
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XC_MethodReplacement;
+import android.content.SharedPreferences;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
@@ -26,7 +27,7 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage;
 public class HookTIMClass {
     public static boolean HookTIM = true;
 
-    public static void DoHook(XC_LoadPackage.LoadPackageParam lpparam){
+    public static void DoHook(XC_LoadPackage.LoadPackageParam lpparam, String procHead, SharedPreferences sharedPreferences){
         if (HookTIM){
             //tim or st. else(give it a try)
             try {
@@ -38,12 +39,246 @@ public class HookTIMClass {
                     XposedHelpers.findAndHookMethod(
                             "moai.core.utilities.appstate.AppStatuses",
                             lpparam.classLoader,
+<<<<<<< Updated upstream
                             "isAppOnForeground",
                             Context.class,
                             new XC_MethodReplacement(114514) {
                                 @Override
                                 protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
                                     return true;
+=======
+                            "isAppOnForeground") != null){
+                        XposedHelpers.findAndHookMethod(
+                                "moai.core.utilities.appstate.AppStatuses",
+                                lpparam.classLoader,
+                                "isAppOnForeground",
+                                new XC_MethodReplacement(114514) {
+                                    @Override
+                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                        return true;
+                                    }
+                                }
+                        );
+                    }
+                }catch(Exception e){
+                    LoggerLog(e);
+                }
+                try{
+                    if (XposedHelpers.findMethodExactIfExists(
+                            "moai.core.utilities.appstate.AppStatuses",
+                            lpparam.classLoader,
+                            "isAppOnBackGround") != null){
+                        XposedHelpers.findAndHookMethod(
+                                "moai.core.utilities.appstate.AppStatuses",
+                                lpparam.classLoader,
+                                "isAppOnBackGround",
+                                new XC_MethodReplacement(114514) {
+                                    @Override
+                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                        return false;
+                                    }
+                                }
+                        );
+                    }
+                }catch(Exception e){
+                    LoggerLog(e);
+                }
+                try{
+                    if (XposedHelpers.findMethodExactIfExists(
+                            "com.tencent.qqmail.utilities.AppStatusUtil",
+                            lpparam.classLoader,
+                            "isAppOnForeground") != null){
+                        XposedHelpers.findAndHookMethod(
+                                "com.tencent.qqmail.utilities.AppStatusUtil",
+                                lpparam.classLoader,
+                                "isAppOnForeground",
+                                new XC_MethodReplacement(114514) {
+                                    @Override
+                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                        return true;
+                                    }
+                                }
+                        );
+                    }
+                }catch(Exception e){
+                    LoggerLog(e);
+                }
+                try{
+                    if (XposedHelpers.findMethodExactIfExists(
+                            "com.tencent.qqmail.utilities.AppStatusUtil",
+                            lpparam.classLoader,
+                            "isAppOnBackGround") != null){
+                        XposedHelpers.findAndHookMethod(
+                                "com.tencent.qqmail.utilities.AppStatusUtil",
+                                lpparam.classLoader,
+                                "isAppOnBackGround",
+                                new XC_MethodReplacement(114514) {
+                                    @Override
+                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                        return false;
+                                    }
+                                }
+                        );
+                    }
+                }catch(Exception e){
+                    LoggerLog(e);
+                }
+                try{
+                    if (XposedHelpers.findMethodExactIfExists(
+                            "com.tencent.av.smallscreen.BaseSmallScreenService",
+                            lpparam.classLoader,
+                            "isAppOnForeground") != null){
+                        XposedHelpers.findAndHookMethod(
+                                "com.tencent.av.smallscreen.BaseSmallScreenService",
+                                lpparam.classLoader,
+                                "isAppOnForeground",
+
+                                new XC_MethodReplacement(114514) {
+                                    @Override
+                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                        return true;
+                                    }
+                                }
+                        );
+                    }
+                }catch(Exception e){
+                    LoggerLog(e);
+                }
+                try{
+                    if (XposedHelpers.findMethodExactIfExists(
+                            "com.tencent.av.smallscreen.SmallScreenService",
+                            lpparam.classLoader,
+                            "isAppOnForeground") != null){
+                        XposedHelpers.findAndHookMethod(
+                                "com.tencent.av.smallscreen.SmallScreenService",
+                                lpparam.classLoader,
+                                "isAppOnForeground",
+                                new XC_MethodReplacement(114514) {
+                                    @Override
+                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                        return true;
+                                    }
+                                }
+                        );
+                    }
+                }catch(Exception e){
+                    LoggerLog(e);
+                }
+                try{
+                    if (XposedHelpers.findMethodExactIfExists(
+                            "aljz",
+                            lpparam.classLoader,
+                            "isAppOnForeground") != null){
+                        XposedHelpers.findAndHookMethod(
+                                "aljz",
+                                lpparam.classLoader,
+                                "isAppOnForeground",
+                                new XC_MethodReplacement(114514) {
+                                    @Override
+                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                        return true;
+                                    }
+                                }
+                        );
+                    }
+                }catch(Exception e){
+                    LoggerLog(e);
+                }
+                try{
+                    if (XposedHelpers.findMethodExactIfExists(
+                            "aktz",
+                            lpparam.classLoader,
+                            "isAppOnForeground") != null){
+                        XposedHelpers.findAndHookMethod(
+                                "aktz",
+                                lpparam.classLoader,
+                                "isAppOnForeground",
+                                new XC_MethodReplacement(114514) {
+                                    @Override
+                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                        return true;
+                                    }
+                                }
+                        );
+                    }
+                }catch(Exception e){
+                    LoggerLog(e);
+                }
+                try{
+                    if (XposedHelpers.findMethodExactIfExists(
+                            "iue",
+                            lpparam.classLoader,
+                            "isAppOnForeground") != null){
+                        XposedHelpers.findAndHookMethod(
+                                "iue",
+                                lpparam.classLoader,
+                                "isAppOnForeground",
+                                new XC_MethodReplacement(114514) {
+                                    @Override
+                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                        return true;
+                                    }
+                                }
+                        );
+                    }
+                }catch(Exception e){
+                    LoggerLog(e);
+                }
+                try{
+                    if (XposedHelpers.findMethodExactIfExists(
+                            "kvv",
+                            lpparam.classLoader,
+                            "isAppOnForeground") != null){
+                        XposedHelpers.findAndHookMethod(
+                                "kvv",
+                                lpparam.classLoader,
+                                "isAppOnForeground",
+                                new XC_MethodReplacement(114514) {
+                                    @Override
+                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                        return true;
+                                    }
+                                }
+                        );
+                    }
+                }catch(Exception e){
+                    LoggerLog(e);
+                }
+                try{
+                    if (XposedHelpers.findMethodExactIfExists(
+                            "aktz",
+                            lpparam.classLoader,
+                            "isAppOnForeground") != null){
+                        XposedHelpers.findAndHookMethod(
+                                "aktz",
+                                lpparam.classLoader,
+                                "isAppOnForeground",
+                                new XC_MethodReplacement(114514) {
+                                    @Override
+                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                        return true;
+                                    }
+                                }
+                        );
+                    }
+                }catch(Exception e){
+                    LoggerLog(e);
+                }
+                try{
+                    if (XposedHelpers.findMethodExactIfExists(
+                            "com.tencent.mobileqq.pluginsdk.PluginProxyActivity",
+                            lpparam.classLoader,
+                            "isAppOnForeground") != null){
+                        XposedHelpers.findAndHookMethod(
+                                "com.tencent.mobileqq.pluginsdk.PluginProxyActivity",
+                                lpparam.classLoader,
+                                "isAppOnForeground",
+                                new XC_MethodReplacement(114514) {
+                                    @Override
+                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                        return true;
+                                    }
+>>>>>>> Stashed changes
                                 }
                             }
                     );
@@ -70,7 +305,29 @@ public class HookTIMClass {
                 }catch (Exception e){
                     LoggerLog(e);
                 }
+<<<<<<< Updated upstream
                 try {
+=======
+                try{
+                    Class<?> tencentAppInterface = XposedHelpers.findClassIfExists("com.tencent.android.tpush.common.AppInfos", lpparam.classLoader);
+                    if (tencentAppInterface != null) {
+
+                        XposedBridge.hookAllMethods(
+                                tencentAppInterface,
+                                "isAppOnForeground",
+                                new XC_MethodReplacement(114514) {
+                                    @Override
+                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                        return true;
+                                    }
+                                }
+                        );
+                    }
+                }catch(Exception e){
+                    LoggerLog(e);
+                }
+                try{
+>>>>>>> Stashed changes
                     Class<?> tencentAppInterface = XposedHelpers.findClassIfExists("mqq.app.Foreground", lpparam.classLoader);
                     if (tencentAppInterface != null) {
 

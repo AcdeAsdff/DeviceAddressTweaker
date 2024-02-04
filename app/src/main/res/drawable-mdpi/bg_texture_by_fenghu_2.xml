@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bitmap
+    android:tileMode="disabled"
+    android:dither="true"
+    android:antialias="true"
+    android:src="@drawable/_weibo_userid_2679566944_l40vvf98j_"
+    android:gravity="center|right"
+    xmlns:android="http://schemas.android.com/apk/res/android"/>
+<!--没准哪天疯狐老师真的真的会把我灭了-->
+<!--事实上文件名应该是I40vVF98J,但是你要知道我没法打大写字母-->

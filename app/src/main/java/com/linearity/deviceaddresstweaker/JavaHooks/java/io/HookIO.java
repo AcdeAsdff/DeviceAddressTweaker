@@ -15,6 +15,7 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage;
 import static com.linearity.deviceaddresstweaker.DeviceAddressTweaker.LoggerLog;
 import static com.linearity.deviceaddresstweaker.DeviceAddressTweaker.getRandomString;
 import static com.linearity.deviceaddresstweaker.DeviceAddressTweaker.random;
+import android.content.SharedPreferences;
 
 import android.annotation.SuppressLint;
 import android.net.Uri;
@@ -24,8 +25,11 @@ public class HookIO {
     public static boolean HookFile = true;
     public static boolean HookInputStream = true;
     public static boolean HookOutputStream = true;
-    public static void DoHook(XC_LoadPackage.LoadPackageParam lpparam){
-        String processHead = lpparam.processName.split(":")[0];
+    public static void DoHook(XC_LoadPackage.LoadPackageParam lpparam, String procHead, SharedPreferences sharedPreferences){
+        HookIO = sharedPreferences.getBoolean("HookIO_HookIO", true);
+        HookFile = sharedPreferences.getBoolean("HookIO_HookFile", true);
+        HookInputStream = sharedPreferences.getBoolean("HookIO_HookInputStream", true);
+        HookOutputStream = sharedPreferences.getBoolean("HookIO_HookOutputStream", true);
         if (HookIO){
             if (HookFile){
                 try {
@@ -46,7 +50,7 @@ public class HookIO {
 //                                            }
 //                                        }
 //                                        String check = sb.toString();
-//                                        if (check.contains(processHead)
+//                                        if (check.contains(procHead)
 //                                                ||check.contains(lpparam.packageName)
 //                                                ||check.endsWith("/lib64")
 //                                                ||check.contains("/lib64|")
@@ -74,11 +78,14 @@ public class HookIO {
                                 protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                                     super.beforeHookedMethod(param);
                                     File file = (File) param.thisObject;
+                                    if (file == null
+                                            || file.toString() == null //there's nothing wrong
+                                            || file.toString().equals("null")){return;}
                                     if (!file.getAbsolutePath().contains(lpparam.packageName)
-                                            && !file.getAbsolutePath().contains(processHead)
+                                            && !file.getAbsolutePath().contains(procHead)
                                     && (
                                             !file.getAbsolutePath().contains("tencent")
-                                            && !processHead.contains("tencent")
+                                            && !procHead.contains("tencent")
                                             )){
                                         param.thisObject = new File("/");
                                     }
@@ -100,10 +107,10 @@ public class HookIO {
                                     super.beforeHookedMethod(param);
                                     File file = (File) param.thisObject;
                                     if (!file.getAbsolutePath().contains(lpparam.packageName)
-                                            && !file.getAbsolutePath().contains(processHead)
+                                            && !file.getAbsolutePath().contains(procHead)
                                             && (
                                             !file.getAbsolutePath().contains("tencent")
-                                                    && !processHead.contains("tencent")
+                                                    && !procHead.contains("tencent")
                                     )){
                                         param.thisObject = new File("/");
                                     }
@@ -363,9 +370,12 @@ public class HookIO {
             "/data/local/bin/su",
     };
     public static String[] whiteListHead = new String[]{
+            "/data/selfdefinedso",
             "/system/etc/security/cacerts",
             "/data/misc/user/0/cacerts-added",
             "/system/framework/core.jar.jex",
+//            ".dmpvedpogjhejs.cfg",
+//            ".imprint",
     };
 
     public static String[] tweakPathExact = new String[]{
@@ -375,11 +385,19 @@ public class HookIO {
             "/storage/emulated/0/",
             "/storage/emulated/0/Android",
             "/storage/emulated/0/Android/",
+<<<<<<< Updated upstream
     };//add processHead after detected
+=======
+            "/storage/emulated/0/Pictures",
+            "/storage/emulated/0/Pictures/",
+            "/storage/emulated/0/Pictures/WeiXin",
+            "/storage/emulated/0/Pictures/WeiXin/",
+    };//add procHead after detected
+>>>>>>> Stashed changes
     public static boolean useChecker = true;
 
     public static boolean checkBannedFile(XC_MethodHook.MethodHookParam param, XC_LoadPackage.LoadPackageParam lpparam) throws Exception{
-        String processHead = lpparam.processName.split(":")[0];
+        String procHead = lpparam.processName.split(":")[0];
         boolean mark = true;
         if (param.args.length == 1)
         {
@@ -388,12 +406,16 @@ public class HookIO {
             {
                 path = (String) param.args[0];
                 path = checkReplaceFile(path, lpparam);
-                if (path.contains(processHead)
+                if (path.contains(procHead)
                         ||path.contains(lpparam.packageName)){return true;}
                 else {
 //                    LoggerLog(path);
                 }
+<<<<<<< Updated upstream
                 if (path.contains("tencent") && processHead.contains("tencent")) {
+=======
+                if ((path.contains("WeiXin") || path.contains("tencent")) && procHead.contains("tencent")) {
+>>>>>>> Stashed changes
                     return true;
                 }
                 if (useChecker){
@@ -430,11 +452,15 @@ public class HookIO {
                     path = (String) param.args[0].toString();
                 }
                 path = checkReplaceFile(path, lpparam);
-                if (path.contains(processHead)
+                if (path.contains(procHead)
                         ||path.contains(lpparam.packageName)){return true;}else {
                     LoggerLog(path);
                 }
+<<<<<<< Updated upstream
                 if (path.contains("tencent") && processHead.contains("tencent")) {
+=======
+                if ((path.contains("WeiXin") || path.contains("tencent")) && procHead.contains("tencent")) {
+>>>>>>> Stashed changes
                     return true;
                 }
                 if (useChecker){
@@ -503,12 +529,16 @@ public class HookIO {
             } else {
                 totalPath = parentPath + path;
             }
+<<<<<<< Updated upstream
             if (totalPath.contains("tencent") && processHead.contains("tencent")) {
+=======
+            if ((totalPath.contains("WeiXin") || totalPath.contains("tencent")) && procHead.contains("tencent")) {
+>>>>>>> Stashed changes
                 return true;
             }
             totalPath = checkReplaceFile(totalPath, lpparam);
             if (
-                    (totalPath).contains(processHead)
+                    (totalPath).contains(procHead)
                             ||(totalPath).contains(lpparam.packageName)
             )
             {
@@ -575,13 +605,13 @@ public class HookIO {
         if (!path.startsWith("/")){
             path = "/" + path;
         }
-        String processHead = lpparam.processName.split(":")[0];
+        String procHead = lpparam.processName.split(":")[0];
         for (String checker:tweakPathExact){
             if (path.equals(checker)){
                 if (!checker.endsWith("/")){
-                    path += "/" + processHead;
+                    path += "/" + procHead;
                 }else {
-                    path += "/" + processHead + "/";
+                    path += "/" + procHead + "/";
                 }
                 File file1 = new File(path);
                 if (!file1.exists()){
@@ -591,17 +621,42 @@ public class HookIO {
                 break;
             }
         }
+<<<<<<< Updated upstream
+=======
+//        LoggerLog("----------------------------");
+        if (path.contains("libdobby.so")||
+                path.contains("libtinyskia.so")||
+                path.contains("libv8.so")||
+                path.contains("libark-e51673")||
+                path.contains("libwebviewchromium_plat_support.so")||
+                path.contains("libvasscupdate.so")||
+                path.contains("libwlc_upload_uni_v1.0.1.so")||
+                path.contains("libopencv_world.so")||
+                path.contains("libc_malloc_debug_qemu.so")||
+                path.contains("libsava.so")||
+                path.contains("libGLESv2_adreno.so")
+        ){
+            path = "";
+        }
+//        else if (path.endsWith(".so")){
+//            LoggerLog(lpparam.processName+"[Warning]Loading native:" + path);
+//        }
+>>>>>>> Stashed changes
         return path;
     }
     public static boolean checkBannedInFile(String path, XC_LoadPackage.LoadPackageParam lpparam){
         boolean mark = true;
-        String processHead = lpparam.processName.split(":")[0];
-        if (path.contains(processHead)
+        String procHead = lpparam.processName.split(":")[0];
+        if (path.contains(procHead)
                 ||path.contains(lpparam.packageName)){return true;}
         else {
 //                    LoggerLog(path);
         }
+<<<<<<< Updated upstream
         if (path.contains("tencent") && processHead.contains("tencent")) {
+=======
+        if ((path.contains("WeiXin") || path.contains("tencent")) && procHead.contains("tencent")) {
+>>>>>>> Stashed changes
             return true;
         }
         if (useChecker){
@@ -634,10 +689,14 @@ public class HookIO {
     }
     public static boolean checkBannedOutFile(String path, XC_LoadPackage.LoadPackageParam lpparam){
         if (path == null){return true;}
-        String processHead = lpparam.processName.split(":")[0];
-        if (path.contains(processHead)
+        String procHead = lpparam.processName.split(":")[0];
+        if (path.contains(procHead)
                 ||path.contains(lpparam.packageName)){return true;}
+<<<<<<< Updated upstream
         if (path.contains("tencent") && processHead.contains("tencent")) {
+=======
+        if ((path.contains("WeiXin") || path.contains("tencent")) && procHead.contains("tencent")) {
+>>>>>>> Stashed changes
             return true;
         }
         return false;

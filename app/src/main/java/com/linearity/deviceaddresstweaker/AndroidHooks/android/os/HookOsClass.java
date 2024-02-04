@@ -9,6 +9,7 @@ import android.system.StructStatVfs;
 
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XC_MethodReplacement;
+import android.content.SharedPreferences;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
@@ -16,6 +17,11 @@ import static com.linearity.deviceaddresstweaker.DeviceAddressTweaker.LoggerLog;
 import static com.linearity.deviceaddresstweaker.JavaHooks.java.io.HookIO.checkReplaceFile;
 
 import java.io.File;
+<<<<<<< Updated upstream
+=======
+import java.time.Duration;
+import java.util.ArrayList;
+>>>>>>> Stashed changes
 
 public class HookOsClass {
     public static StructStatVfs emptyStructStatVfs =
@@ -35,8 +41,35 @@ public class HookOsClass {
     public static boolean HookBuild = true;
     public static boolean HookEnvironment = true;
     public static boolean HookStatFs = true;
+<<<<<<< Updated upstream
 
     public static void DoHook(XC_LoadPackage.LoadPackageParam lpparam) {
+=======
+    public static boolean HookPowerManager = true;
+
+    public static String[] foolCpuAll = new String[]{
+            "x86",
+            "x86_64",
+            "arm64-v8a",
+            "armeabi-v7a",
+    };
+    public static String[] foolCpu;
+    public static void DoHook(XC_LoadPackage.LoadPackageParam lpparam, String procHead, SharedPreferences sharedPreferences) {
+        HookOs = sharedPreferences.getBoolean("HookOsClass_HookOs", true);
+        HookBuild = sharedPreferences.getBoolean("HookOsClass_HookBuild", true);
+        HookEnvironment = sharedPreferences.getBoolean("HookOsClass_HookEnvironment", true);
+        HookStatFs = sharedPreferences.getBoolean("HookOsClass_HookStatFs", true);
+        HookPowerManager = sharedPreferences.getBoolean("HookOsClass_HookPowerManager", true);
+
+                ArrayList<String> temp = new ArrayList<>();
+        String UrCpu = (String) XposedHelpers.getStaticObjectField(Build.class, "CPU_ABI");
+        for (String check:foolCpuAll){
+            if (!check.equals(UrCpu)){
+                temp.add(check);
+            }
+        }
+        foolCpu = temp.toArray(new String[0]);
+>>>>>>> Stashed changes
         if (HookOs){
             if (HookBuild) {
                 //      (StaticObjectField) android.os.Build.class MODEL|BRAND|BOARD|DEVICE|DISPLAY
@@ -49,7 +82,12 @@ public class HookOsClass {
                     XposedHelpers.setStaticObjectField(android.os.Build.class, "DEVICE", getRandomString(20));
                     XposedHelpers.setStaticObjectField(android.os.Build.class, "DISPLAY", getRandomString(20));
                     XposedHelpers.setStaticObjectField(android.os.Build.class, "BOOTLOADER", getRandomString(20));
+<<<<<<< Updated upstream
 //                    XposedHelpers.setStaticObjectField(android.os.Build.class, "CPU_ABI", getRandomString(20));
+=======
+//                    XposedHelpers.setStaticObjectField(android.os.Build.class, "CPU_ABI", foolCpu[random.nextInt(foolCpu.length)]);
+//                    XposedHelpers.setStaticObjectField(android.os.Build.class, "CPU_ABI", "x86_32");
+>>>>>>> Stashed changes
                     XposedHelpers.setStaticObjectField(android.os.Build.class, "CPU_ABI2", getRandomString(20));
                     XposedHelpers.setStaticObjectField(android.os.Build.class, "FINGERPRINT", getRandomString(20));
                     XposedHelpers.setStaticObjectField(android.os.Build.class, "HARDWARE", getRandomString(20));
@@ -135,21 +173,7 @@ public class HookOsClass {
                 } catch (Exception e) {
                     LoggerLog(e);
                 }
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            android.os.Environment.class.getName(),
-                            lpparam.classLoader,
-                            "getDataDirectory",
-                            new XC_MethodReplacement(114514) {
-                                @Override
-                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                    return new File(getRandomString(50));
-                                }
-                            }
-                    );
-                } catch (Exception e) {
-                    LoggerLog(e);
-                }
+                //getDataDirectory
                 try {
                     XposedHelpers.findAndHookMethod(
                             android.os.Environment.class.getName(),
@@ -389,7 +413,7 @@ public class HookOsClass {
                 }
                 //getDirectory
                 //getDirectoryPath
-            }
+            }//not finished
             if (HookStatFs){
                 try {
                     XposedHelpers.findAndHookMethod(
@@ -414,6 +438,624 @@ public class HookOsClass {
                                 protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
 //                                    return emptyStructStatVfs;
                                     return emptyStructStatVfs;
+                                }
+                            }
+                    );
+                } catch (Exception e) {
+                    LoggerLog(e);
+                }
+            }//not finished
+            if (HookPowerManager){
+                try {
+                    XposedBridge.hookAllMethods(
+                            android.os.PowerManager.class,
+                            "getBrightnessConstraint",
+                            new XC_MethodReplacement(114514) {
+                                @Override
+                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                    return Integer.MAX_VALUE;
+                                }
+                            }
+                    );
+                } catch (Exception e) {
+                    LoggerLog(e);
+                }
+                try {
+                    XposedBridge.hookAllMethods(
+                            android.os.PowerManager.class,
+                            "userActivity",
+                            new XC_MethodReplacement(114514) {
+                                @Override
+                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                    return null;
+                                }
+                            }
+                    );
+                } catch (Exception e) {
+                    LoggerLog(e);
+                }
+                try {
+                    XposedBridge.hookAllMethods(
+                            android.os.PowerManager.class,
+                            "goToSleep",
+                            new XC_MethodReplacement(114514) {
+                                @Override
+                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                    return null;
+                                }
+                            }
+                    );
+                } catch (Exception e) {
+                    LoggerLog(e);
+                }
+                try {
+                    XposedBridge.hookAllMethods(
+                            android.os.PowerManager.class,
+                            "wakeUp",
+                            new XC_MethodReplacement(114514) {
+                                @Override
+                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                    return null;
+                                }
+                            }
+                    );
+                } catch (Exception e) {
+                    LoggerLog(e);
+                }
+                try {
+                    XposedBridge.hookAllMethods(
+                            android.os.PowerManager.class,
+                            "nap",
+                            new XC_MethodReplacement(114514) {
+                                @Override
+                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                    return null;
+                                }
+                            }
+                    );
+                } catch (Exception e) {
+                    LoggerLog(e);
+                }
+                try {
+                    XposedBridge.hookAllMethods(
+                            android.os.PowerManager.class,
+                            "dream",
+                            new XC_MethodReplacement(114514) {
+                                @Override
+                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                    return null;
+                                }
+                            }
+                    );
+                } catch (Exception e) {
+                    LoggerLog(e);
+                }
+                try {
+                    XposedBridge.hookAllMethods(
+                            android.os.PowerManager.class,
+                            "boostScreenBrightness",
+                            new XC_MethodReplacement(114514) {
+                                @Override
+                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                    return null;
+                                }
+                            }
+                    );
+                } catch (Exception e) {
+                    LoggerLog(e);
+                }
+                try {
+                    XposedBridge.hookAllMethods(
+                            android.os.PowerManager.class,
+                            "isWakeLockLevelSupported",
+                            new XC_MethodReplacement(114514) {
+                                @Override
+                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                    return true;
+                                }
+                            }
+                    );
+                } catch (Exception e) {
+                    LoggerLog(e);
+                }
+                try {
+                    XposedBridge.hookAllMethods(
+                            android.os.PowerManager.class,
+                            "isScreenOn",
+                            new XC_MethodReplacement(114514) {
+                                @Override
+                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                    return true;
+                                }
+                            }
+                    );
+                } catch (Exception e) {
+                    LoggerLog(e);
+                }
+                try {
+                    XposedBridge.hookAllMethods(
+                            android.os.PowerManager.class,
+                            "isInteractive",
+                            new XC_MethodReplacement(114514) {
+                                @Override
+                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                    return true;
+                                }
+                            }
+                    );
+                } catch (Exception e) {
+                    LoggerLog(e);
+                }
+                try {
+                    XposedBridge.hookAllMethods(
+                            android.os.PowerManager.class,
+                            "isRebootingUserspaceSupportedImpl",
+                            new XC_MethodReplacement(114514) {
+                                @Override
+                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                    return true;
+                                }
+                            }
+                    );
+                } catch (Exception e) {
+                    LoggerLog(e);
+                }
+                try {
+                    XposedBridge.hookAllMethods(
+                            android.os.PowerManager.class,
+                            "reboot",
+                            new XC_MethodReplacement(114514) {
+                                @Override
+                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                    return null;
+                                }
+                            }
+                    );
+                } catch (Exception e) {
+                    LoggerLog(e);
+                }
+                try {
+                    XposedBridge.hookAllMethods(
+                            android.os.PowerManager.class,
+                            "rebootSafeMode",
+                            new XC_MethodReplacement(114514) {
+                                @Override
+                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                    return null;
+                                }
+                            }
+                    );
+                } catch (Exception e) {
+                    LoggerLog(e);
+                }
+                try {
+                    XposedBridge.hookAllMethods(
+                            android.os.PowerManager.class,
+                            "areAutoPowerSaveModesEnabled",
+                            new XC_MethodReplacement(114514) {
+                                @Override
+                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                    return false;
+                                }
+                            }
+                    );
+                } catch (Exception e) {
+                    LoggerLog(e);
+                }
+                try {
+                    XposedBridge.hookAllMethods(
+                            android.os.PowerManager.class,
+                            "isPowerSaveMode",
+                            new XC_MethodReplacement(114514) {
+                                @Override
+                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                    return false;
+                                }
+                            }
+                    );
+                } catch (Exception e) {
+                    LoggerLog(e);
+                }
+                try {
+                    XposedBridge.hookAllMethods(
+                            android.os.PowerManager.class,
+                            "setPowerSaveModeEnabled",
+                            new XC_MethodReplacement(114514) {
+                                @Override
+                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                    return true;
+                                }
+                            }
+                    );
+                } catch (Exception e) {
+                    LoggerLog(e);
+                }
+                try {
+                    XposedBridge.hookAllMethods(
+                            android.os.PowerManager.class,
+                            "getBatteryDischargePrediction",
+                            new XC_MethodReplacement(114514) {
+                                @Override
+                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                    return Duration.ZERO;
+                                }
+                            }
+                    );
+                } catch (Exception e) {
+                    LoggerLog(e);
+                }
+                try {
+                    XposedBridge.hookAllMethods(
+                            android.os.PowerManager.class,
+                            "isBatteryDischargePredictionPersonalized",
+                            new XC_MethodReplacement(114514) {
+                                @Override
+                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                    return false;
+                                }
+                            }
+                    );
+                } catch (Exception e) {
+                    LoggerLog(e);
+                }
+                try {
+                    XposedBridge.hookAllMethods(
+                            android.os.PowerManager.class,
+                            "getLocationPowerSaveMode",
+                            new XC_MethodReplacement(114514) {
+                                @Override
+                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                    return Integer.MAX_VALUE;
+                                }
+                            }
+                    );
+                } catch (Exception e) {
+                    LoggerLog(e);
+                }
+                try {
+                    XposedBridge.hookAllMethods(
+                            android.os.PowerManager.class,
+                            "getSoundTriggerPowerSaveMode",
+                            new XC_MethodReplacement(114514) {
+                                @Override
+                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                    return Integer.MAX_VALUE;
+                                }
+                            }
+                    );
+                } catch (Exception e) {
+                    LoggerLog(e);
+                }
+                try {
+                    XposedBridge.hookAllMethods(
+                            android.os.PowerManager.class,
+                            "isDeviceIdleMode",
+                            new XC_MethodReplacement(114514) {
+                                @Override
+                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                    return false;
+                                }
+                            }
+                    );
+                } catch (Exception e) {
+                    LoggerLog(e);
+                }
+                try {
+                    XposedBridge.hookAllMethods(
+                            android.os.PowerManager.class,
+                            "isDeviceLightIdleMode",
+                            new XC_MethodReplacement(114514) {
+                                @Override
+                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                    return false;
+                                }
+                            }
+                    );
+                } catch (Exception e) {
+                    LoggerLog(e);
+                }
+                try {
+                    XposedBridge.hookAllMethods(
+                            android.os.PowerManager.class,
+                            "isLightDeviceIdleMode",
+                            new XC_MethodReplacement(114514) {
+                                @Override
+                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                    return false;
+                                }
+                            }
+                    );
+                } catch (Exception e) {
+                    LoggerLog(e);
+                }
+                try {
+                    XposedBridge.hookAllMethods(
+                            android.os.PowerManager.class,
+                            "isLowPowerStandbySupported",
+                            new XC_MethodReplacement(114514) {
+                                @Override
+                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                    return true;
+                                }
+                            }
+                    );
+                } catch (Exception e) {
+                    LoggerLog(e);
+                }
+                try {
+                    XposedBridge.hookAllMethods(
+                            android.os.PowerManager.class,
+                            "setLowPowerStandbyActiveDuringMaintenance",
+                            new XC_MethodReplacement(114514) {
+                                @Override
+                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                    return null;
+                                }
+                            }
+                    );
+                } catch (Exception e) {
+                    LoggerLog(e);
+                }
+                try {
+                    XposedBridge.hookAllMethods(
+                            android.os.PowerManager.class,
+                            "forceLowPowerStandbyActive",
+                            new XC_MethodReplacement(114514) {
+                                @Override
+                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                    return null;
+                                }
+                            }
+                    );
+                } catch (Exception e) {
+                    LoggerLog(e);
+                }
+                try {
+                    XposedBridge.hookAllMethods(
+                            android.os.PowerManager.class,
+                            "setLowPowerStandbyPolicy",
+                            new XC_MethodReplacement(114514) {
+                                @Override
+                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                    return null;
+                                }
+                            }
+                    );
+                } catch (Exception e) {
+                    LoggerLog(e);
+                }
+                try {
+                    XposedBridge.hookAllMethods(
+                            android.os.PowerManager.class,
+                            "isExemptFromLowPowerStandby",
+                            new XC_MethodReplacement(114514) {
+                                @Override
+                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                    return false;
+                                }
+                            }
+                    );
+                } catch (Exception e) {
+                    LoggerLog(e);
+                }
+                try {
+                    XposedBridge.hookAllMethods(
+                            android.os.PowerManager.class,
+                            "isAllowedInLowPowerStandby",
+                            new XC_MethodReplacement(114514) {
+                                @Override
+                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                    return true;
+                                }
+                            }
+                    );
+                } catch (Exception e) {
+                    LoggerLog(e);
+                }
+                try {
+                    XposedBridge.hookAllMethods(
+                            android.os.PowerManager.class,
+                            "isIgnoringBatteryOptimizations",
+                            new XC_MethodReplacement(114514) {
+                                @Override
+                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                    return true;
+                                }
+                            }
+                    );
+                } catch (Exception e) {
+                    LoggerLog(e);
+                }
+                try {
+                    XposedBridge.hookAllMethods(
+                            android.os.PowerManager.class,
+                            "shutdown",
+                            new XC_MethodReplacement(114514) {
+                                @Override
+                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                    return null;
+                                }
+                            }
+                    );
+                } catch (Exception e) {
+                    LoggerLog(e);
+                }
+                try {
+                    XposedBridge.hookAllMethods(
+                            android.os.PowerManager.class,
+                            "isSustainedPerformanceModeSupported",
+                            new XC_MethodReplacement(114514) {
+                                @Override
+                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                    return true;
+                                }
+                            }
+                    );
+                } catch (Exception e) {
+                    LoggerLog(e);
+                }
+                try {
+                    XposedBridge.hookAllMethods(
+                            android.os.PowerManager.class,
+                            "getCurrentThermalStatus",
+                            new XC_MethodReplacement(114514) {
+                                @Override
+                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                    return Integer.MAX_VALUE;
+                                }
+                            }
+                    );
+                } catch (Exception e) {
+                    LoggerLog(e);
+                }
+                try {
+                    XposedBridge.hookAllMethods(
+                            android.os.PowerManager.class,
+                            "getThermalHeadroom",
+                            new XC_MethodReplacement(114514) {
+                                @Override
+                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                    return Float.MAX_VALUE;
+                                }
+                            }
+                    );
+                } catch (Exception e) {
+                    LoggerLog(e);
+                }
+                try {
+                    XposedBridge.hookAllMethods(
+                            android.os.PowerManager.class,
+                            "setDozeAfterScreenOff",
+                            new XC_MethodReplacement(114514) {
+                                @Override
+                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                    return null;
+                                }
+                            }
+                    );
+                } catch (Exception e) {
+                    LoggerLog(e);
+                }
+                try {
+                    XposedBridge.hookAllMethods(
+                            android.os.PowerManager.class,
+                            "isAmbientDisplayAvailable",
+                            new XC_MethodReplacement(114514) {
+                                @Override
+                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                    return true;
+                                }
+                            }
+                    );
+                } catch (Exception e) {
+                    LoggerLog(e);
+                }
+                try {
+                    XposedBridge.hookAllMethods(
+                            android.os.PowerManager.class,
+                            "suppressAmbientDisplay",
+                            new XC_MethodReplacement(114514) {
+                                @Override
+                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                    return null;
+                                }
+                            }
+                    );
+                } catch (Exception e) {
+                    LoggerLog(e);
+                }
+                try {
+                    XposedBridge.hookAllMethods(
+                            android.os.PowerManager.class,
+                            "isAmbientDisplaySuppressedForToken",
+                            new XC_MethodReplacement(114514) {
+                                @Override
+                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                    return true;
+                                }
+                            }
+                    );
+                } catch (Exception e) {
+                    LoggerLog(e);
+                }
+                try {
+                    XposedBridge.hookAllMethods(
+                            android.os.PowerManager.class,
+                            "isAmbientDisplaySuppressed",
+                            new XC_MethodReplacement(114514) {
+                                @Override
+                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                    return true;
+                                }
+                            }
+                    );
+                } catch (Exception e) {
+                    LoggerLog(e);
+                }
+                try {
+                    XposedBridge.hookAllMethods(
+                            android.os.PowerManager.class,
+                            "isAmbientDisplaySuppressedForTokenByApp",
+                            new XC_MethodReplacement(114514) {
+                                @Override
+                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                    return true;
+                                }
+                            }
+                    );
+                } catch (Exception e) {
+                    LoggerLog(e);
+                }
+                try {
+                    XposedBridge.hookAllMethods(
+                            android.os.PowerManager.class,
+                            "getLastShutdownReason",
+                            new XC_MethodReplacement(114514) {
+                                @Override
+                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                    return Integer.MAX_VALUE;
+                                }
+                            }
+                    );
+                } catch (Exception e) {
+                    LoggerLog(e);
+                }
+                try {
+                    XposedBridge.hookAllMethods(
+                            android.os.PowerManager.class,
+                            "getLastSleepReason",
+                            new XC_MethodReplacement(114514) {
+                                @Override
+                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                    return Integer.MAX_VALUE;
+                                }
+                            }
+                    );
+                } catch (Exception e) {
+                    LoggerLog(e);
+                }
+                try {
+                    XposedBridge.hookAllMethods(
+                            android.os.PowerManager.class,
+                            "forceSuspend",
+                            new XC_MethodReplacement(114514) {
+                                @Override
+                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                    return true;
+                                }
+                            }
+                    );
+                } catch (Exception e) {
+                    LoggerLog(e);
+                }
+                try {
+                    XposedBridge.hookAllMethods(
+                            android.os.PowerManager.class,
+                            "forceSuspend",
+                            new XC_MethodReplacement(114514) {
+                                @Override
+                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                    return true;
                                 }
                             }
                     );

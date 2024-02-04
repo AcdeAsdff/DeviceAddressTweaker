@@ -29,6 +29,7 @@ import java.util.concurrent.TimeUnit;
 
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XC_MethodReplacement;
+import android.content.SharedPreferences;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
@@ -40,7 +41,13 @@ public class HookAccountClass {
     public static boolean HookAccountAuthenticatorResponse = true;
     public static boolean HookAuthenticatorDescription = true;
     public static boolean HookAbstractAccountAuthenticator = true;
-    public static void DoHook(XC_LoadPackage.LoadPackageParam lpparam){
+    public static void DoHook(XC_LoadPackage.LoadPackageParam lpparam, String procHead, SharedPreferences sharedPreferences){
+        HookAccounts = sharedPreferences.getBoolean("HookAccountClass_HookAccounts",true);
+        HookAccount = sharedPreferences.getBoolean("HookAccountClass_HookAccount", true);
+        HookAccountManager = sharedPreferences.getBoolean("HookAccountClass_HookAccountManager", true);
+        HookAccountAuthenticatorResponse = sharedPreferences.getBoolean("HookAccountClass_HookAccountAuthenticatorResponse", true);
+        HookAuthenticatorDescription = sharedPreferences.getBoolean("HookAccountClass_HookAuthenticatorDescription", true);
+        HookAbstractAccountAuthenticator = sharedPreferences.getBoolean("HookAccountClass_HookAbstractAccountAuthenticator", true);
         if (HookAccounts){
             if (HookAbstractAccountAuthenticator){
                 try {

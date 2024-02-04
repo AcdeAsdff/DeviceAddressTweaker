@@ -60,6 +60,7 @@ import javax.net.SocketFactory;
 
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XC_MethodReplacement;
+import android.content.SharedPreferences;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
@@ -148,7 +149,11 @@ public class HookNetClass {
     public static boolean HookConnectivityManager = true;
     public static boolean HookPlatformVpnProfile = true;
     public static boolean HookVpnManager = true;
+<<<<<<< Updated upstream
 //    public static boolean HookVpnProfileState = true;
+=======
+    public static boolean HookInetAddress = true;
+>>>>>>> Stashed changes
     public static boolean HookVpnService = true;
     public static boolean HookTelephonyNetworkSpecifier = true;
     public static boolean HookRouteInfo = true;
@@ -166,7 +171,42 @@ public class HookNetClass {
     public static boolean HookConnectivityDiagnosticsManager = true;
     public static boolean HookCaptivePortal = true;
     public static boolean HookUri = true;
+<<<<<<< Updated upstream
     public static void DoHook(XC_LoadPackage.LoadPackageParam lpparam){
+=======
+    public static boolean HookDnsResolver = false;
+    public static boolean HookDhcpInfo = false;
+    public static ProxyInfo proxyInfo = null;
+    public static void DoHook(XC_LoadPackage.LoadPackageParam lpparam, String procHead, SharedPreferences sharedPreferences){
+        {
+            HookNet = sharedPreferences.getBoolean("HookNetClass_HookNet", true);
+            HookNetworkCapabilities = sharedPreferences.getBoolean("HookNetClass_HookNetworkCapabilities", true);
+            HookNetworkInfo = sharedPreferences.getBoolean("HookNetClass_HookNetworkInfo", true);
+            HookConnectivityManager = sharedPreferences.getBoolean("HookNetClass_HookConnectivityManager", true);
+            HookPlatformVpnProfile = sharedPreferences.getBoolean("HookNetClass_HookPlatformVpnProfile", true);
+            HookVpnManager = sharedPreferences.getBoolean("HookNetClass_HookVpnManager", true);
+            HookInetAddress = sharedPreferences.getBoolean("HookNetClass_HookInetAddress", true);
+            HookVpnService = sharedPreferences.getBoolean("HookNetClass_HookVpnService", true);
+            HookTelephonyNetworkSpecifier = sharedPreferences.getBoolean("HookNetClass_HookTelephonyNetworkSpecifier", true);
+            HookRouteInfo = sharedPreferences.getBoolean("HookNetClass_HookRouteInfo", true);
+            HookProxyInfo = sharedPreferences.getBoolean("HookNetClass_HookProxyInfo", true);
+            HookProxy = sharedPreferences.getBoolean("HookNetClass_HookProxy", true);
+            HookNetworkRequest = sharedPreferences.getBoolean("HookNetClass_HookNetworkRequest", true);
+            HookNetwork = sharedPreferences.getBoolean("HookNetClass_HookNetwork", true);
+            HookMacAddress = sharedPreferences.getBoolean("HookNetClass_HookMacAddress", true);
+            HookLocalSocketAddress = sharedPreferences.getBoolean("HookNetClass_HookLocalSocketAddress", true);
+            HookLinkProperties = sharedPreferences.getBoolean("HookNetClass_HookLinkProperties", true);
+            HookLinkAddress = sharedPreferences.getBoolean("HookNetClass_HookLinkAddress", true);
+            HookIpSecTransform = sharedPreferences.getBoolean("HookNetClass_HookIpSecTransform", true);
+            HookIpPrefix = sharedPreferences.getBoolean("HookNetClass_HookIpPrefix", true);
+            HookIkev2VpnProfile = sharedPreferences.getBoolean("HookNetClass_HookIkev2VpnProfile", true);
+            HookConnectivityDiagnosticsManager = sharedPreferences.getBoolean("HookNetClass_HookConnectivityDiagnosticsManager", true);
+            HookCaptivePortal = sharedPreferences.getBoolean("HookNetClass_HookCaptivePortal", true);
+            HookUri = sharedPreferences.getBoolean("HookNetClass_HookUri", true);
+            HookDnsResolver = sharedPreferences.getBoolean("HookNetClass_HookDnsResolver", false);
+            HookDhcpInfo = sharedPreferences.getBoolean("HookNetClass_HookDhcpInfo", false);
+        }
+>>>>>>> Stashed changes
         InetAddress emptyInetAddress = null;
         RouteInfo emptyRouteInfo = null;
         ProxyInfo proxyInfo = null;
@@ -188,7 +228,7 @@ public class HookNetClass {
 
 
         if (HookNet){
-            HookWifiClass.DoHook(lpparam);//working here
+            HookWifiClass.DoHook(lpparam,procHead,sharedPreferences);//working here
             if (HookCaptivePortal){
                 try {
                     XposedHelpers.findAndHookMethod(

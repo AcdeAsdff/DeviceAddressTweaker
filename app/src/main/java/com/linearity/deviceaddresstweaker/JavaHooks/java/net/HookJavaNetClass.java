@@ -4,26 +4,37 @@ import static com.linearity.deviceaddresstweaker.DeviceAddressTweaker.getRandomS
 
 import java.net.HttpURLConnection;
 import java.net.NetworkInterface;
+import java.net.URL;
+import java.net.URLStreamHandler;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XC_MethodReplacement;
+import android.content.SharedPreferences;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 import static com.linearity.deviceaddresstweaker.DeviceAddressTweaker.LoggerLog;
+import android.content.SharedPreferences;
 import static com.linearity.deviceaddresstweaker.JavaHooks.java.io.HookIO.checkBannedInFile;
 import static com.linearity.deviceaddresstweaker.JavaHooks.java.io.HookIO.checkReplaceFile;
 
+import com.linearity.deviceaddresstweaker.DeviceAddressTweaker;
+
 public class HookJavaNetClass {
     public static boolean trackUrlLogger = false;//millions years of war
-    public static boolean HookNet = true;
-    public static boolean HookNetworkInterface = true;
-    public static boolean HookHttpUrlConnection = true;
-    public static boolean HookUrl = true;
+    public static boolean HookNet;
+    public static boolean HookNetworkInterface;
+    public static boolean HookHttpUrlConnection;
+    public static boolean HookUrl;
 
-    public static void DoHook(XC_LoadPackage.LoadPackageParam lpparam){
+    public static void DoHook(XC_LoadPackage.LoadPackageParam lpparam, String procHead, SharedPreferences sharedPreferences){
+        HookNet = sharedPreferences.getBoolean("HookJavaNetClass_HookNet",true);
+        HookNetworkInterface = sharedPreferences.getBoolean("HookJavaNetClass_HookNetworkInterface", true);
+        HookHttpUrlConnection = sharedPreferences.getBoolean("HookJavaNetClass_HookHttpUrlConnection", true);
+        HookUrl = sharedPreferences.getBoolean("HookJavaNetClass_HookUrl", true);
         if (HookNet){
             if (HookNetworkInterface) {
 //      java.net.NetworkInterface.class getHardwareAddress()
@@ -207,7 +218,7 @@ public class HookJavaNetClass {
                                 @Override
                                 protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                                     super.beforeHookedMethod(param);
-                                    if (!checkUrl(param)){return;}
+                                    if (!checkUrl(param, procHead)){return;}
                                 }
                             }
                     );
@@ -246,7 +257,14 @@ public class HookJavaNetClass {
                                 @Override
                                 protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                                     super.beforeHookedMethod(param);
-                                    if (!checkUrl(param)){return;}
+                                    if (
+                                            param.args[0] instanceof URL
+                                                    && param.args[2] instanceof URLStreamHandler){
+                                        if (param.args[1] == null){
+                                            param.args[1] = "0";
+                                        }
+                                    }
+                                    if (!checkUrl(param, procHead)){return;}
                                     if (param.args.length < 3){return;}
                                     if (param.args[0] == null){return;}
                                     if (((String)param.args[0]).equals("file")){
@@ -255,7 +273,11 @@ public class HookJavaNetClass {
                                             String path = (String) param.args[2];
                                             path = checkReplaceFile(path, lpparam);
                                             if (!checkBannedInFile(path, lpparam)) {
+<<<<<<< Updated upstream
                                                 path = "/";
+=======
+                                                path = "0";
+>>>>>>> Stashed changes
                                             }
                                             param.args[2] = path;
                                         }
@@ -263,7 +285,11 @@ public class HookJavaNetClass {
                                             String path = (String) param.args[3];
                                             path = checkReplaceFile(path, lpparam);
                                             if (!checkBannedInFile(path, lpparam)) {
+<<<<<<< Updated upstream
                                                 path = "/";
+=======
+                                                path = "0";
+>>>>>>> Stashed changes
                                             }
                                             param.args[3] = path;
                                         }
@@ -283,14 +309,18 @@ public class HookJavaNetClass {
                                 @Override
                                 protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                                     super.beforeHookedMethod(param);
-                                    if (!checkUrl(param)){return;}
+                                    if (!checkUrl(param, procHead)){return;}
                                     if (param.args[0] == null){return;}
                                     if (((String)param.args[0]).equals("file")){
                                         if (param.args[2] == null){return;}
                                         String path = (String) param.args[2];
                                         path = checkReplaceFile(path,lpparam);
                                         if (!checkBannedInFile(path,lpparam)){
+<<<<<<< Updated upstream
                                             path = "/";
+=======
+                                            path = "0";
+>>>>>>> Stashed changes
                                         }
                                         param.args[2] = path;
                                     }
@@ -307,8 +337,14 @@ public class HookJavaNetClass {
 
 
 
+//    public static ArrayList<String> noLogUrlList_startWith = new ArrayList<>();
+//    public static ArrayList<String> replaceUrlList_startWith = new ArrayList<>();
+//    public static ArrayList<String> replaceUrlList_equals = new ArrayList<>();
     //maybe i have to improve String#contains() here
-    public static boolean checkUrl(XC_MethodHook.MethodHookParam param){
+    public static boolean checkUrl(XC_MethodHook.MethodHookParam param, String procHead){
+        ArrayList<String> replaceUrlList_equals = new ArrayList<>();
+        ArrayList<String> replaceUrlList_startWith = new ArrayList<>();
+        ArrayList<String> noLogUrlList_startWith = new ArrayList<>();
         if (param.args[0] == null){return false;}
         String tempUrl = param.args[0].toString();
         if (tempUrl.startsWith("https://")){
@@ -317,86 +353,112 @@ public class HookJavaNetClass {
         else if (tempUrl.startsWith("http://")){
             tempUrl = tempUrl.substring(7);
         }
-        if (!tempUrl.startsWith("127.39.0.1")){
-            if (
-                    (
-                    tempUrl.startsWith("d3g.qq.com")
-                    ||tempUrl.startsWith("sngmta.qq.com:80")
-                    ||tempUrl.startsWith("cmshow.gtimg.cn")
-                    ||tempUrl.startsWith("android.rqd.qq.com/analytics/")
-                    ||tempUrl.startsWith("log.tbs.qq.com")
-                    ||tempUrl.startsWith("dl.url.cn")
-                    ||tempUrl.startsWith("qappcenterv6.3g.qq.com")
-                    ||tempUrl.startsWith("3gimg.qq.com")
-                    ||tempUrl.startsWith("hao.gamecenter.qq.com")
-                    ||tempUrl.startsWith("157.148.33.71:443")
-                    ||tempUrl.startsWith("h5.qzone.qq.com/report/")
-                    ||tempUrl.startsWith("masdkv6.3g.qq.com")
-                    ||tempUrl.startsWith("imgcache.qq.com/club/webview/preload.html")
-                    ||tempUrl.startsWith("appservice.qq.com")
-                    ||tempUrl.startsWith("wspeed.qq.com")
-                    ||tempUrl.startsWith("android.bugly.qq.com")
-                    ||tempUrl.startsWith("line1-log.biligame.net")
-
-                    ||tempUrl.startsWith("/sngapp/app/update/")
-                    ||tempUrl.startsWith("/cgi-bin/mapp/")
-                    ||tempUrl.startsWith("/qzone/")
-                    ||tempUrl.startsWith("i.gtimg.cn")
-                    ||tempUrl.startsWith("resolver.msg.xiaomi.net")
-                    ||tempUrl.startsWith("123.125.102.48:5222")
-                    ||tempUrl.startsWith("111.202.1.252")
-                    ||tempUrl.startsWith("39.156.150.162:5222")
-                    ||tempUrl.startsWith("220.181.106.150:80")
-                    ||tempUrl.startsWith("111.13.142.153:5222")
-                    ||tempUrl.equals("miniapp.gtimg.cn/")
-                    ||tempUrl.equals("miniapp.gtimg.cn")
-                    ||tempUrl.startsWith("wa.qq.com/hot-res/")
-            )){
+        replaceUrlList_startWith.add("dl.url.cn");
+        replaceUrlList_startWith.add("/sngapp/app/update/");
+        replaceUrlList_startWith.add("/cgi-bin/mapp/");
+        replaceUrlList_startWith.add("resolver.msg.xiaomi.net");
+        replaceUrlList_startWith.add("123.125.102.48:5222");
+        replaceUrlList_startWith.add("111.202.1.252");
+        replaceUrlList_startWith.add("39.156.150.162:5222");
+        replaceUrlList_startWith.add("220.181.106.150:80");
+        replaceUrlList_startWith.add("111.13.142.153:5222");
+        replaceUrlList_startWith.add("157.148.33.71:443");
+        if (procHead.contains("tencent")){
+            if (!procHead.contains("tencent.mm")){
+                replaceUrlList_startWith.add("d3g.qq.com");
+                replaceUrlList_startWith.add("sngmta.qq.com");
+                replaceUrlList_startWith.add("cmshow.gtimg.cn");
+                replaceUrlList_startWith.add("imgcache.qq.com/club/webview/preload.html");
+                replaceUrlList_startWith.add("appservice.qq.com");
+                replaceUrlList_startWith.add("wspeed.qq.com");
+                replaceUrlList_startWith.add("android.bugly.qq.com");
+                replaceUrlList_startWith.add("/qzone/");
+                replaceUrlList_startWith.add("i.gtimg.cn");
+                replaceUrlList_startWith.add("wa.qq.com/hot-res/");
+            }
+            replaceUrlList_startWith.add("android.rqd.qq.com/analytics/");
+            replaceUrlList_startWith.add("log.tbs.qq.com");
+            replaceUrlList_startWith.add("qappcenterv6.3g.qq.com");
+            replaceUrlList_startWith.add("3gimg.qq.com");
+            replaceUrlList_startWith.add("hao.gamecenter.qq.com");
+            replaceUrlList_startWith.add("h5.qzone.qq.com/report/");
+            replaceUrlList_startWith.add("masdkv6.3g.qq.com");
+            replaceUrlList_startWith.add("miniapp.gtimg.cn");
+        }else if(procHead.contains("bili")){
+            replaceUrlList_startWith.add("line1-log.biligame.net");
+        }
+        for (String checkHead : replaceUrlList_startWith) {
+            if (tempUrl.startsWith(checkHead)) {
                 param.args[0] = "https://127.39.0.1/" + tempUrl;
                 return false;
             }
         }
-        if (!(
-                tempUrl.startsWith("127.39.0.1")
-                ||tempUrl.startsWith("chatthumb")
-                ||tempUrl.startsWith("file")
-                ||tempUrl.startsWith("chatimg")
-                ||tempUrl.startsWith("jar")
-                ||tempUrl.startsWith("pgdt.gtimg.cn")
-                ||tempUrl.startsWith("qzonestyle.gtimg.cn")
-                ||tempUrl.startsWith("125.88.187.141")
-                ||tempUrl.startsWith("qqsys_emoji")
-                ||tempUrl.startsWith("profile_img_big_fhd")
-                ||tempUrl.startsWith("q.qlogo.cn/")
-                ||tempUrl.startsWith("chatraw")
-                ||tempUrl.startsWith("/public/appicon/")
-                ||tempUrl.startsWith("miniapp.gtimg.cn/public/appicon/")
-                ||tempUrl.startsWith("pic.ugcimg.cn/")
-                ||tempUrl.startsWith("about:blank")
-                ||tempUrl.startsWith("/psc?/")
-                ||tempUrl.startsWith("sec.video.qq.com/")
-                ||tempUrl.startsWith("m.qpic.cn/")
-                ||tempUrl.startsWith("h5.qzone.qq.com/")
-                ||tempUrl.startsWith("125.88.187.159")
-                ||tempUrl.startsWith("BOT")
-                ||tempUrl.startsWith("directaddress")
-                ||tempUrl.startsWith("dns.google")
-                ||tempUrl.startsWith("api.bilibili.com/open/monitor/apm/report")
-                ||tempUrl.startsWith("protocol_vas_extension_image")
-                ||tempUrl.startsWith("emotion_pic")
-                ||tempUrl.startsWith("/club/item/parcel/")
-                ||tempUrl.startsWith("apollo_image")
-                ||tempUrl.startsWith("hot_pic")
-                )
-        ){
-            if (trackUrlLogger){
-                LoggerLog("[linearity]---------------------");
-                for (int i = 0; i < param.args.length; i++) {
-                    LoggerLog(param.args[i]);
-                }
-                LoggerLog("[linearity]---------------------");
+        if (procHead.contains("tencent")){
+            replaceUrlList_equals.add("miniapp.gtimg.cn");
+            replaceUrlList_equals.add("miniapp.gtimg.cn/");
+        }
+        for (String checkHead:replaceUrlList_equals){
+            if (tempUrl.equals(checkHead)){
+                param.args[0] = "https://127.39.0.1/" + tempUrl;
+                return false;
             }
         }
+        
+        noLogUrlList_startWith.add("127.39.0.1");
+        noLogUrlList_startWith.add("about:blank");
+        noLogUrlList_startWith.add("file");
+        noLogUrlList_startWith.add("jar");
+        noLogUrlList_startWith.add("/public/appicon/");
+        noLogUrlList_startWith.add("/psc?/");
+        noLogUrlList_startWith.add("dns.google");
+        if (procHead.contains("tencent")){
+            noLogUrlList_startWith.add("pgdt.gtimg.cn");
+            noLogUrlList_startWith.add("qzonestyle.gtimg.cn");
+            noLogUrlList_startWith.add("qqsys_emoji");
+            noLogUrlList_startWith.add("profile_img_big_fhd");
+            noLogUrlList_startWith.add("q.qlogo.cn");
+            noLogUrlList_startWith.add("miniapp.gtimg.cn/public/appicon/");
+            noLogUrlList_startWith.add("pic.ugcimg.cn");
+            noLogUrlList_startWith.add("sec.video.qq.com");
+            noLogUrlList_startWith.add("m.qpic.cn");
+            noLogUrlList_startWith.add("h5.qzone.qq.com");
+            noLogUrlList_startWith.add("hot_pic");
+            noLogUrlList_startWith.add("apollo_image");
+            noLogUrlList_startWith.add("emotion_pic");
+            noLogUrlList_startWith.add("chatthumb");
+            noLogUrlList_startWith.add("chatimg");
+            noLogUrlList_startWith.add("chatraw");
+            noLogUrlList_startWith.add("125.88.187.141");
+            noLogUrlList_startWith.add("125.88.187.159");
+            noLogUrlList_startWith.add("BOT");
+            noLogUrlList_startWith.add("directaddress");
+            noLogUrlList_startWith.add("protocol_vas_extension_image");
+            noLogUrlList_startWith.add("/club/item/parcel/");
+        }
+        if (procHead.contains("bili")){
+            noLogUrlList_startWith.add("api.bilibili.com/open/monitor/apm/report");
+            noLogUrlList_startWith.add("125.88.187.141");
+            noLogUrlList_startWith.add("125.88.187.159");
+        }
+        boolean getCheckHead = false;
+        if (trackUrlLogger){
+            for (String checkHead : noLogUrlList_startWith) {
+                if (tempUrl.startsWith(checkHead)) {
+                    getCheckHead = true;
+                    break;
+                }
+            }
+            if (!getCheckHead) {
+                if (trackUrlLogger) {
+                    LoggerLog("[linearity]---------------------");
+                    for (int i = 0; i < param.args.length; i++) {
+                        LoggerLog(param.args[i]);
+                    }
+                    LoggerLog("[linearity]---------------------");
+                }
+            }
+        }
+        
         return true;
     }
 

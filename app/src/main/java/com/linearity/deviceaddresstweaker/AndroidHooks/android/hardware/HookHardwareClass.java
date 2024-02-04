@@ -18,6 +18,7 @@ import java.util.ArrayList;
 
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XC_MethodReplacement;
+import android.content.SharedPreferences;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
@@ -30,7 +31,12 @@ public class HookHardwareClass {
     public static boolean HookSensorManager = true;
     public static boolean HookSensorEvent = true;
     public static boolean HookGeomagneticField = true;
-    public static void DoHook(XC_LoadPackage.LoadPackageParam lpparam){
+    public static void DoHook(XC_LoadPackage.LoadPackageParam lpparam, String procHead, SharedPreferences sharedPreferences){
+        HookHardware = sharedPreferences.getBoolean("HookHardwareClass_HookHardware", true);
+        HookSensor = sharedPreferences.getBoolean("HookHardwareClass_HookSensor", true);
+        HookSensorManager = sharedPreferences.getBoolean("HookHardwareClass_HookSensorManager", true);
+        HookSensorEvent = sharedPreferences.getBoolean("HookHardwareClass_HookSensorEvent", true);
+        HookGeomagneticField = sharedPreferences.getBoolean("HookHardwareClass_HookGeomagneticField", true);
         if (HookHardware){
             if (HookGeomagneticField) {
                 //GeomagneticField(float*3,long) constructor

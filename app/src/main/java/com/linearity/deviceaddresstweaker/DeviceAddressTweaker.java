@@ -8,7 +8,13 @@ import android.accounts.AccountManagerFuture;
 import android.accounts.AuthenticatorDescription;
 import android.accounts.AuthenticatorException;
 import android.accounts.OperationCanceledException;
+import android.annotation.SuppressLint;
+import android.app.AndroidAppHelper;
+import android.app.Instrumentation;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.location.Location;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiInfo;
@@ -30,8 +36,17 @@ import com.linearity.deviceaddresstweaker.JavaHooks.java.io.HookIO;
 import com.linearity.deviceaddresstweaker.JavaHooks.java.lang.HookLang;
 import com.linearity.deviceaddresstweaker.JavaHooks.java.net.HookJavaNetClass;
 import com.linearity.deviceaddresstweaker.TIM.HookTIMClass;
+<<<<<<< Updated upstream
+=======
+import com.linearity.deviceaddresstweaker.Wechat.HookWechatClass;
+import com.linearity.deviceaddresstweaker.bilibili.HookBilibiliClass;
+import com.linearity.deviceaddresstweaker.chaoxing.HookChaoxingClass;
+import com.topjohnwu.superuser.Shell;
+>>>>>>> Stashed changes
 
+import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -40,11 +55,23 @@ import java.util.concurrent.TimeUnit;
 
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.XC_MethodHook;
+import android.content.SharedPreferences;
+
+import de.robv.android.xposed.XSharedPreferences;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
+<<<<<<< Updated upstream
 public class DeviceAddressTweaker implements IXposedHookLoadPackage {
+=======
+public class DeviceAddressTweaker implements IXposedHookLoadPackage, IXposedHookInitPackageResources, IXposedHookZygoteInit {
+    public Map<String, Context> ProcHead2Context = new HashMap<>();
+    public Map<String, SharedPreferences> ProcHead2SP = new HashMap<>();
+    public Context appContext = null;
+    public String processHead;
+    public String modulePath;
+>>>>>>> Stashed changes
     public static boolean useLogger = true;
 
     public static Bundle EmptyBundle = new Bundle();
@@ -151,6 +178,7 @@ public class DeviceAddressTweaker implements IXposedHookLoadPackage {
     public static Account[] EmptyAccountArray = new Account[0];
     public static UUID uuid = UUID.randomUUID();
     public static Random random = new Random();
+    SharedPreferences sharedPreferences;
 
 
     public static final  Parcelable.Creator<Account> CREATOR = new Parcelable.Creator<Account>() {
@@ -176,63 +204,22 @@ public class DeviceAddressTweaker implements IXposedHookLoadPackage {
         }
     };
     //a looooooooooong way 2 go
-    public void handleLoadPackage(XC_LoadPackage.LoadPackageParam lpparam) {
+    @SuppressLint({"SetWorldWritable", "SetWorldReadable"})
+    public void handleLoadPackage(XC_LoadPackage.LoadPackageParam lpparam) throws IOException, PackageManager.NameNotFoundException {
         if (lpparam == null) {
             return;
         }
 
         LoggerLog("[linearity]Load app packageName:" + lpparam.packageName);
-//java
-        HookJavaNetClass.DoHook(lpparam);//Working......
-        HookLang.DoHook(lpparam);//not finished
-        HookIO.DoHook(lpparam);//not finished
-//android
-        //accessibilityservice
-        HookAccountClass.DoHook(lpparam);//DONE(API:32)
-        //adservices(Not yet)
-        //animation
-        //annotation(NO)
-        HookAppClass.DoHook(lpparam);//not finished
-        //appwidget
-        HookBluetoothClass.DoHook(lpparam);//not finished
-        //companion
-        HookContentClass.DoHook(lpparam);//not finished
-        //database
-        //drm
-        //gesture
-        //graphics
-        HookHardwareClass.DoHook(lpparam);//not finished
-        //icu
-        //inputmethodservice
-        HookLocationClass.DoHook(lpparam);//not finished
-        //media
-        //mtp
-        HookNetClass.DoHook(lpparam);//not finished
-        //nfc
-        //opengl
-        HookOsClass.DoHook(lpparam);//not finished
-        //preference
-        //print
-        //printservice
-        HookProviderClass.DoHook(lpparam);//not finished
-        //renderscript
-        //sax
-        //se.omapi
-        //security
-        //service
-        //speech
-        //system
-        //telecom
-        HookTelephonyClass.DoHook(lpparam);//not finished
-        //text
-        //transition
-        //util
-        //view
-        //webkit
-        //widget
-        //window
+        processHead = lpparam.processName.split(":")[0];
+        ProcHead2Context.put(processHead, null);
+//        sharedPreferences = new XSharedPreferences("com.linearity.deviceaddresstweaker",processHead + "_linearity_dat_settings");
+        File spFile = new File("/data/local/tmp/linearity_dat/shared_prefs/" + processHead + "_linearity_dat_settings.xml");
 
+        //        Runtime.getRuntime().exec("chmod +r shared_prefs " + spFile.getAbsolutePath());
+//        Context context = AndroidAppHelper.currentApplication().createPackageContext("com.linearity.deviceaddresstweaker",Context.CONTEXT_IGNORE_SECURITY);
 
+<<<<<<< Updated upstream
         //wechat
         try{
             if (lpparam.packageName.contains("tencent.mm")) {
@@ -289,6 +276,14 @@ public class DeviceAddressTweaker implements IXposedHookLoadPackage {
         }
 
         HookTIMClass.DoHook(lpparam);
+=======
+        sharedPreferences = new XSharedPreferences(spFile);
+//        sharedPreferences = context.getSharedPreferences(processHead + "_linearity_dat_settings",Context.MODE_PRIVATE);
+//        LoggerLog(spFile.exists());
+//        LoggerLog(spFile.getAbsolutePath());
+        startHookMethods(lpparam, processHead, sharedPreferences);
+    }
+>>>>>>> Stashed changes
 
     }
 
@@ -337,6 +332,106 @@ public class DeviceAddressTweaker implements IXposedHookLoadPackage {
         if (useLogger){
             XposedBridge.log(prefix + e);//not best?
         }
+    }
+    
+//    public static void getAppContextInit(XC_LoadPackage.LoadPackageParam lpparam, DeviceAddressTweaker instance, String processHead){
+//        Class<?> loadedApkClass = XposedHelpers.findClass(
+//                "android.app.LoadedApk",
+//                lpparam.classLoader
+//        );
+//        Class<?> contextImplClass = XposedHelpers.findClass(
+//                "android.app.ContextImpl",
+//                lpparam.classLoader
+//        );
+//        Class<?> activityThreadClass = XposedHelpers.findClass(
+//                "android.app.ActivityThread",
+//                lpparam.classLoader
+//        );
+//        XposedHelpers.findAndHookMethod(
+//                contextImplClass,
+//                "createAppContext",
+//                activityThreadClass, loadedApkClass, String.class,
+//                new XC_MethodHook(1919810) {
+//                    @Override
+//                    protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+//                        super.afterHookedMethod(param);
+//                        Context result = (Context) param.getResult();
+//                        instance.ProcHead2Context.put(processHead, (Context) param.getResult());
+//
+//                        if (result != null){
+//                            instance.ProcHead2SP.put(processHead, result.getSharedPreferences(processHead + "_dat_settings", Context.MODE_PRIVATE));
+//                        }else {
+//                            instance.ProcHead2SP.put(processHead, new XSharedPreferences(processHead));
+//                        }
+//                        startHookMethods(lpparam, processHead, instance.ProcHead2SP.get(processHead));
+//                    }
+//                }
+//        );
+//    }
+
+    public static void startHookMethods(XC_LoadPackage.LoadPackageParam lpparam, String processHead, SharedPreferences sharedPreferences){
+//        LoggerLog(sharedPreferences.getAll());
+        //        StrangeHookClass.DoHook(lpparam,processHead,sharedPreferences);
+//        if (!lpparam.processName.split(":")[0].contains("com.jingcai.apps")){return;}
+//java
+        HookJavaNetClass.DoHook(lpparam,processHead,sharedPreferences);//Working......
+        HookLang.DoHook(lpparam,processHead,sharedPreferences);//not finished
+        HookIO.DoHook(lpparam,processHead,sharedPreferences);//not finished
+//android
+        //accessibilityservice
+        HookAccountClass.DoHook(lpparam,processHead,sharedPreferences);//DONE(API:32)
+        //adservices(Not yet)
+        //animation
+        //annotation(NO)
+        HookAppClass.DoHook(lpparam,processHead,sharedPreferences);//not finished
+        //appwidget
+        HookBluetoothClass.DoHook(lpparam,processHead,sharedPreferences);//not finished
+        //companion
+        HookContentClass.DoHook(lpparam,processHead,sharedPreferences);//not finished
+        //database
+        //drm
+        //gesture
+        //graphics
+        HookHardwareClass.DoHook(lpparam,processHead,sharedPreferences);//not finished
+        //icu
+        //inputmethodservice
+        HookLocationClass.DoHook(lpparam,processHead,sharedPreferences);//not finished
+        //media
+        //mtp
+        HookNetClass.DoHook(lpparam,processHead,sharedPreferences);//not finished
+        //nfc
+        //opengl
+        HookOsClass.DoHook(lpparam,processHead,sharedPreferences);//not finished
+        //preference
+        //print
+        //printservice
+        HookProviderClass.DoHook(lpparam,processHead,sharedPreferences);//not finished
+        //renderscript
+        //sax
+        //se.omapi
+        //security
+        //service
+        //speech
+        //system
+        //telecom
+        HookTelephonyClass.DoHook(lpparam,processHead,sharedPreferences);//not finished
+        //text
+        //transition
+        //util
+        //view
+        //webkit
+        //widget
+        //window
+
+
+        HookWechatClass.DoHook(lpparam,processHead,sharedPreferences);
+
+        HookTIMClass.DoHook(lpparam,processHead,sharedPreferences);
+
+        HookChaoxingClass.DoHook(lpparam,processHead,sharedPreferences);
+
+        HookBilibiliClass.DoHook(lpparam,processHead,sharedPreferences);
+
     }
 }
 

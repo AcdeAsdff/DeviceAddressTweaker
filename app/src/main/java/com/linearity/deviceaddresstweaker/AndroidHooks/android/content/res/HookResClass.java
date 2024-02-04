@@ -17,6 +17,7 @@ import java.util.Arrays;
 import java.util.Locale;
 
 import de.robv.android.xposed.XC_MethodHook;
+import android.content.SharedPreferences;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
@@ -26,7 +27,9 @@ import static com.linearity.deviceaddresstweaker.DeviceAddressTweaker.random;
 public class HookResClass {
     public static boolean HookRes = true;
     public static boolean HookResources = true;
-    public static void DoHook(XC_LoadPackage.LoadPackageParam lpparam){
+    public static void DoHook(XC_LoadPackage.LoadPackageParam lpparam, String procHead, SharedPreferences sharedPreferences){
+        HookRes = sharedPreferences.getBoolean("HookContentClass_HookResClass_HookRes", true);
+        HookResources = sharedPreferences.getBoolean("HookContentClass_HookResClass_HookResources", true);
         if (HookRes){
             if (HookResources) {
 //      android.content.res.Resources.class getConfiguration()

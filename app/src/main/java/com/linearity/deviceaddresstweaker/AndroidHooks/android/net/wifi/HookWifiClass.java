@@ -2,6 +2,12 @@ package com.linearity.deviceaddresstweaker.AndroidHooks.android.net.wifi;
 
 import static com.linearity.deviceaddresstweaker.DeviceAddressTweaker.getRandomString;
 
+<<<<<<< Updated upstream
+=======
+import android.app.AndroidAppHelper;
+import android.content.Context;
+import android.net.DhcpInfo;
+>>>>>>> Stashed changes
 import android.net.MacAddress;
 import android.net.NetworkInfo;
 import android.net.NetworkSpecifier;
@@ -21,6 +27,7 @@ import javax.crypto.Mac;
 
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XC_MethodReplacement;
+import android.content.SharedPreferences;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
@@ -57,12 +64,37 @@ public class HookWifiClass {
     public static List<WifiConfiguration> wifiConfigurationList = new ArrayList<>();
     public static boolean HookWifi = true;
     public static boolean HookWifiInfo = true;
+<<<<<<< Updated upstream
     public static boolean HookWifiNetworkSpecifier = true;
     public static boolean HookWifiNetworkSuggestion = true;
     public static boolean HookWpsInfo = true;
+=======
+    public static boolean HookWifiManager = false;
+    public static boolean HookWifiNetworkSpecifier = true;
+    public static boolean HookWifiNetworkSuggestion = true;
+    public static boolean HookWpsInfo = true;
+    public static boolean HookWifiEnterpriseConfig = true;
+    public static boolean HookWifiConfiguration = true;
+    public static boolean HookSupplicantState = true;
+    public static boolean HookSoftApConfiguration = true;
+    public static boolean HookScanResult = true;
+    public static boolean HookWifiLocks = false;
+    public static ByteBuffer emptyByteBuffer = ByteBuffer.allocate(0);
+>>>>>>> Stashed changes
 
-    public static void DoHook(XC_LoadPackage.LoadPackageParam lpparam){
-
+    public static void DoHook(XC_LoadPackage.LoadPackageParam lpparam, String procHead, SharedPreferences sharedPreferences){
+        HookWifi = sharedPreferences.getBoolean("HookNetClass_HookWifiClass_HookWifi", true);
+        HookWifiInfo = sharedPreferences.getBoolean("HookNetClass_HookWifiClass_HookWifiInfo", true);
+        HookWifiManager = sharedPreferences.getBoolean("HookNetClass_HookWifiClass_HookWifiManager", false);
+        HookWifiNetworkSpecifier = sharedPreferences.getBoolean("HookNetClass_HookWifiClass_HookWifiNetworkSpecifier", true);
+        HookWifiNetworkSuggestion = sharedPreferences.getBoolean("HookNetClass_HookWifiClass_HookWifiNetworkSuggestion", true);
+        HookWpsInfo = sharedPreferences.getBoolean("HookNetClass_HookWifiClass_HookWpsInfo", true);
+        HookWifiEnterpriseConfig = sharedPreferences.getBoolean("HookNetClass_HookWifiClass_HookWifiEnterpriseConfig", true);
+        HookWifiConfiguration = sharedPreferences.getBoolean("HookNetClass_HookWifiClass_HookWifiConfiguration", true);
+        HookSupplicantState = sharedPreferences.getBoolean("HookNetClass_HookWifiClass_HookSupplicantState", true);
+        HookSoftApConfiguration = sharedPreferences.getBoolean("HookNetClass_HookWifiClass_HookSoftApConfiguration", true);
+        HookScanResult = sharedPreferences.getBoolean("HookNetClass_HookWifiClass_HookScanResult", true);
+        HookWifiLocks = sharedPreferences.getBoolean("HookNetClass_HookWifiClass_HookWifiLocks", false);
         if (HookWifi){
             if (HookWifiInfo) {
                 try {
@@ -450,7 +482,190 @@ public class HookWifiClass {
                     LoggerLog(e);
                 }
             }
+<<<<<<< Updated upstream
             //working...
+=======
+            if (HookWifiManager){
+                //addNetworkPrivileged
+                for (Method i: WifiManager.class.getDeclaredMethods()){
+                    if (Modifier.isAbstract(i.getModifiers())){continue;}
+                    if (int.class.equals(i.getReturnType())){
+                        if (i.getName().equals("getWifiState")){
+                            XposedBridge.hookMethod(i, new XC_MethodReplacement() {
+                                @Override
+                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                    return WifiManager.WIFI_STATE_ENABLED;
+                                }
+                            });
+                            continue;
+                        }
+                        XposedBridge.hookMethod(i, new XC_MethodReplacement() {
+                            @Override
+                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                return Integer.MAX_VALUE;
+                            }
+                        });
+                        continue;
+                    }
+                    if (boolean.class.equals(i.getReturnType())){
+                        if (i.getName().contains("equal")){
+                            XposedBridge.hookMethod(i, new XC_MethodReplacement() {
+                                @Override
+                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                    return false;
+                                }
+                            });continue;
+                        }
+                        XposedBridge.hookMethod(i, new XC_MethodReplacement() {
+                            @Override
+                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                return true;
+                            }
+                        });continue;
+                    }
+                    if (void.class.equals(i.getReturnType())){
+                        XposedBridge.hookMethod(i, new XC_MethodReplacement() {
+                            @Override
+                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                return null;
+                            }
+                        });continue;
+                    }
+                    if (List.class.equals(i.getReturnType())){
+                        XposedBridge.hookMethod(i, new XC_MethodReplacement() {
+                            @Override
+                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                return new ArrayList<>();
+                            }
+                        });continue;
+                    }
+                    if (WifiInfo.class.equals(i.getReturnType())){
+                        XposedBridge.hookMethod(i, new XC_MethodReplacement() {
+                            @Override
+                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                return fakeWifiInfo;
+                            }
+                        });continue;
+                    }
+                    if (DhcpInfo.class.equals(i.getReturnType())){
+                        XposedBridge.hookMethod(i, new XC_MethodReplacement() {
+                            @Override
+                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                return null;
+                            }
+                        });continue;
+                    }
+                }
+                for (Method i: WifiManager.AddNetworkResult.class.getDeclaredMethods()){
+                    if (int.class.equals(i.getReturnType())){
+                        if (i.getName().equals("getWifiState")){
+                            XposedBridge.hookMethod(i, new XC_MethodReplacement() {
+                                @Override
+                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                    return WifiManager.WIFI_STATE_ENABLED;
+                                }
+                            });
+                            continue;
+                        }
+                        XposedBridge.hookMethod(i, new XC_MethodReplacement() {
+                            @Override
+                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                return Integer.MAX_VALUE;
+                            }
+                        });
+                        continue;
+                    }
+                    if (void.class.equals(i.getReturnType())){
+                        XposedBridge.hookMethod(i, new XC_MethodReplacement() {
+                            @Override
+                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                return null;
+                            }
+                        });continue;
+                    }
+                }
+                for (Method i: WifiManager.LocalOnlyHotspotCallback.class.getDeclaredMethods()){
+                    if (void.class.equals(i.getReturnType())){
+                        XposedBridge.hookMethod(i, new XC_MethodReplacement() {
+                            @Override
+                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                return null;
+                            }
+                        });continue;
+                    }
+                }
+                for (Method i: WifiManager.LocalOnlyHotspotReservation.class.getDeclaredMethods()){
+                    if (void.class.equals(i.getReturnType())){
+                        XposedBridge.hookMethod(i, new XC_MethodReplacement() {
+                            @Override
+                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                return null;
+                            }
+                        });continue;
+                    }
+                }
+                if (HookWifiLocks){
+                    for (Method i : WifiManager.MulticastLock.class.getDeclaredMethods()) {
+                        if (void.class.equals(i.getReturnType())) {
+                            XposedBridge.hookMethod(i, new XC_MethodReplacement() {
+                                @Override
+                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                    return null;
+                                }
+                            });
+                            continue;
+                        }
+                        if (boolean.class.equals(i.getReturnType())) {
+                            XposedBridge.hookMethod(i, new XC_MethodReplacement() {
+                                @Override
+                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                    return true;
+                                }
+                            });
+                            continue;
+                        }
+                        if (String.class.equals(i.getReturnType())) {
+                            XposedBridge.hookMethod(i, new XC_MethodReplacement() {
+                                @Override
+                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                    return getRandomString(10);
+                                }
+                            });
+                            continue;
+                        }
+                    }
+                    for (Method i : WifiManager.WifiLock.class.getDeclaredMethods()) {
+                        if (void.class.equals(i.getReturnType())) {
+                            XposedBridge.hookMethod(i, new XC_MethodReplacement() {
+                                @Override
+                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                    return null;
+                                }
+                            });
+                            continue;
+                        }
+                        if (boolean.class.equals(i.getReturnType())) {
+                            XposedBridge.hookMethod(i, new XC_MethodReplacement() {
+                                @Override
+                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                    return true;
+                                }
+                            });
+                            continue;
+                        }
+                        if (String.class.equals(i.getReturnType())) {
+                            XposedBridge.hookMethod(i, new XC_MethodReplacement() {
+                                @Override
+                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                    return getRandomString(10);
+                                }
+                            });
+                            continue;
+                        }
+                    }
+                }
+            }
+>>>>>>> Stashed changes
             if (HookWifiNetworkSpecifier) {
                 try {
                     XposedHelpers.findAndHookMethod(
@@ -882,4 +1097,5 @@ public class HookWifiClass {
             }
         }
     }
+
 }

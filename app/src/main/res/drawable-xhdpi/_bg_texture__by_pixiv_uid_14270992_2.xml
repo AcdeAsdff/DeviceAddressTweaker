@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<bitmap
+    android:tileMode="disabled"
+    android:dither="true"
+    android:antialias="true"
+    android:src="@drawable/_pixiv_96788690_by_userid_14270992"
+    android:gravity="top|center"
+    xmlns:android="http://schemas.android.com/apk/res/android"/>
+<!--by:白洛-->
+<!--(filename does not support utf-8 :(-->

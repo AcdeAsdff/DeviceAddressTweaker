@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bitmap
+    android:tileMode="disabled"
+    android:dither="true"
+    android:antialias="true"
+    android:src="@drawable/_twitter_stauts_1654020886742323201_by_huli1412_"
+    android:gravity="top|left"
+    xmlns:android="http://schemas.android.com/apk/res/android"/>
+<!--没准哪天疯狐老师真的会把我灭了-->

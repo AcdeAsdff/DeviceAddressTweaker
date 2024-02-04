@@ -6,6 +6,7 @@ import static com.linearity.deviceaddresstweaker.DeviceAddressTweaker.LoggerLog;
 import android.bluetooth.BluetoothAdapter;
 
 import de.robv.android.xposed.XC_MethodHook;
+import android.content.SharedPreferences;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
@@ -13,7 +14,9 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage;
 public class HookBluetoothClass {
     public static boolean HookBluetooth = true;
     public static boolean HookBluetoothAdapter = true;
-    public static void DoHook(XC_LoadPackage.LoadPackageParam lpparam){
+    public static void DoHook(XC_LoadPackage.LoadPackageParam lpparam, String procHead, SharedPreferences sharedPreferences){
+        HookBluetooth = sharedPreferences.getBoolean("HookBluetoothClass_HookBluetooth", true);
+        HookBluetoothAdapter = sharedPreferences.getBoolean("HookBluetoothClass_HookBluetoothAdapter", true);
         if (HookBluetooth){
             if (HookBluetoothAdapter) {
                 //      BluetoothAdapter.class getAddress()

@@ -4,6 +4,7 @@ import android.location.Location;
 import static com.linearity.deviceaddresstweaker.DeviceAddressTweaker.LoggerLog;
 
 import de.robv.android.xposed.XC_MethodHook;
+import android.content.SharedPreferences;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
@@ -11,8 +12,10 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage;
 public class HookLocationClass {
     public static boolean HookLocation = true;
 
-    public static void DoHook(XC_LoadPackage.LoadPackageParam lpparam){
-        if (HookLocation){//      Location.class getLatitude()
+    public static void DoHook(XC_LoadPackage.LoadPackageParam lpparam, String procHead, SharedPreferences sharedPreferences){
+        HookLocation = sharedPreferences.getBoolean("HookLocationClass_HookLocation", true);
+        if (HookLocation){
+            //      Location.class getLatitude()
             try {
                 XposedHelpers.findAndHookMethod(
                         Location.class.getName(),

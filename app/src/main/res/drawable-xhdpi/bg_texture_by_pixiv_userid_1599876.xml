@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bitmap
+    android:tileMode="disabled"
+    android:dither="true"
+    android:antialias="true"
+    android:src="@drawable/_pixiv_111302539_by_userid_1599876_"
+    android:gravity="center"
+    xmlns:android="http://schemas.android.com/apk/res/android"/>
+<!--by:ばな奈/甘木花-->

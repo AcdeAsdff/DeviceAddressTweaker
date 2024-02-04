@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="action_sheet_layout_style" parent="">
+        <item name="android:background">@drawable/p</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+    <style name="switch_style" parent="Theme.AppCompat.Light">
+        <item name="colorControlActivated">@color/white</item>
+        <item name="colorSwitchThumbNormal">@color/teal_700</item>
+        <item name="android:colorForeground">@color/black</item>
+    </style>
+</resources>

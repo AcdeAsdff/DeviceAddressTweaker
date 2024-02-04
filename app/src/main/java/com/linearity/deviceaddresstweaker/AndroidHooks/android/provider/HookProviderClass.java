@@ -10,6 +10,7 @@ import android.provider.MediaStore;
 
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XC_MethodReplacement;
+import android.content.SharedPreferences;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
@@ -31,7 +32,11 @@ public class HookProviderClass {
     public static boolean HookSettings = true;
     public static boolean HookSecure = true;
     
-    public static void DoHook(XC_LoadPackage.LoadPackageParam lpparam){
+    public static void DoHook(XC_LoadPackage.LoadPackageParam lpparam, String procHead, SharedPreferences sharedPreferences){
+        HookProvider = sharedPreferences.getBoolean("HookProviderClass_HookProvider", true);
+        HookMediaStore = sharedPreferences.getBoolean("HookProviderClass_HookMediaStore", true);
+        HookSettings = sharedPreferences.getBoolean("HookProviderClass_HookSettings", true);
+        HookSecure = sharedPreferences.getBoolean("HookProviderClass_HookSecure", true);
         if (HookProvider){
             if (HookSettings){
                 if (HookSecure) {//      android.provider.Settings.Secure.class getString()
