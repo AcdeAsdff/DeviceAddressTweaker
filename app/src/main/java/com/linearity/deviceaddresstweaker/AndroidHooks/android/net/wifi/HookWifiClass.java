@@ -3,7 +3,6 @@ package com.linearity.deviceaddresstweaker.AndroidHooks.android.net.wifi;
 import static com.linearity.deviceaddresstweaker.DeviceAddressTweaker.fakeWifiInfo;
 import static com.linearity.deviceaddresstweaker.DeviceAddressTweaker.getRandomString;
 
-
 import android.app.AndroidAppHelper;
 import android.content.Context;
 import android.net.DhcpInfo;
@@ -479,7 +478,6 @@ public class HookWifiClass {
                     LoggerLog(e);
                 }
             }
-
             if (HookWifiManager){
                 //addNetworkPrivileged
                 for (Method i: WifiManager.class.getDeclaredMethods()){

@@ -383,8 +383,6 @@ public class HookIO {
             "/sdcard/",
             "/storage/emulated/0",
             "/storage/emulated/0/",
-            "/storage/emulated/0/Android",
-            "/storage/emulated/0/Android/",
             "/storage/emulated/0/Pictures",
             "/storage/emulated/0/Pictures/",
             "/storage/emulated/0/Pictures/WeiXin",
@@ -401,13 +399,15 @@ public class HookIO {
             if (param.args[0] instanceof String)
             {
                 path = (String) param.args[0];
+                String cache = path;
                 path = checkReplaceFile(path, lpparam);
-                if (path.contains(procHead)
-                        ||path.contains(lpparam.packageName)){return true;}
-                else {
+                if (path.equals(cache)){return true;}
+//                else {
 //                    LoggerLog(path);
-                }
-                if ((path.contains("WeiXin") || path.contains("tencent")) && procHead.contains("tencent")) {
+//                }
+                if ((path.contains("WeiXin")
+                        || path.contains("tencent"))
+                        && procHead.contains("tencent")) {
                     return true;
                 }
                 if (useChecker){
@@ -443,11 +443,12 @@ public class HookIO {
                 if (param.args[0] != null){
                     path = (String) param.args[0].toString();
                 }
+                String cache = path;
                 path = checkReplaceFile(path, lpparam);
-                if (path.contains(procHead)
-                        ||path.contains(lpparam.packageName)){return true;}else {
-                    LoggerLog(path);
-                }
+                if (path.equals(cache)){return true;}
+//                else {
+//                    LoggerLog(path);
+//                }
                 if ((path.contains("WeiXin") || path.contains("tencent")) && procHead.contains("tencent")) {
                     return true;
                 }
@@ -464,14 +465,14 @@ public class HookIO {
                             break;
                         }
                         if (path.startsWith(checker)) {
-                            param.args[0] = new URI(getRandomString(14));
+                            param.args[0] = new URI(((URI)param.args[0]).toString() + "/" + procHead);
                             mark = false;
                             break;
                         }
                     }
                     for (String checker : bannedFileExact) {
                         if (path.equals(checker)) {
-                            param.args[0] = new URI(getRandomString(14));
+                            param.args[0] =  new URI(((URI)param.args[0]).toString() + "/" + procHead);
                             mark = false;
                             break;
                         }
@@ -520,16 +521,18 @@ public class HookIO {
             if ((totalPath.contains("WeiXin") || totalPath.contains("tencent")) && procHead.contains("tencent")) {
                 return true;
             }
+            String cache = totalPath;
             totalPath = checkReplaceFile(totalPath, lpparam);
             if (
-                    (totalPath).contains(procHead)
-                            ||(totalPath).contains(lpparam.packageName)
+                    totalPath.equals(cache)
             )
             {
                 return true;
-            }else {
-//                LoggerLog(totalPath);
             }
+//            else {
+//                LoggerLog(totalPath);
+//                LoggerLog(cache);
+//            }
             if (useChecker){
                 for (String checker : bannedFileHead) {
                     if (totalPath.startsWith(checker)) {
@@ -544,16 +547,16 @@ public class HookIO {
                             break;
                         }
                         if (ConstructorType == FileConstructor_Type_File_String) {
-                            param.args[0] = new File(getRandomString(14));
-                            param.args[1] = getRandomString(14);
+                            param.args[0] =  new File(((File)param.args[0]).toString() + "/" + procHead);
+                            param.args[1] = ((String)param.args[1]) + "/" + procHead;
                         } else if (ConstructorType == FileConstructor_Type_String_File) {
-                            param.args[0] = getRandomString(14);
-                            param.args[1] = new File(getRandomString(14));
+                            param.args[0] = ((String)param.args[0]) + "/" + procHead;
+                            param.args[1] =  new File(((File)param.args[1]).toString() + "/" + procHead);
                         } else if (ConstructorType == FileConstructor_Type_String_String) {
-                            param.args[0] = getRandomString(14);
-                            param.args[1] = getRandomString(14);
+                            param.args[0] = ((String)param.args[0]) + "/" + procHead;
+                            param.args[1] = ((String)param.args[1]) + "/" + procHead;
                         } else {
-                            param.args[0] = getRandomString(14);
+                            param.args[0] = ((String)param.args[0]) + "/" + procHead;
                             param.args[1] = random.nextInt(Integer.MAX_VALUE);
                         }
                         mark = false;
@@ -563,16 +566,16 @@ public class HookIO {
                 for (String checker : bannedFileExact) {
                     if ((totalPath).equals(checker)) {
                         if (ConstructorType == FileConstructor_Type_File_String) {
-                            param.args[0] = new File(getRandomString(14));
-                            param.args[1] = getRandomString(14);
+                            param.args[0] =  new File(((File)param.args[0]).toString() + "/" + procHead);
+                            param.args[1] = ((String)param.args[1]) + "/" + procHead;
                         } else if (ConstructorType == FileConstructor_Type_String_File) {
-                            param.args[0] = getRandomString(14);
-                            param.args[1] = new File(getRandomString(14));
+                            param.args[0] = ((String)param.args[0]) + "/" + procHead;
+                            param.args[1] =  new File(((File)param.args[1]).toString() + "/" + procHead);
                         } else if (ConstructorType == FileConstructor_Type_String_String) {
-                            param.args[0] = getRandomString(14);
-                            param.args[1] = getRandomString(14);
+                            param.args[0] = ((String)param.args[0]) + "/" + procHead;
+                            param.args[1] = ((String)param.args[1]) + "/" + procHead;
                         } else {
-                            param.args[0] = getRandomString(14);
+                            param.args[0] = ((String)param.args[0]) + "/" + procHead;
                             param.args[1] = random.nextInt(Integer.MAX_VALUE);
                         }
                         mark = false;
@@ -586,10 +589,16 @@ public class HookIO {
     public static String checkReplaceFile(String path, XC_LoadPackage.LoadPackageParam lpparam){
         if (path == null){return null;}
         if (path.equals("")){return "";}
+        String procHead = lpparam.processName.split(":")[0];
+        if (path.contains(procHead + "/Android")){
+            path = path.replace(procHead + "/Android","/Android");
+        }
+        if (path.contains(lpparam.packageName)
+                || path.contains(procHead)
+        ){return path;}
         if (!path.startsWith("/")){
             path = "/" + path;
         }
-        String procHead = lpparam.processName.split(":")[0];
         for (String checker:tweakPathExact){
             if (path.equals(checker)){
                 if (!checker.endsWith("/")){
@@ -620,9 +629,6 @@ public class HookIO {
         ){
             path = "";
         }
-//        else if (path.endsWith(".so")){
-//            LoggerLog(lpparam.processName+"[Warning]Loading native:" + path);
-//        }
         return path;
     }
     public static boolean checkBannedInFile(String path, XC_LoadPackage.LoadPackageParam lpparam){
@@ -630,9 +636,9 @@ public class HookIO {
         String procHead = lpparam.processName.split(":")[0];
         if (path.contains(procHead)
                 ||path.contains(lpparam.packageName)){return true;}
-        else {
+//        else {
 //                    LoggerLog(path);
-        }
+//        }
         if ((path.contains("WeiXin") || path.contains("tencent")) && procHead.contains("tencent")) {
             return true;
         }

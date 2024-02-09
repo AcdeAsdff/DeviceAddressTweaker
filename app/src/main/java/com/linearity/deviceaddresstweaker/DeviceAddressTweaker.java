@@ -52,12 +52,14 @@ import java.util.concurrent.TimeUnit;
 
 import de.robv.android.xposed.IXposedHookInitPackageResources;
 import de.robv.android.xposed.IXposedHookLoadPackage;
+import de.robv.android.xposed.IXposedHookZygoteInit;
 import de.robv.android.xposed.XC_MethodHook;
 import android.content.SharedPreferences;
 
 import de.robv.android.xposed.XSharedPreferences;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
+import de.robv.android.xposed.callbacks.XC_InitPackageResources;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
 
@@ -198,6 +200,8 @@ public class DeviceAddressTweaker implements IXposedHookLoadPackage, IXposedHook
             return null;
         }
     };
+    public XC_InitPackageResources.InitPackageResourcesParam resparam;
+
     //a looooooooooong way 2 go
     @SuppressLint({"SetWorldWritable", "SetWorldReadable"})
     public void handleLoadPackage(XC_LoadPackage.LoadPackageParam lpparam) throws IOException, PackageManager.NameNotFoundException {
@@ -215,18 +219,13 @@ public class DeviceAddressTweaker implements IXposedHookLoadPackage, IXposedHook
 //        Context context = AndroidAppHelper.currentApplication().createPackageContext("com.linearity.deviceaddresstweaker",Context.CONTEXT_IGNORE_SECURITY);
 
 
+        sharedPreferences = new XSharedPreferences(spFile);
+//        sharedPreferences = context.getSharedPreferences(processHead + "_linearity_dat_settings",Context.MODE_PRIVATE);
+//        LoggerLog(spFile.exists());
+//        LoggerLog(spFile.getAbsolutePath());
+        startHookMethods(lpparam, processHead, sharedPreferences);
     }
 
-    //empty,implements AccountManagerFuture
-    public static abstract class Future2Task<T>
-     implements AccountManagerFuture<T> {
-        Account account;
-        public Future2Task() {
-        }
-        public Future2Task(Account account) {
-            this.account = account;
-        }
-    }
 
     public static String getRandomString(int length){
         random = new Random();
@@ -264,6 +263,30 @@ public class DeviceAddressTweaker implements IXposedHookLoadPackage, IXposedHook
         }
     }
 
+    @Override
+    public void handleInitPackageResources(XC_InitPackageResources.InitPackageResourcesParam resparam) throws Throwable {
+        this.resparam = resparam;
+        HookTIMClass.DoColor(this);
+    }
+
+    @Override
+    public void initZygote(StartupParam startupParam) throws Throwable {
+        this.modulePath = startupParam.modulePath;
+    }
+
+
+    //empty,implements AccountManagerFuture
+ public static abstract class Future2Task<T>
+     implements AccountManagerFuture<T> {
+        Account account;
+        public Future2Task() {
+        }
+        public Future2Task(Account account) {
+            this.account = account;
+        }
+    }
+
+    
 //    public static void getAppContextInit(XC_LoadPackage.LoadPackageParam lpparam, DeviceAddressTweaker instance, String processHead){
 //        Class<?> loadedApkClass = XposedHelpers.findClass(
 //                "android.app.LoadedApk",
@@ -353,7 +376,6 @@ public class DeviceAddressTweaker implements IXposedHookLoadPackage, IXposedHook
         //widget
         //window
 
-
         HookWechatClass.DoHook(lpparam,processHead,sharedPreferences);
 
         HookTIMClass.DoHook(lpparam,processHead,sharedPreferences);
@@ -364,5 +386,4 @@ public class DeviceAddressTweaker implements IXposedHookLoadPackage, IXposedHook
 
     }
 }
-
 

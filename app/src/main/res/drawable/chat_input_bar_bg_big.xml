@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--<bitmap xmlns:android="http://schemas.android.com/apk/res/android" -->
+<!--    android:gravity="top|fill_horizontal" -->
+<!--    android:src="@color/miku_alpha80" -->
+<!--    android:tileMode="disabled"/>-->
+<selector
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:drawable="@color/C86C7C5"/>
+</selector>

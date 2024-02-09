@@ -121,9 +121,9 @@ public class HookBilibiliClass {
                                 protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
                                     return m.invoke(staticObj,param.args[0]);
 
-                            });
-                        }
-                    } catch (Exception e) {
+                            }
+                        });
+                    }} catch (Exception e) {
                         LoggerLog(e);
                     }
                     try {

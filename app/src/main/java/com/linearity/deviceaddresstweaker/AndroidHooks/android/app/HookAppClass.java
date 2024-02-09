@@ -1905,6 +1905,7 @@ public class HookAppClass {
             }//not finished,
         }
     }
+
     public static boolean checkAllowIntent(Intent intent, XC_LoadPackage.LoadPackageParam lpparam){
 //        return true;
         if (intent.getComponent() != null){
@@ -1919,8 +1920,7 @@ public class HookAppClass {
                             || (checkStr.contains("com.alipay.android"))
             )
             );
-        }
-        else {return false;}
+        }else {return false;}
     }
 
     public static ActivityManager.RunningAppProcessInfo cloneRunningAppProcessInfo(ActivityManager.RunningAppProcessInfo i){

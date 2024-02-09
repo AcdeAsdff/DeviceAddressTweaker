@@ -273,11 +273,7 @@ public class HookJavaNetClass {
                                             String path = (String) param.args[2];
                                             path = checkReplaceFile(path, lpparam);
                                             if (!checkBannedInFile(path, lpparam)) {
-<<<<<<< Updated upstream
-                                                path = "/";
-=======
                                                 path = "0";
->>>>>>> Stashed changes
                                             }
                                             param.args[2] = path;
                                         }
@@ -285,11 +281,7 @@ public class HookJavaNetClass {
                                             String path = (String) param.args[3];
                                             path = checkReplaceFile(path, lpparam);
                                             if (!checkBannedInFile(path, lpparam)) {
-<<<<<<< Updated upstream
-                                                path = "/";
-=======
                                                 path = "0";
->>>>>>> Stashed changes
                                             }
                                             param.args[3] = path;
                                         }
@@ -316,11 +308,7 @@ public class HookJavaNetClass {
                                         String path = (String) param.args[2];
                                         path = checkReplaceFile(path,lpparam);
                                         if (!checkBannedInFile(path,lpparam)){
-<<<<<<< Updated upstream
-                                            path = "/";
-=======
                                             path = "0";
->>>>>>> Stashed changes
                                         }
                                         param.args[2] = path;
                                     }

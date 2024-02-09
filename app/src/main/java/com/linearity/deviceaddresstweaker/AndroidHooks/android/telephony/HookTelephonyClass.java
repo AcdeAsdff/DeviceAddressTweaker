@@ -10,7 +10,6 @@ import static android.telephony.gsm.SmsManager.STATUS_ON_SIM_FREE;
 import static com.linearity.deviceaddresstweaker.AndroidHooks.android.net.HookNetClass.byteArray114514;
 import static com.linearity.deviceaddresstweaker.DeviceAddressTweaker.getRandomString;
 
-
 import android.content.Context;
 import android.telecom.PhoneAccountHandle;
 import android.telephony.CellInfo;
@@ -46,16 +45,17 @@ public class HookTelephonyClass {
     public static boolean HookTelephonyManager = true;
     public static boolean HookGSMCellLocation = true;
     public static boolean HookCdmaCellLocation = true;
+
     public static boolean HookExactLocation = true;
-    public static boolean HookGSM = true;
-    public static boolean HookSmsManager = true;
-    public static boolean HookSmsMessage = true;
     public static SmsManager defaultSMSManager;
     public static ArrayList<String> emptyArrListStr = new ArrayList<>();
     public static ArrayList<android.telephony.SmsMessage> emptyArrListSmsMsg = new ArrayList<>();
     public static SmsMessage.SubmitPdu emptySubmitPdu = new SmsMessage.SubmitPdu();
     public static List<CellInfo> emptyArrListCellInfo = new ArrayList<CellInfo>();
     public static List<UiccCardInfo> emptyArrListUiccCardInfo = new ArrayList<UiccCardInfo>();
+    public static boolean HookGSM = false;
+    public static boolean HookSmsManager = false;
+    public static boolean HookSmsMessage = false;
     public static String[] randomStrArray = new String[]{getRandomString(10),getRandomString(10),getRandomString(10),getRandomString(10),getRandomString(10),getRandomString(10),getRandomString(10),getRandomString(10),getRandomString(10)};
 
     public static Map<Integer, List<EmergencyNumber>> emptyEmergencyNumberList = new HashMap();
@@ -68,7 +68,6 @@ public class HookTelephonyClass {
         HookGSMCellLocation = sharedPreferences.getBoolean("HookTelephonyClass_HookGSMCellLocation", true);
         HookCdmaCellLocation = sharedPreferences.getBoolean("HookTelephonyClass_HookCdmaCellLocation", true);
         HookExactLocation =  sharedPreferences.getBoolean("HookTelephonyClass_HookHookExactLocation", true);
-
 
         if (HookTelephony){
             if (HookGSMCellLocation){//      android.telephony.gSM.GSMCellLocation.class getLac()
@@ -3065,7 +3064,6 @@ public class HookTelephonyClass {
                 } catch (Exception e) {
                     LoggerLog(e);
                 }
-
             }
         }
     }

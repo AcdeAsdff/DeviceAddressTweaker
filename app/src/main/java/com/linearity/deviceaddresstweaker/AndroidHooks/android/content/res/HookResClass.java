@@ -52,20 +52,20 @@ public class HookResClass {
                                     Configuration configuration = (Configuration) param.getResult();
 //                            configuration.setToDefaults();
                                     configuration.setLocale(Locale.CHINA);
-                                    configuration.mcc = 114514;
-                                    configuration.mnc = 114514;
+                                    configuration.mcc = 1;
+                                    configuration.mnc = 1;
                                     configuration.keyboardHidden = KEYBOARDHIDDEN_YES;
                                     configuration.keyboard = KEYBOARD_NOKEYS;
                                     configuration.hardKeyboardHidden = HARDKEYBOARDHIDDEN_YES;
                                     configuration.navigation = NAVIGATION_NONAV;
                                     configuration.navigationHidden = NAVIGATIONHIDDEN_YES;
-                                    configuration.orientation = ORIENTATION_PORTRAIT;
+//                                    configuration.orientation = ORIENTATION_PORTRAIT;
                                     configuration.screenLayout = SCREENLAYOUT_LONG_NO;
                                     configuration.colorMode = COLOR_MODE_HDR_NO;
                                     configuration.fontScale = 1;
-//                                    configuration.uiMode = UI_MODE_NIGHT_YES;
+                                    configuration.uiMode = UI_MODE_NIGHT_YES;
 //                            configuration.densityDpi = metrics.densityDpi;
-                                    param.setResult(configuration);
+//                                    param.setResult(configuration);
                                 }
                             });
                 } catch (Exception e) {
@@ -105,7 +105,7 @@ public class HookResClass {
 //                                result.getResourcePackageName()
                                         if (!result.equals(lpparam.packageName)) {
                                             LoggerLog(lpparam.packageName + "调用getResourcePackageName()" + result);
-                                            param.setResult(null);
+//                                            param.setResult(null);
                                         }
                                     }
                                 }
@@ -127,17 +127,17 @@ public class HookResClass {
                                 protected void afterHookedMethod(MethodHookParam param) throws Throwable {
 //                        super.afterHookedMethod(param);
                                     String args = Arrays.toString(param.args).toLowerCase();
-                                    param.setResult(random.nextInt(Integer.MAX_VALUE));
-//                                    if (args.contains("linearity")
-//                                            || args.contains("lineage")
-//                                            || args.contains("magisk")
-//                                            || args.contains("posed")
-//                                            || args.contains("google")
-//                                    ) {
-////                                        LoggerLog(lpparam.packageName + "调用getIdentifier(String,String,String)" + param.getResult());
-////                                        LoggerLog(lpparam.packageName + "调用getIdentifier(String,String,String) args:" + Arrays.toString(param.args));
-//                                        param.setResult(random.nextInt(Integer.MAX_VALUE));
-//                                    }
+//                                    param.setResult(random.nextInt(Integer.MAX_VALUE));
+                                    if (args.contains("linearity")
+                                            || args.contains("lineage")
+                                            || args.contains("magisk")
+                                            || args.contains("posed")
+                                            || args.contains("google")
+                                    ) {
+//                                        LoggerLog(lpparam.packageName + "调用getIdentifier(String,String,String)" + param.getResult());
+//                                        LoggerLog(lpparam.packageName + "调用getIdentifier(String,String,String) args:" + Arrays.toString(param.args));
+                                        param.setResult(random.nextInt(Integer.MAX_VALUE));
+                                    }
                                 }
                             });
                 } catch (Exception e) {

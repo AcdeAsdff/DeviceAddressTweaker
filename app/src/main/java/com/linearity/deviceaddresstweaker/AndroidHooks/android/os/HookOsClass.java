@@ -38,7 +38,6 @@ public class HookOsClass {
     public static boolean HookBuild = true;
     public static boolean HookEnvironment = true;
     public static boolean HookStatFs = true;
-
     public static boolean HookPowerManager = true;
 
     public static String[] foolCpuAll = new String[]{
