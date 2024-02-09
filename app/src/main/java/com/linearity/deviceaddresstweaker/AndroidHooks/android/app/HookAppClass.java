@@ -1083,12 +1083,6 @@ public class HookAppClass {
                             new XC_MethodHook(114514) {
                                 @Override
                                 protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-<<<<<<< Updated upstream
-                                    List<ActivityManager.RunningAppProcessInfo> result = (List<ActivityManager.RunningAppProcessInfo>) param.getResult();
-                                    List<ActivityManager.RunningAppProcessInfo> returnValue = new ArrayList<>();
-                                    //LoggerLog(lpparam.packageName + "调用android.app.ActivityManager.class getRunningAppProcesses()" + param.getResult());
-                                    for (ActivityManager.RunningAppProcessInfo i : result) {
-=======
                                     final List<ActivityManager.RunningAppProcessInfo>[] result = new List[]{(List<ActivityManager.RunningAppProcessInfo>) param.getResult()};
                                     List<ActivityManager.RunningAppProcessInfo> tempList = new ArrayList<>(result[0]);
                                     result[0] = tempList;
@@ -1096,7 +1090,6 @@ public class HookAppClass {
                                     ArrayList<ActivityManager.RunningAppProcessInfo> tempRunningAppProcessInfoReturnValue = RunningAppProcessInfoReturnValue[0];
                                     if (result[0] == null){return;}
                                     for (ActivityManager.RunningAppProcessInfo i : result[0]) {
->>>>>>> Stashed changes
                                         if (i != null) {
                                             for (String str : i.pkgList) {
                                                 if (RunningAppProcessInfoReturnValue[0].contains(i)){continue;}
@@ -1912,7 +1905,6 @@ public class HookAppClass {
             }//not finished,
         }
     }
-
     public static boolean checkAllowIntent(Intent intent, XC_LoadPackage.LoadPackageParam lpparam){
 //        return true;
         if (intent.getComponent() != null){
@@ -1927,7 +1919,8 @@ public class HookAppClass {
                             || (checkStr.contains("com.alipay.android"))
             )
             );
-        }else {return false;}
+        }
+        else {return false;}
     }
 
     public static ActivityManager.RunningAppProcessInfo cloneRunningAppProcessInfo(ActivityManager.RunningAppProcessInfo i){

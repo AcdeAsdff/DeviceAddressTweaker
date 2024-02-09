@@ -1,25 +1,28 @@
 package com.linearity.deviceaddresstweaker.AndroidHooks.android.net.wifi;
 
+import static com.linearity.deviceaddresstweaker.DeviceAddressTweaker.fakeWifiInfo;
 import static com.linearity.deviceaddresstweaker.DeviceAddressTweaker.getRandomString;
 
-<<<<<<< Updated upstream
-=======
+
 import android.app.AndroidAppHelper;
 import android.content.Context;
 import android.net.DhcpInfo;
->>>>>>> Stashed changes
 import android.net.MacAddress;
 import android.net.NetworkInfo;
 import android.net.NetworkSpecifier;
 import android.net.wifi.SupplicantState;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.net.wifi.WifiNetworkSpecifier;
 import android.net.wifi.WifiNetworkSuggestion;
 import android.net.wifi.WpsInfo;
 
 import com.linearity.deviceaddresstweaker.AndroidHooks.android.net.HookNetClass;
 
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -64,11 +67,6 @@ public class HookWifiClass {
     public static List<WifiConfiguration> wifiConfigurationList = new ArrayList<>();
     public static boolean HookWifi = true;
     public static boolean HookWifiInfo = true;
-<<<<<<< Updated upstream
-    public static boolean HookWifiNetworkSpecifier = true;
-    public static boolean HookWifiNetworkSuggestion = true;
-    public static boolean HookWpsInfo = true;
-=======
     public static boolean HookWifiManager = false;
     public static boolean HookWifiNetworkSpecifier = true;
     public static boolean HookWifiNetworkSuggestion = true;
@@ -80,7 +78,6 @@ public class HookWifiClass {
     public static boolean HookScanResult = true;
     public static boolean HookWifiLocks = false;
     public static ByteBuffer emptyByteBuffer = ByteBuffer.allocate(0);
->>>>>>> Stashed changes
 
     public static void DoHook(XC_LoadPackage.LoadPackageParam lpparam, String procHead, SharedPreferences sharedPreferences){
         HookWifi = sharedPreferences.getBoolean("HookNetClass_HookWifiClass_HookWifi", true);
@@ -482,9 +479,7 @@ public class HookWifiClass {
                     LoggerLog(e);
                 }
             }
-<<<<<<< Updated upstream
-            //working...
-=======
+
             if (HookWifiManager){
                 //addNetworkPrivileged
                 for (Method i: WifiManager.class.getDeclaredMethods()){
@@ -665,7 +660,6 @@ public class HookWifiClass {
                     }
                 }
             }
->>>>>>> Stashed changes
             if (HookWifiNetworkSpecifier) {
                 try {
                     XposedHelpers.findAndHookMethod(

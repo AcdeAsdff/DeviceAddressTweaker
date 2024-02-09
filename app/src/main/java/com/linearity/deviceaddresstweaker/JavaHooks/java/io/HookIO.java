@@ -385,15 +385,11 @@ public class HookIO {
             "/storage/emulated/0/",
             "/storage/emulated/0/Android",
             "/storage/emulated/0/Android/",
-<<<<<<< Updated upstream
-    };//add processHead after detected
-=======
             "/storage/emulated/0/Pictures",
             "/storage/emulated/0/Pictures/",
             "/storage/emulated/0/Pictures/WeiXin",
             "/storage/emulated/0/Pictures/WeiXin/",
     };//add procHead after detected
->>>>>>> Stashed changes
     public static boolean useChecker = true;
 
     public static boolean checkBannedFile(XC_MethodHook.MethodHookParam param, XC_LoadPackage.LoadPackageParam lpparam) throws Exception{
@@ -411,11 +407,7 @@ public class HookIO {
                 else {
 //                    LoggerLog(path);
                 }
-<<<<<<< Updated upstream
-                if (path.contains("tencent") && processHead.contains("tencent")) {
-=======
                 if ((path.contains("WeiXin") || path.contains("tencent")) && procHead.contains("tencent")) {
->>>>>>> Stashed changes
                     return true;
                 }
                 if (useChecker){
@@ -456,11 +448,7 @@ public class HookIO {
                         ||path.contains(lpparam.packageName)){return true;}else {
                     LoggerLog(path);
                 }
-<<<<<<< Updated upstream
-                if (path.contains("tencent") && processHead.contains("tencent")) {
-=======
                 if ((path.contains("WeiXin") || path.contains("tencent")) && procHead.contains("tencent")) {
->>>>>>> Stashed changes
                     return true;
                 }
                 if (useChecker){
@@ -529,11 +517,7 @@ public class HookIO {
             } else {
                 totalPath = parentPath + path;
             }
-<<<<<<< Updated upstream
-            if (totalPath.contains("tencent") && processHead.contains("tencent")) {
-=======
             if ((totalPath.contains("WeiXin") || totalPath.contains("tencent")) && procHead.contains("tencent")) {
->>>>>>> Stashed changes
                 return true;
             }
             totalPath = checkReplaceFile(totalPath, lpparam);
@@ -621,8 +605,6 @@ public class HookIO {
                 break;
             }
         }
-<<<<<<< Updated upstream
-=======
 //        LoggerLog("----------------------------");
         if (path.contains("libdobby.so")||
                 path.contains("libtinyskia.so")||
@@ -641,7 +623,6 @@ public class HookIO {
 //        else if (path.endsWith(".so")){
 //            LoggerLog(lpparam.processName+"[Warning]Loading native:" + path);
 //        }
->>>>>>> Stashed changes
         return path;
     }
     public static boolean checkBannedInFile(String path, XC_LoadPackage.LoadPackageParam lpparam){
@@ -652,11 +633,7 @@ public class HookIO {
         else {
 //                    LoggerLog(path);
         }
-<<<<<<< Updated upstream
-        if (path.contains("tencent") && processHead.contains("tencent")) {
-=======
         if ((path.contains("WeiXin") || path.contains("tencent")) && procHead.contains("tencent")) {
->>>>>>> Stashed changes
             return true;
         }
         if (useChecker){
@@ -692,11 +669,7 @@ public class HookIO {
         String procHead = lpparam.processName.split(":")[0];
         if (path.contains(procHead)
                 ||path.contains(lpparam.packageName)){return true;}
-<<<<<<< Updated upstream
-        if (path.contains("tencent") && processHead.contains("tencent")) {
-=======
         if ((path.contains("WeiXin") || path.contains("tencent")) && procHead.contains("tencent")) {
->>>>>>> Stashed changes
             return true;
         }
         return false;

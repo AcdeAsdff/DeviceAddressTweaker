@@ -2,6 +2,7 @@
 <resources>
     <color name="miku">#FF39c5bb</color>
     <color name="miku_alpha80">#8039c5bb</color>
+    <color name="miku_alpha60">#6039c5bb</color>
     <color name="purple_200">#FFBB86FC</color>
     <color name="purple_500">#FF6200EE</color>
     <color name="purple_700">#FF3700B3</color>
@@ -13,5 +14,5 @@
     <color name="gray">#FF888888</color>
     <color name="miku_trans_30">#4D39C5BB</color>
     <color name="teal_custom_2">#FF00856b</color>
-    <color name="C86C7C5">#FFC86C7C5</color>
+    <color name="C86C7C5">#FF86C7C5</color>
 </resources>

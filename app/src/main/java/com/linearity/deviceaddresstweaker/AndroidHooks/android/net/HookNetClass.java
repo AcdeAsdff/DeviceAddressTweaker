@@ -149,11 +149,7 @@ public class HookNetClass {
     public static boolean HookConnectivityManager = true;
     public static boolean HookPlatformVpnProfile = true;
     public static boolean HookVpnManager = true;
-<<<<<<< Updated upstream
-//    public static boolean HookVpnProfileState = true;
-=======
     public static boolean HookInetAddress = true;
->>>>>>> Stashed changes
     public static boolean HookVpnService = true;
     public static boolean HookTelephonyNetworkSpecifier = true;
     public static boolean HookRouteInfo = true;
@@ -171,9 +167,6 @@ public class HookNetClass {
     public static boolean HookConnectivityDiagnosticsManager = true;
     public static boolean HookCaptivePortal = true;
     public static boolean HookUri = true;
-<<<<<<< Updated upstream
-    public static void DoHook(XC_LoadPackage.LoadPackageParam lpparam){
-=======
     public static boolean HookDnsResolver = false;
     public static boolean HookDhcpInfo = false;
     public static ProxyInfo proxyInfo = null;
@@ -206,7 +199,6 @@ public class HookNetClass {
             HookDnsResolver = sharedPreferences.getBoolean("HookNetClass_HookDnsResolver", false);
             HookDhcpInfo = sharedPreferences.getBoolean("HookNetClass_HookDhcpInfo", false);
         }
->>>>>>> Stashed changes
         InetAddress emptyInetAddress = null;
         RouteInfo emptyRouteInfo = null;
         ProxyInfo proxyInfo = null;

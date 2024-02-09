@@ -1,14 +1,18 @@
 package com.linearity.deviceaddresstweaker.AndroidHooks.android.telephony;
 
+import static android.telephony.SmsManager.STATUS_ON_ICC_FREE;
+import static android.telephony.TelephonyManager.CALL_COMPOSER_STATUS_ON;
 import static android.telephony.TelephonyManager.NETWORK_TYPE_1xRTT;
 import static android.telephony.TelephonyManager.SIM_STATE_UNKNOWN;
 import static android.telephony.TelephonyManager.UNINITIALIZED_CARD_ID;
+import static android.telephony.gsm.SmsManager.STATUS_ON_SIM_FREE;
 
+import static com.linearity.deviceaddresstweaker.AndroidHooks.android.net.HookNetClass.byteArray114514;
 import static com.linearity.deviceaddresstweaker.DeviceAddressTweaker.getRandomString;
 
+
+import android.content.Context;
 import android.telecom.PhoneAccountHandle;
-<<<<<<< Updated upstream
-=======
 import android.telephony.CellInfo;
 import android.telephony.CellInfoLte;
 import android.telephony.ClosedSubscriberGroupInfo;
@@ -18,7 +22,6 @@ import android.telephony.TelephonyManager;
 import android.telephony.UiccCardInfo;
 import android.telephony.emergency.EmergencyNumber;
 import android.telephony.gsm.SmsMessage;
->>>>>>> Stashed changes
 
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XC_MethodReplacement;
@@ -27,8 +30,6 @@ import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 import static com.linearity.deviceaddresstweaker.DeviceAddressTweaker.LoggerLog;
-<<<<<<< Updated upstream
-=======
 import static com.linearity.deviceaddresstweaker.DeviceAddressTweaker.random;
 
 import java.lang.reflect.Constructor;
@@ -39,18 +40,16 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
->>>>>>> Stashed changes
 
 public class HookTelephonyClass {
     public static boolean HookTelephony = true;
     public static boolean HookTelephonyManager = true;
     public static boolean HookGSMCellLocation = true;
     public static boolean HookCdmaCellLocation = true;
-<<<<<<< Updated upstream
-
-    public static void DoHook(XC_LoadPackage.LoadPackageParam lpparam) {
-=======
     public static boolean HookExactLocation = true;
+    public static boolean HookGSM = true;
+    public static boolean HookSmsManager = true;
+    public static boolean HookSmsMessage = true;
     public static SmsManager defaultSMSManager;
     public static ArrayList<String> emptyArrListStr = new ArrayList<>();
     public static ArrayList<android.telephony.SmsMessage> emptyArrListSmsMsg = new ArrayList<>();
@@ -70,7 +69,7 @@ public class HookTelephonyClass {
         HookCdmaCellLocation = sharedPreferences.getBoolean("HookTelephonyClass_HookCdmaCellLocation", true);
         HookExactLocation =  sharedPreferences.getBoolean("HookTelephonyClass_HookHookExactLocation", true);
 
->>>>>>> Stashed changes
+
         if (HookTelephony){
             if (HookGSMCellLocation){//      android.telephony.gSM.GSMCellLocation.class getLac()
                 try {
@@ -244,9 +243,6 @@ public class HookTelephonyClass {
                     LoggerLog(e);
                 }
             }
-<<<<<<< Updated upstream
-            if (HookTelephonyManager) {//      android.telephony.TelephonyManager.class getDeviceId()
-=======
             if (HookGSM){
                 if (HookGSMCellLocation) {
                     try {
@@ -1184,7 +1180,6 @@ public class HookTelephonyClass {
                 }catch (Exception e){
                     LoggerLog(e);
                 }
->>>>>>> Stashed changes
                 try {
                     XposedHelpers.findAndHookMethod(
                             android.telephony.TelephonyManager.class.getName(),
@@ -1782,8 +1777,6 @@ public class HookTelephonyClass {
                 } catch (Exception e) {
                     LoggerLog(e);
                 }
-<<<<<<< Updated upstream
-=======
                 try {
                     XposedBridge.hookAllMethods(
                             android.telephony.TelephonyManager.class,
@@ -3073,7 +3066,6 @@ public class HookTelephonyClass {
                     LoggerLog(e);
                 }
 
->>>>>>> Stashed changes
             }
         }
     }

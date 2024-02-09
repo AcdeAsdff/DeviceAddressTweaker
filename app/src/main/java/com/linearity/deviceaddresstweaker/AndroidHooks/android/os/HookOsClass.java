@@ -17,11 +17,8 @@ import static com.linearity.deviceaddresstweaker.DeviceAddressTweaker.LoggerLog;
 import static com.linearity.deviceaddresstweaker.JavaHooks.java.io.HookIO.checkReplaceFile;
 
 import java.io.File;
-<<<<<<< Updated upstream
-=======
 import java.time.Duration;
 import java.util.ArrayList;
->>>>>>> Stashed changes
 
 public class HookOsClass {
     public static StructStatVfs emptyStructStatVfs =
@@ -41,10 +38,7 @@ public class HookOsClass {
     public static boolean HookBuild = true;
     public static boolean HookEnvironment = true;
     public static boolean HookStatFs = true;
-<<<<<<< Updated upstream
 
-    public static void DoHook(XC_LoadPackage.LoadPackageParam lpparam) {
-=======
     public static boolean HookPowerManager = true;
 
     public static String[] foolCpuAll = new String[]{
@@ -69,7 +63,6 @@ public class HookOsClass {
             }
         }
         foolCpu = temp.toArray(new String[0]);
->>>>>>> Stashed changes
         if (HookOs){
             if (HookBuild) {
                 //      (StaticObjectField) android.os.Build.class MODEL|BRAND|BOARD|DEVICE|DISPLAY
@@ -82,12 +75,6 @@ public class HookOsClass {
                     XposedHelpers.setStaticObjectField(android.os.Build.class, "DEVICE", getRandomString(20));
                     XposedHelpers.setStaticObjectField(android.os.Build.class, "DISPLAY", getRandomString(20));
                     XposedHelpers.setStaticObjectField(android.os.Build.class, "BOOTLOADER", getRandomString(20));
-<<<<<<< Updated upstream
-//                    XposedHelpers.setStaticObjectField(android.os.Build.class, "CPU_ABI", getRandomString(20));
-=======
-//                    XposedHelpers.setStaticObjectField(android.os.Build.class, "CPU_ABI", foolCpu[random.nextInt(foolCpu.length)]);
-//                    XposedHelpers.setStaticObjectField(android.os.Build.class, "CPU_ABI", "x86_32");
->>>>>>> Stashed changes
                     XposedHelpers.setStaticObjectField(android.os.Build.class, "CPU_ABI2", getRandomString(20));
                     XposedHelpers.setStaticObjectField(android.os.Build.class, "FINGERPRINT", getRandomString(20));
                     XposedHelpers.setStaticObjectField(android.os.Build.class, "HARDWARE", getRandomString(20));

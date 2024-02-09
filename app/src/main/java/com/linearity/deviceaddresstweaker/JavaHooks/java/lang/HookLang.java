@@ -4,28 +4,17 @@ import java.io.File;
 import java.util.Arrays;
 
 import de.robv.android.xposed.XC_MethodHook;
-<<<<<<< Updated upstream
-=======
 import de.robv.android.xposed.XC_MethodReplacement;
 import android.content.SharedPreferences;
->>>>>>> Stashed changes
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 import static com.linearity.deviceaddresstweaker.DeviceAddressTweaker.LoggerLog;
-<<<<<<< Updated upstream
-=======
-
-import com.linearity.deviceaddresstweaker.Exceptions.LinearityException;
 import com.linearity.deviceaddresstweaker.JavaHooks.java.lang.reflect.HookReflect;
->>>>>>> Stashed changes
 
 public class HookLang {
     public static boolean HookLang = true;
     public static boolean HookRuntime = true;
-<<<<<<< Updated upstream
-    public static void DoHook(XC_LoadPackage.LoadPackageParam lpparam){
-=======
     public static boolean HookThrowable = true;
     public static boolean HookObject = true;
     public static boolean HookClass = true;
@@ -43,7 +32,6 @@ public class HookLang {
         HookClass = sharedPreferences.getBoolean("HookLang_HookClass", true);
         HookStackTraceElement = sharedPreferences.getBoolean("HookLang_HookStackTraceElement",true);
         Listen2Throwable = sharedPreferences.getBoolean("HookLang_Listen2Throwable", false);
->>>>>>> Stashed changes
         if (HookLang){
             if (HookRuntime){//      Runtime.class exec
                 try {
@@ -54,7 +42,8 @@ public class HookLang {
                             String.class,
                             String[].class,
                             File.class,
-                            new XC_MethodHook(114514) {
+                            new XC_MethodHook(114514)
+                            {
                                 @Override
                                 protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                                     //LoggerLog(lpparam.packageName + "调用Runtime.class exec()" + param.getResult());
@@ -67,25 +56,23 @@ public class HookLang {
                                             process = Runtime.getRuntime().exec("getprop debug.sf.hw", null, null);
                                             param.setResult(process);
                                         }
-                                    } else if (command.contains("ls")) {
+                                    }
+                                    else if (command.contains("ls")) {
                                         if (!command.equals("ls -l /system/bin/getprop")) {
                                             Process process1 = Runtime.getRuntime().exec("ls -l /system/bin/getprop", null, null);
                                             param.setResult(process1);
                                         }
                                         //LoggerLog(lpparam.packageName + "Runtime.class exec args set to " + "ls -l /system/bin/getprop");
-                                    } else if (command.contains("cat")) {
+                                    }
+                                    else if (command.contains("cat")) {
                                         if (!command.equals("cat /proc")) {
                                             Process process1 = Runtime.getRuntime().exec("cat /proc", null, null);
                                             param.setResult(process1);
                                         }
                                     } else {
-<<<<<<< Updated upstream
-                                        LoggerLog(lpparam.packageName + " Runtime.class exec args" + Arrays.toString(args));
-                                        if (!command.contains(lpparam.packageName)) {
-=======
+
                                         //LoggerLog(lpparam.packageName + " Runtime.class exec args" + Arrays.toString(args));
                                         if (!command.contains(lpparam.processName.split(":")[0])) {
->>>>>>> Stashed changes
                                             param.setResult(process);
                                         }
                                         //LoggerLog(lpparam.packageName + "exec process set null");
@@ -96,14 +83,7 @@ public class HookLang {
                                 }
                             }
                     );
-                } catch (Exception e) {
-<<<<<<< Updated upstream
-                    LoggerLog(e);
-                }
-        }
-=======
-                    //LoggerLog(e);
-                }
+                }catch (Exception e){LoggerLog(e);}
         }//not finished
             if (HookThrowable){
                 try {
@@ -426,10 +406,9 @@ public class HookLang {
                 } catch (Exception e) {
                     LoggerLog(e);
                 }
-                
+
             }//md,跟美团拼了 https://tech.meituan.com/2018/02/02/android-anti-hooking.html
             HookReflect.DoHook(lpparam,procHead,sharedPreferences);
->>>>>>> Stashed changes
         }
     }
 }
