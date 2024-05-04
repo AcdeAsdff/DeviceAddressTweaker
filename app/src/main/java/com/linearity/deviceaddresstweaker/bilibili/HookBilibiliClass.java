@@ -1,7 +1,6 @@
 package com.linearity.deviceaddresstweaker.bilibili;
 
 import static com.linearity.deviceaddresstweaker.LoggerUtils.LoggerLog;
-import static com.linearity.deviceaddresstweaker.LoggerUtils.showObjectFields;
 
 import android.content.SharedPreferences;
 
@@ -11,7 +10,6 @@ import org.json.JSONObject;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import de.robv.android.xposed.XC_MethodHook;
@@ -116,101 +114,6 @@ public class HookBilibiliClass {
                                     return generalResponse;
                                 }
                             });
-//                            hookClass = XposedHelpers.findClassIfExists("com.bilibili.pegasus.api.c0", lpparam.classLoader);
-//                            {
-//                                XposedBridge.hookAllMethods(hookClass, "j", new XC_MethodReplacement() {
-//                                    @Override
-//                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-//                                        Object responseBody = param.args[0];
-//                                        Object generalResponse = XposedHelpers.findConstructorExact(GeneralResponseClass).newInstance();
-//                                        String respStr = (String) XposedHelpers.findMethodExact(OkhttpResponseBodyClass,"string").invoke(responseBody);
-//                                        {
-//                                            JSONObject anotherJSON = new JSONObject(respStr);
-//                                            JSONArray anotherJSONArray = anotherJSON.getJSONObject("data").getJSONArray("items");
-//                                            JSONArray result = new JSONArray();
-//                                            int cards = 0;
-//                                            for (int i=0;i<anotherJSONArray.length();i++){
-//                                                JSONObject jsonItem = anotherJSONArray.getJSONObject(i);
-//                                                if (
-//                                                        !jsonItem.get("card_goto").equals("ad_web_s")
-//                                                                && jsonItem.get("card_type").equals("small_cover_v2")
-//                                                ){
-//                                                    result.put(jsonItem);
-//                                                    cards += 1;
-//                                                }else {
-//                                                    LoggerLog(jsonItem);
-//                                                }
-//                                            }
-//                                            anotherJSON.getJSONObject("data").getJSONObject("config").put("autoplay_card",cards);
-//                                            anotherJSON.getJSONObject("data").put("items", result);
-//                                            respStr = anotherJSON.toString();
-//                                        }
-//
-//                                        Object parseObject = XposedHelpers.callStaticMethod(FastJSONClass, "parseObject",respStr);
-//
-//                                        XposedHelpers.setIntField(generalResponse,"code", (Integer) FastJSON_getIntValue.invoke(parseObject,"code"));
-//                                        XposedHelpers.setObjectField(generalResponse,"message", FastJSON_getString.invoke(parseObject,"message"));
-//                                        XposedHelpers.setIntField(generalResponse,"ttl", (Integer) FastJSON_getIntValue.invoke(parseObject,"ttl"));
-//
-//                                        if ((Boolean) FastJSON_containsKey.invoke(parseObject, "data")) {
-//                                            Object newInstance = XposedHelpers.callStaticMethod(PromoOperationTabClass,"newInstance");
-//                                            Object jSONArray = FastJSON_getJSONArray.invoke(parseObject,"items");
-//                                            List<?> list = (List<?>) XposedHelpers.findField(PromoOperationTabClass,"item").get(newInstance);
-//                                            if (list != null) {
-//                                                list.addAll((Collection) XposedHelpers.findMethodExact(BaseTMApiParserClass,"e",FastJSONArrayClass).invoke(param.thisObject, jSONArray));
-//                                            }
-//                                            XposedHelpers.setObjectField(generalResponse,"data",newInstance);
-//                                        }
-//                                        return generalResponse;
-//                                    }
-//                                });
-//                            }//still listening
-//
-//                            hookClass = XposedHelpers.findClassIfExists("com.bilibili.pegasus.api.e", lpparam.classLoader);
-//                            {
-//                                XposedBridge.hookAllMethods(hookClass, "j", new XC_MethodReplacement() {
-//                                    @Override
-//                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-//                                        Object responseBody = param.args[0];
-//                                        Object generalResponse = XposedHelpers.findConstructorExact(GeneralResponseClass).newInstance();
-//                                        String respStr = (String) XposedHelpers.findMethodExact(OkhttpResponseBodyClass,"string").invoke(responseBody);
-//                                        {
-//                                            JSONObject anotherJSON = new JSONObject(respStr);
-//                                            LoggerLog(anotherJSON);
-//                                            respStr = anotherJSON.toString();
-//                                        }
-//                                        Object parseObject = XposedHelpers.callStaticMethod(FastJSONClass, "parseObject",respStr);
-//                                        XposedHelpers.setIntField(generalResponse,"code", (Integer) FastJSON_getIntValue.invoke(parseObject,"code"));
-//                                        XposedHelpers.setObjectField(generalResponse,"message", FastJSON_getString.invoke(parseObject,"message"));
-//                                        XposedHelpers.setIntField(generalResponse,"ttl", (Integer) FastJSON_getIntValue.invoke(parseObject,"ttl"));
-//
-//                                        if ((Boolean) FastJSON_containsKey.invoke(parseObject, "data")) {
-//                                            Object newInstance = XposedHelpers.callStaticMethod(ChannelFeedV2Class,"newInstance");
-//                                            Object JSONObject = FastJSON_getJSONObject.invoke(parseObject,"data");
-//                                            Object jSONArray = FastJSON_getJSONArray.invoke(JSONObject,"feed");
-//                                            List<?> list = (List<?>) XposedHelpers.findField(ChannelFeedV2Class,"feedList").get(newInstance);
-//                                            if (list != null) {
-//                                                list.addAll((Collection) XposedHelpers.findMethodExact(BaseTMApiParserClass,"e",FastJSONArrayClass).invoke(param.thisObject, jSONArray));
-//                                            }
-//                                            XposedHelpers.setObjectField(ChannelFeedV2Class,"topstick",XposedHelpers.callMethod(param.thisObject,"k",JSONObject));
-//                                            XposedHelpers.setObjectField(generalResponse,"data",newInstance);
-//                                        }
-//                                        return generalResponse;
-//                                    }
-//                                });
-//                            }//still listening
-
-//
-//                            {
-//                                XposedHelpers.findAndHookMethod(OkhttpResponseBodyClass, "string", new XC_MethodHook() {
-//                                    @Override
-//                                    protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-//                                        super.afterHookedMethod(param);
-//                                        LoggerLog(new Exception((String)param.getResult()));
-//                                    }
-//                                });
-//                            }
-
                             {
                                 hookClass = XposedHelpers.findClass("com.bilibili.okretro.converter.a",lpparam.classLoader);
                                 XposedBridge.hookAllMethods(hookClass, "convert", new XC_MethodHook() {
@@ -240,7 +143,7 @@ public class HookBilibiliClass {
                                                     XposedHelpers.setObjectField(detail,"pkgUrl","https://i0.hdslb.com/bfs/garb/zip/b8faab964ae2f61671e416cca22bcba546799c6d.zip");
                                                     //↑I believe this is the only useful one
                                                     // (can change into your own link if you have a server (like 127.0.0.1:80) XD)
-                                                    XposedHelpers.setObjectField(detail,"name","樱花未来");
+                                                    XposedHelpers.setObjectField(detail,"name","樱花未来");//sakura miku. XD
                                                     XposedHelpers.setLongField(detail,"ver",1660720238L);
                                                     XposedHelpers.setLongField(detail,"id",50874L);
                                                     XposedHelpers.setObjectField(detail,"conf",null);
@@ -309,25 +212,10 @@ public class HookBilibiliClass {
                                                     (((String)XposedHelpers.getObjectField(o,"uri")).startsWith("bilibili://uper/")
                                                     || ((String)XposedHelpers.getObjectField(o,"uri")).startsWith("bilibili://mall/")
                                                     ));
-//                                            showObjectFields(result,"    ");
-//                                            LoggerLog(new Exception("not an exception"));
                                         }
                                     }
                                 });
-                            }//NO REVISIONISM OCCUPATION!!!!!(I mean the tab "新征程")
-
-//                            {
-//                                hookClass = XposedHelpers.findClass("com.bilibili.adcommon.commercial.s",lpparam.classLoader);
-//                                XposedBridge.hookAllMethods(hookClass,"x", new XC_MethodHook() {
-//                                    @Override
-//                                    protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-//                                        super.afterHookedMethod(param);
-//                                        LoggerLog(param.args[0].getClass().getTypeName());
-//                                        LoggerLog(new Exception("not an exception"));
-//                                    }
-//                                });
-//                            }
-
+                            }//NO REVISIONISM OCCUPATION!!!!!(I mean the tab like "新征程")
                             {
                                 hookClass = XposedHelpers.findClass("tv.danmaku.bili.ui.video.videodetail.function.y$d",lpparam.classLoader);
                                 XposedBridge.hookAllMethods(hookClass,"onDataSuccess", new XC_MethodHook() {
@@ -367,26 +255,6 @@ public class HookBilibiliClass {
                                     }
                                 });
                             }
-//                                XposedBridge.hookAllConstructors(OkhttpResponseBodyClass, new XC_MethodHook() {
-//                                    @Override
-//                                    protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-//                                        super.afterHookedMethod(param);
-//                                        LoggerLog(new Exception("not an exception:respBody"));
-//                                    }
-//                                });
-//                            }
-
-//                            hookClass = XposedHelpers.findClassIfExists("com.bilibili.okretro.converter.b", lpparam.classLoader);
-//                            {
-//                                XposedBridge.hookAllMethods(hookClass, "a", new XC_MethodHook() {
-//                                    @Override
-//                                    protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-//                                        super.beforeHookedMethod(param);
-//                                        LoggerLog(Okhttp_ResponseBody_string.invoke(param.args[0]));
-//                                    }
-//                                });
-//                            }//still listening
-
                             hookClass = XposedHelpers.findClassIfExists("com.bilibili.search.result.m", lpparam.classLoader);
                             {
                                 XposedBridge.hookAllMethods(hookClass, "a", new XC_MethodReplacement() {
@@ -439,7 +307,6 @@ public class HookBilibiliClass {
                                         XposedHelpers.setObjectField(generalResponse,"message", FastJSON_getString.invoke(parseObject,"message"));
                                         if (respCode == 0) {
                                             XposedHelpers.setObjectField(generalResponse,"data", XposedHelpers.callMethod(param.thisObject,"b",FastJSON_getJSONArray.invoke(parseObject,"data")));
-//                                            generalResponse.data = b(parseObject.getJSONArray("data"));
                                         }
                                         return generalResponse;
                                     }
