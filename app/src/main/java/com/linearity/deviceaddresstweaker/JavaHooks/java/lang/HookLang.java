@@ -1,7 +1,6 @@
 package com.linearity.deviceaddresstweaker.JavaHooks.java.lang;
 
 import java.io.File;
-import java.util.Arrays;
 
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XC_MethodReplacement;
@@ -9,7 +8,7 @@ import android.content.SharedPreferences;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
-import static com.linearity.deviceaddresstweaker.DeviceAddressTweaker.LoggerLog;
+import static com.linearity.deviceaddresstweaker.LoggerUtils.LoggerLog;
 import com.linearity.deviceaddresstweaker.JavaHooks.java.lang.reflect.HookReflect;
 
 public class HookLang {

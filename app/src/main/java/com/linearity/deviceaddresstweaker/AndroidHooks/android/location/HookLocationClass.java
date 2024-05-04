@@ -1,11 +1,11 @@
 package com.linearity.deviceaddresstweaker.AndroidHooks.android.location;
 
 import android.location.Location;
-import static com.linearity.deviceaddresstweaker.DeviceAddressTweaker.LoggerLog;
+import static com.linearity.deviceaddresstweaker.LoggerUtils.LoggerLog;
 
 import de.robv.android.xposed.XC_MethodHook;
 import android.content.SharedPreferences;
-import de.robv.android.xposed.XposedBridge;
+
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 

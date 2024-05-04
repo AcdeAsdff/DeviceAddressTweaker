@@ -4,6 +4,7 @@ import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 import static android.telephony.TelephonyManager.NETWORK_TYPE_LTE;
 import static com.linearity.deviceaddresstweaker.AndroidHooks.android.net.HookNetClass.byteArray114514;
 import static com.linearity.deviceaddresstweaker.DeviceAddressTweaker.*;
+import static com.linearity.deviceaddresstweaker.LoggerUtils.LoggerLog;
 import static com.linearity.deviceaddresstweaker.DeviceAddressTweaker.getRandomString;
 
 import android.annotation.SuppressLint;
@@ -14,6 +15,8 @@ import android.content.res.XResForwarder;
 import android.content.res.XResources;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.StateListDrawable;
 import android.net.ConnectivityManager;
 import android.telephony.NetworkScan;
 import android.telephony.UiccCardInfo;
@@ -28,6 +31,7 @@ import java.util.Objects;
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XC_MethodReplacement;
 import android.content.SharedPreferences;
+import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
@@ -289,24 +293,25 @@ public class HookTIMClass {
                     LoggerLog(e);
                 }
                 try {
-                    try {
-                        Class<?> tencentAppInterface = XposedHelpers.findClassIfExists("com.tencent.common.app.AppInterface", lpparam.classLoader);
-                        if (tencentAppInterface != null) {
+                    Class<?> tencentAppInterface = XposedHelpers.findClassIfExists("com.tencent.common.app.AppInterface", lpparam.classLoader);
+                    if (tencentAppInterface != null) {
 
-                            XposedBridge.hookAllMethods(
-                                    tencentAppInterface,
-                                    "isAppOnForeground",
-                                    new XC_MethodReplacement(114514) {
-                                        @Override
-                                        protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                            return true;
-                                        }
+                        XposedBridge.hookAllMethods(
+                                tencentAppInterface,
+                                "isAppOnForeground",
+                                new XC_MethodReplacement(114514) {
+                                    @Override
+                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                        return true;
                                     }
-                            );
-                        }
-                    } catch (Exception e) {
-                        LoggerLog(e);
+                                }
+                        );
                     }
+                } catch (Exception e) {
+                    LoggerLog(e);
+                }
+                try {
+
                     try {
                         Class<?> tencentAppInterface = XposedHelpers.findClassIfExists("com.tencent.android.tpush.common.AppInfos", lpparam.classLoader);
                         if (tencentAppInterface != null) {
@@ -361,80 +366,28 @@ public class HookTIMClass {
                     } catch (Exception e) {
                         LoggerLog(e);
                     }
-                    if (false) {
-                        try {
-                            Class<?> tencentAppInterface = XposedHelpers.findClassIfExists("com.tencent.mobileqq.msf.core.i", lpparam.classLoader);
-
-                            if (tencentAppInterface != null) {
-                                LoggerLog("Class Found!");
-//                        for (Method i: tencentAppInterface.getMethods())
-//                        {
-//                            LoggerLog(i.toString());
+//                    try {
+//                        Class<?> tencentAppInterface = XposedHelpers.findClassIfExists("com.tencent.qmethod.pandoraex.monitor.ContactsMonitor", lpparam.classLoader);
+//                        if (tencentAppInterface != null) {
+////                    Class<?> CursorWrapperInnerClass = XposedHelpers.findClass("android.content.ContentResolver$CursorWrapperInner", lpparam.classLoader);
+//                            XposedBridge.hookAllMethods(
+//                                    tencentAppInterface,
+//                                    "query",
+//                                    new XC_MethodHook() {
+//                                        @Override
+//                                        protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+//                                            super.beforeHookedMethod(param);
+//                                            LoggerLog("-----");
+//                                            for (Object o:param.args){
+//                                                LoggerLog(o);
+//                                            }
+//                                        }
+//                                    }
+//                            );
 //                        }
-                                XposedBridge.hookAllMethods(
-                                        tencentAppInterface,
-                                        "a",
-                                        new XC_MethodHook(114514) {
-                                            @Override
-                                            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-//                                        super.beforeHookedMethod(param);
-                                                if (param.args.length != 0) {
-                                                    LoggerLog("--------------start---------------------");
-                                                    for (Object i : param.args) {
-                                                        if (i != null) {
-                                                            if (i instanceof String) {
-                                                                LoggerLog("[linearity]param:" + i);
-                                                            } else {
-                                                                LoggerLog("[linearity]param:" + i.toString());
-                                                            }
-                                                        } else {
-                                                            LoggerLog("[linearity]param:null");
-                                                        }
-                                                    }
-
-                                                    LoggerLog("--------------end---------------------");
-                                                }
-                                            }
-                                        }
-                                );
-                            }
-                        } catch (Exception e) {
-                            LoggerLog(e);
-                        }
-                    }
-//            if (false){
-//                try {
-//                    Class<?> tencentAppInterface = XposedHelpers.findClassIfExists("com.tencent.mobileqq.utils.DeviceInfoUtil$1", lpparam.classLoader);
-//
-//                    if (tencentAppInterface != null) {
-//                        LoggerLog("Class Found!");
-//                        for (Method i: tencentAppInterface.getMethods())
-//                        {
-//                            LoggerLog(i.toString());
-//                        }
+//                    } catch (Exception e) {
+//                        LoggerLog(e);
 //                    }
-//                } catch (Exception e) {
-//                    LoggerLog(e);
-//                }
-//            }
-                    try {
-                        Class<?> tencentAppInterface = XposedHelpers.findClassIfExists("com.tencent.qmethod.pandoraex.monitor.ContactsMonitor", lpparam.classLoader);
-                        if (tencentAppInterface != null) {
-//                    Class<?> CursorWrapperInnerClass = XposedHelpers.findClass("android.content.ContentResolver$CursorWrapperInner", lpparam.classLoader);
-                            XposedBridge.hookAllMethods(
-                                    tencentAppInterface,
-                                    "query",
-                                    new XC_MethodReplacement(114514) {
-                                        @Override
-                                        protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                            return null;
-                                        }
-                                    }
-                            );
-                        }
-                    } catch (Exception e) {
-                        LoggerLog(e);
-                    }
                     try {
                         Class<?> tencentAppInterface = XposedHelpers.findClassIfExists("com.tencent.qmethod.pandoraex.monitor.DeviceInfoMonitor", lpparam.classLoader);
                         if (tencentAppInterface != null) {
@@ -1750,6 +1703,260 @@ public class HookTIMClass {
                 } catch (Exception e) {
                     LoggerLog(e);
                 }
+                try {
+                    Class<?> hookClass = XposedHelpers.findClassIfExists("angt",lpparam.classLoader);
+                    if (hookClass != null){
+                        XposedBridge.hookAllMethods(hookClass, "uj", new XC_MethodReplacement() {
+                            @Override
+                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                return true;
+                            }
+                        });
+                    }
+                } catch (Exception e) {
+                    LoggerLog(e);
+                }
+                try {
+                    Class<?> hookClass = XposedHelpers.findClassIfExists("ajka",lpparam.classLoader);
+                    if (hookClass != null){
+                        XposedBridge.hookAllMethods(hookClass, "g", new XC_MethodReplacement() {
+                            @Override
+                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                return true;
+                            }
+                        });
+                    }
+                } catch (Exception e) {
+                    LoggerLog(e);
+                }
+                try {
+                    Class<?> hookClass = XposedHelpers.findClassIfExists("com.tencent.mobileqq.Pandora.util.BackgroundUtil",lpparam.classLoader);
+                    if (hookClass != null){
+                        for (Method m:hookClass.getDeclaredMethods()){
+                            Class<?> returnType = m.getReturnType();
+                            if (returnType.equals(Void.TYPE)){
+                                XposedBridge.hookMethod(m, new XC_MethodReplacement() {
+                                    @Override
+                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                        return null;
+                                    }
+                                });
+                            }else if (returnType.equals(Boolean.TYPE)){
+                                XposedBridge.hookMethod(m, new XC_MethodReplacement() {
+                                    @Override
+                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                        return false;
+                                    }
+                                });
+                            }
+                        }
+                    }
+                } catch (Exception e) {
+                    LoggerLog(e);
+                }
+                try {
+                    Class<?> hookClass = XposedHelpers.findClassIfExists("com.tencent.mobileqq.msf.core.c.k",lpparam.classLoader);
+                    if (hookClass != null){
+                        for (Method m:hookClass.getDeclaredMethods()){
+                            Class<?> returnType = m.getReturnType();
+                            if (returnType.equals(Void.TYPE)){
+                                XposedBridge.hookMethod(m, new XC_MethodReplacement() {
+                                    @Override
+                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                        return null;
+                                    }
+                                });
+                            }else if (returnType.equals(Boolean.TYPE)){
+                                XposedBridge.hookMethod(m, new XC_MethodReplacement() {
+                                    @Override
+                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                        return false;
+                                    }
+                                });
+                            }
+                        }
+                    }
+                } catch (Exception e) {
+                    LoggerLog(e);
+                }
+                try {
+                    Class<?> hookClass = XposedHelpers.findClassIfExists("wis",lpparam.classLoader);
+                    if (hookClass != null){
+                        XposedBridge.hookAllMethods(hookClass,
+                                "getPriority",
+                                new XC_MethodReplacement() {
+                                    @Override
+                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                        int index = (int) param.args[0];
+                                        SparseArray<Integer> bt = (SparseArray<Integer>) XposedHelpers.getObjectField(param.thisObject,"bt");
+                                        if (bt.contains(index)){
+                                            return bt.get(index);
+                                        }
+                                        return 0;
+                                    }
+                                });
+                    }
+                } catch (Exception e) {
+                    LoggerLog(e);
+                }
+                try {
+                    Class<?> hookClass = XposedHelpers.findClassIfExists("com.tencent.qphone.base.util.QLog",lpparam.classLoader);
+                    if (hookClass != null){
+                        XposedBridge.hookAllMethods(hookClass,
+                                "writeLogToFile",
+                                new XC_MethodReplacement() {
+                                    @Override
+                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                        return false;
+                                    }
+                                });
+                        XposedBridge.hookAllMethods(hookClass,
+                                "addLogItem",
+                                new XC_MethodReplacement() {
+                                    @Override
+                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                        return null;
+                                    }
+                                });
+                        XposedHelpers.findAndHookMethod(hookClass,
+                                "isColorLevel",
+                                new XC_MethodReplacement() {
+                                    @Override
+                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                        return true;
+                                    }
+                                });
+                    }
+                } catch (Exception e) {
+                    LoggerLog(e);
+                }
+                try {
+                    Class<?> hookClass = XposedHelpers.findClassIfExists("ayvc",lpparam.classLoader);
+                    if (hookClass != null){
+                        XposedBridge.hookAllMethods(hookClass,
+                                "cr",
+                                new XC_MethodReplacement() {
+                                    @Override
+                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                        return null;
+                                    }
+                                });
+                    }
+                } catch (Exception e) {
+                    LoggerLog(e);
+                }
+                try {
+                    Class<?> hookClass = XposedHelpers.findClassIfExists("aszn",lpparam.classLoader);
+                    if (hookClass != null){
+                        XposedBridge.hookAllMethods(hookClass,
+                                "H",
+                                new XC_MethodHook() {
+                                    @Override
+                                    protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                                        super.afterHookedMethod(param);
+                                        StateListDrawable drawable = ((StateListDrawable)param.getResult());
+                                        GradientDrawable gradientDrawable = ((GradientDrawable)drawable.getStateDrawable(0));
+                                        gradientDrawable.setColor(Color.parseColor("#4019A59B"));
+                                        StateListDrawable result = new StateListDrawable();
+                                        result.addState(drawable.getStateSet(0),gradientDrawable);
+                                        gradientDrawable = (GradientDrawable) drawable.getStateDrawable(1);
+                                        gradientDrawable.setColor(Color.parseColor("#4039C5BB"));
+                                        result.addState(new int[0],gradientDrawable);
+                                        param.setResult(result);
+                                    }
+                                });
+                    }
+                } catch (Exception e) {
+                    LoggerLog(e);
+                }
+                try {
+                    Class<?> hookClass = XposedHelpers.findClassIfExists("aicd",lpparam.classLoader);
+                    if (hookClass != null){
+                        XposedBridge.hookAllMethods(hookClass,
+                                "aoM",
+                                new XC_MethodReplacement() {
+                                    @Override
+                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                        return false;
+                                    }
+                                });
+                    }
+                } catch (Exception e) {
+                    LoggerLog(e);
+                }
+                try {
+                    Class<?> hookClass = XposedHelpers.findClassIfExists("com.tencent.biz.pubaccount.readinjoy.engine.KandianMergeManager",lpparam.classLoader);
+                    if (hookClass != null){
+                        XposedBridge.hookAllConstructors(hookClass,
+                                new XC_MethodReplacement() {
+                                    @Override
+                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                        return param.thisObject;
+                                    }
+                                });
+                        for (Method m:hookClass.getDeclaredMethods()){
+                            if (m.getReturnType().equals(Integer.TYPE)){
+                                XposedBridge.hookMethod(m, new XC_MethodReplacement() {
+                                    @Override
+                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                        return 0;
+                                    }
+                                });
+                            }else if (m.getReturnType().equals(Long.TYPE)){
+                                XposedBridge.hookMethod(m, new XC_MethodReplacement() {
+                                    @Override
+                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                        return 0L;
+                                    }
+                                });
+                            }else if (m.getReturnType().equals(Boolean.TYPE)){
+                                XposedBridge.hookMethod(m, new XC_MethodReplacement() {
+                                    @Override
+                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                        return false;
+                                    }
+                                });
+                            }else {
+                                XposedBridge.hookMethod(m, new XC_MethodReplacement() {
+                                    @Override
+                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                        return null;
+                                    }
+                                });
+                            }
+                        }
+                    }
+                } catch (Exception e) {
+                    LoggerLog(e);
+                }
+//                try {
+//                    Class<?> hookClass = XposedHelpers.findClassIfExists("com.tencent.biz.pubaccount.readinjoy.engine.KandianDailyManager",lpparam.classLoader);
+//                    if (hookClass != null){
+//                        XposedBridge.hookAllConstructors(hookClass,
+//                                new XC_MethodReplacement() {
+//                                    @Override
+//                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+//                                        return param.thisObject;
+//                                    }
+//                                });
+//                    }
+//                } catch (Exception e) {
+//                    LoggerLog(e);
+//                }
+//                try {
+//                    Class<?> hookClass = XposedHelpers.findClassIfExists("com.tencent.biz.pubaccount.readinjoy.engine.KandianSubscribeManager",lpparam.classLoader);
+//                    if (hookClass != null){
+//                        XposedBridge.hookAllConstructors(hookClass,
+//                                new XC_MethodReplacement() {
+//                                    @Override
+//                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+//                                        return param.thisObject;
+//                                    }
+//                                });
+//                    }
+//                } catch (Exception e) {
+//                    LoggerLog(e);
+//                }
             } catch (Exception e) {
                 LoggerLog(e);
             }
@@ -1947,6 +2154,15 @@ public class HookTIMClass {
             xres.setReplacement(pkg,"color", "skin_gray3", Color_Miku);//unknown text color
             xres.setReplacement(pkg,"color", "skin_gray2_item", Color_Miku);//unknown text color
             xres.setReplacement(pkg,"color", "skin_black_item", Color_Miku);//unknown text color
+            xres.setReplacement(pkg,"color", "skin_color_title_immersive_bar", Color_Miku_a80);
+            xres.setReplacement(pkg,"color", "skin_notification", Color_Miku_a80);
+            xres.setReplacement(pkg,"color", "aj3", Color_Miku_a80);
+            xres.setReplacement(pkg,"drawable", "euc", modRes.fwd(R.drawable.p));
+//            xres.setReplacement(pkg,"drawable", "h03", modRes.fwd(R.drawable.p));
+//            xres.setReplacement(pkg,"drawable", "skin_header_bar_bg", modRes.fwd(R.drawable.p));
+
+            xres.setReplacement(pkg,"layout", "cod", modRes.fwd(R.layout.cod));
+            xres.setReplacement(pkg,"layout", "coe", modRes.fwd(R.layout.coe));
 //            xres.setReplacement(pkg,"color", "transparent", Color_Miku);
 //            xres.setReplacement(pkg,"drawable", "bg_maillist_addaccount", modRes.fwd(R.drawable.bg_maillist_addaccount));
 
@@ -2095,25 +2311,25 @@ public class HookTIMClass {
             }catch(Exception e){
                 LoggerLog(e);
             }
-            try{xres.hookLayout(pkg,
-                    "layout",
-                    "cod",
-                    new XC_LayoutInflated() {
-                        @Override
-                        public void handleLayoutInflated(LayoutInflatedParam liparam) throws Throwable {
-//                            LoggerLog(liparam.view.getParent());
-//                            liparam.view.setVisibility(View.INVISIBLE);
-//                            liparam.view.setBackground(null);
-//                            liparam.view.setDrawingCacheBackgroundColor(Color.parseColor("#6039c5bb"));
-                            liparam.view.setAlpha(0.4F);
-//                            View view = liparam.view.findViewById(liparam.res.getIdentifier("nk4", "id", pkg));
-//                            view.setBackground(null);
-//                            view.setAlpha(1);
-                        }
-                    });
-            }catch(Exception e){
-                LoggerLog(e);
-            }
+//            try{xres.hookLayout(pkg,
+//                    "layout",
+//                    "cod",
+//                    new XC_LayoutInflated() {
+//                        @Override
+//                        public void handleLayoutInflated(LayoutInflatedParam liparam) throws Throwable {
+////                            LoggerLog(liparam.view.getParent());
+////                            liparam.view.setVisibility(View.INVISIBLE);
+////                            liparam.view.setBackground(null);
+////                            liparam.view.setDrawingCacheBackgroundColor(Color.parseColor("#6039c5bb"));
+//                            liparam.res
+////                            View view = liparam.view.findViewById(liparam.res.getIdentifier("nk4", "id", pkg));
+////                            view.setBackground(null);
+////                            view.setAlpha(1);
+//                        }
+//                    });
+//            }catch(Exception e){
+//                LoggerLog(e);
+//            }
             try{xres.hookLayout(pkg,
                     "layout",
                     "coe",
@@ -2191,6 +2407,20 @@ public class HookTIMClass {
                 LoggerLog(e);
             }
 
+//            try{xres.hookLayout(pkg,
+//                    "layout",
+//                    "ik",
+//                    new XC_LayoutInflated() {
+//                        @Override
+//                        public void handleLayoutInflated(LayoutInflatedParam liparam) throws Throwable {
+//                            View view = liparam.view.findViewById(liparam.res.getIdentifier("d7a", "id", pkg));
+//                            view.setVisibility(View.INVISIBLE);
+//
+//                        }
+//                    });
+//            }catch(Exception e){
+//                LoggerLog(e);
+//            }
         }catch(Exception e){
             LoggerLog(e);
         }
@@ -2220,4 +2450,5 @@ public class HookTIMClass {
             LoggerLog(e);
         }
     }
+
 }

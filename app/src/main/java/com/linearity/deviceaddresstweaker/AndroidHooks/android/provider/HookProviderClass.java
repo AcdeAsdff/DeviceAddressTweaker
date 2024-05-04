@@ -5,7 +5,6 @@ import static com.linearity.deviceaddresstweaker.DeviceAddressTweaker.getRandomS
 import android.content.ContentResolver;
 import android.content.Context;
 import android.net.Uri;
-import android.print.PageRange;
 import android.provider.MediaStore;
 
 import de.robv.android.xposed.XC_MethodHook;
@@ -14,7 +13,7 @@ import android.content.SharedPreferences;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
-import static com.linearity.deviceaddresstweaker.DeviceAddressTweaker.LoggerLog;
+import static com.linearity.deviceaddresstweaker.LoggerUtils.LoggerLog;
 import static com.linearity.deviceaddresstweaker.DeviceAddressTweaker.random;
 import static com.linearity.deviceaddresstweaker.JavaHooks.java.io.HookIO.checkBannedInFile;
 import static com.linearity.deviceaddresstweaker.JavaHooks.java.io.HookIO.checkFileUri;

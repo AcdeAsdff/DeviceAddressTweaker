@@ -6,11 +6,8 @@ import static android.content.res.Configuration.KEYBOARD_NOKEYS;
 import static com.linearity.deviceaddresstweaker.DeviceAddressTweaker.EmptyIntent;
 import static com.linearity.deviceaddresstweaker.DeviceAddressTweaker.EmptyMap_String_Object;
 import static com.linearity.deviceaddresstweaker.DeviceAddressTweaker.getRandomString;
-import static com.linearity.deviceaddresstweaker.DeviceAddressTweaker.LoggerLog;
+import static com.linearity.deviceaddresstweaker.LoggerUtils.LoggerLog;
 import static com.linearity.deviceaddresstweaker.DeviceAddressTweaker.random;
-import static com.linearity.deviceaddresstweaker.JavaHooks.java.io.HookIO.checkBannedInFile;
-import static com.linearity.deviceaddresstweaker.JavaHooks.java.io.HookIO.checkBannedOutFile;
-import static com.linearity.deviceaddresstweaker.JavaHooks.java.io.HookIO.checkReplaceFile;
 
 import android.app.Activity;
 import android.app.ActivityManager;
@@ -1585,56 +1582,54 @@ public class HookAppClass {
 //                    }
                 }
             }
-            if (HookContextImpl){
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            "android.app.ContextImpl",
-                            lpparam.classLoader,
-                            "openFileInput",
-                            String.class,
-                            new XC_MethodHook(114514) {
-                                @Override
-                                protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                                    super.beforeHookedMethod(param);
-                                    String path = (String)param.args[0];
+//            if (HookContextImpl){
+//                try {
+//                    XposedHelpers.findAndHookMethod(
+//                            "android.app.ContextImpl",
+//                            lpparam.classLoader,
+//                            "openFileInput",
+//                            String.class,
+//                            new XC_MethodHook(114514) {
+//                                @Override
+//                                protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+//                                    super.beforeHookedMethod(param);
+//                                    String path = (String)param.args[0];
 //                                    LoggerLog("---------------");
 //                                    LoggerLog(path);
-//                                    LoggerLog("---------------");
-                                    path = checkReplaceFile(path,lpparam);
-                                    if (!checkBannedInFile(path, lpparam)){
-                                        param.args[0] = "/";
-                                    }
-                                }
-                            }
-                    );
-                } catch (Exception e) {
-                    LoggerLog(e);
-                }
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            "android.app.ContextImpl",
-                            lpparam.classLoader,
-                            "openFileOutput",
-                            String.class,int.class,
-                            new XC_MethodHook(114514) {
-                                @Override
-                                protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                                    super.beforeHookedMethod(param);
-                                    String path = (String)param.args[0];
+//                                    path = checkReplaceFile(path,lpparam);
+//                                    if (!checkBannedInFile(path, lpparam)){
+//                                        param.args[0] = Environment.getExternalStorageDirectory().getPath() + "/Android/"+procHead+"/";
+//                                    }
+//                                }
+//                            }
+//                    );
+//                } catch (Exception e) {
+//                    LoggerLog(e);
+//                }
+//                try {
+//                    XposedHelpers.findAndHookMethod(
+//                            "android.app.ContextImpl",
+//                            lpparam.classLoader,
+//                            "openFileOutput",
+//                            String.class,int.class,
+//                            new XC_MethodHook(114514) {
+//                                @Override
+//                                protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+//                                    super.beforeHookedMethod(param);
+//                                    String path = (String)param.args[0];
 //                                    LoggerLog("---------------");
 //                                    LoggerLog(path);
-//                                    LoggerLog("---------------");
-                                    path = checkReplaceFile(path, lpparam);
-                                    if (!checkBannedOutFile(path, lpparam)){
-                                        param.args[0] = "/";
-                                    }
-                                }
-                            }
-                    );
-                } catch (Exception e) {
-                    LoggerLog(e);
-                }
-            }//not finished,
+//                                    path = checkReplaceFile(path, lpparam);
+//                                    if (!checkBannedOutFile(path, lpparam)){
+//                                        param.args[0] = Environment.getExternalStorageDirectory().getPath() + "/Android/"+procHead+"/";
+//                                    }
+//                                }
+//                            }
+//                    );
+//                } catch (Exception e) {
+//                    LoggerLog(e);
+//                }
+//            }//not finished,
             if (HookKeyguardManager){
                 try {
                     XposedBridge.hookAllMethods(

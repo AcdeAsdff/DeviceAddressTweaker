@@ -1,14 +1,11 @@
 package com.linearity.deviceaddresstweaker.AndroidHooks.android.content;
 
-import static com.linearity.deviceaddresstweaker.DeviceAddressTweaker.EmptyIntent;
-import static com.linearity.deviceaddresstweaker.DeviceAddressTweaker.LoggerLog;
+import static com.linearity.deviceaddresstweaker.LoggerUtils.LoggerLog;
 
-import android.content.Intent;
 import android.content.SharedPreferences;
 
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XposedBridge;
-import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
 public class HookSharedPreferencesClass {

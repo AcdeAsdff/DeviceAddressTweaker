@@ -1,11 +1,9 @@
 package com.linearity.deviceaddresstweaker.JavaHooks.java.lang.reflect;
 
-import static com.linearity.deviceaddresstweaker.DeviceAddressTweaker.LoggerLog;
-import static com.linearity.deviceaddresstweaker.DeviceAddressTweaker.getRandomString;
+import static com.linearity.deviceaddresstweaker.LoggerUtils.LoggerLog;
 
 import java.lang.reflect.Modifier;
 
-import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XC_MethodReplacement;
 import android.content.SharedPreferences;
 import de.robv.android.xposed.XposedBridge;

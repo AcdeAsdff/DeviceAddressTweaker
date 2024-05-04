@@ -1,13 +1,11 @@
 package com.linearity.deviceaddresstweaker.StrangeHook;
 
-import static com.linearity.deviceaddresstweaker.DeviceAddressTweaker.LoggerLog;
+import static com.linearity.deviceaddresstweaker.LoggerUtils.LoggerLog;
 import static com.linearity.deviceaddresstweaker.DeviceAddressTweaker.getRandomString;
 
-import android.app.Application;
 import android.content.Context;
 
 import java.io.File;
-import java.util.Objects;
 
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XC_MethodReplacement;

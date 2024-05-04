@@ -3,19 +3,13 @@ package com.linearity.deviceaddresstweaker.AndroidHooks.android.net.wifi;
 import static com.linearity.deviceaddresstweaker.DeviceAddressTweaker.fakeWifiInfo;
 import static com.linearity.deviceaddresstweaker.DeviceAddressTweaker.getRandomString;
 
-import android.app.AndroidAppHelper;
-import android.content.Context;
 import android.net.DhcpInfo;
-import android.net.MacAddress;
 import android.net.NetworkInfo;
 import android.net.NetworkSpecifier;
 import android.net.wifi.SupplicantState;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
-import android.net.wifi.WifiNetworkSpecifier;
-import android.net.wifi.WifiNetworkSuggestion;
-import android.net.wifi.WpsInfo;
 
 import com.linearity.deviceaddresstweaker.AndroidHooks.android.net.HookNetClass;
 
@@ -25,15 +19,13 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.crypto.Mac;
-
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XC_MethodReplacement;
 import android.content.SharedPreferences;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
-import static com.linearity.deviceaddresstweaker.DeviceAddressTweaker.LoggerLog;
+import static com.linearity.deviceaddresstweaker.LoggerUtils.LoggerLog;
 
 public class HookWifiClass {
     public static String wpsInfoStr = "setup: 4\nBSSID: null\npin: null";

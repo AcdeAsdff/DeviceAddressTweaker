@@ -1,7 +1,6 @@
 package com.linearity.deviceaddresstweaker.JavaHooks.java.io;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.net.URI;
@@ -12,8 +11,7 @@ import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
-import static com.linearity.deviceaddresstweaker.DeviceAddressTweaker.LoggerLog;
-import static com.linearity.deviceaddresstweaker.DeviceAddressTweaker.getRandomString;
+import static com.linearity.deviceaddresstweaker.LoggerUtils.LoggerLog;
 import static com.linearity.deviceaddresstweaker.DeviceAddressTweaker.random;
 import android.content.SharedPreferences;
 
@@ -590,8 +588,8 @@ public class HookIO {
         if (path == null){return null;}
         if (path.equals("")){return "";}
         String procHead = lpparam.processName.split(":")[0];
-        if (path.contains(procHead + "/Android")){
-            path = path.replace(procHead + "/Android","/Android");
+        if (path.contains("/" + procHead + "/Android")){
+            path = path.replace("/" + procHead + "/Android","/Android");
         }
         if (path.contains(lpparam.packageName)
                 || path.contains(procHead)

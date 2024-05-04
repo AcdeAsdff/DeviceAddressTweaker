@@ -1,13 +1,13 @@
 package com.linearity.deviceaddresstweaker.AndroidHooks.android.bluetooth;
 
 import static com.linearity.deviceaddresstweaker.DeviceAddressTweaker.getRandomString;
-import static com.linearity.deviceaddresstweaker.DeviceAddressTweaker.LoggerLog;
+import static com.linearity.deviceaddresstweaker.LoggerUtils.LoggerLog;
 
 import android.bluetooth.BluetoothAdapter;
 
 import de.robv.android.xposed.XC_MethodHook;
 import android.content.SharedPreferences;
-import de.robv.android.xposed.XposedBridge;
+
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 

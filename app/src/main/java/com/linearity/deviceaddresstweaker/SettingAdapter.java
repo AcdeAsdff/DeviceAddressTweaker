@@ -1,10 +1,9 @@
 package com.linearity.deviceaddresstweaker;
 
-import static com.linearity.deviceaddresstweaker.DeviceAddressTweaker.LoggerLog;
+import static com.linearity.deviceaddresstweaker.LoggerUtils.LoggerLog;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.util.Log;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,11 +14,7 @@ import androidx.appcompat.widget.SwitchCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.topjohnwu.superuser.Shell;
-import com.topjohnwu.superuser.ShellUtils;
-import com.topjohnwu.superuser.internal.MainShell;
 
-import java.io.DataOutputStream;
-import java.io.File;
 import java.util.List;
 
 public class SettingAdapter extends RecyclerView.Adapter<SettingAdapter.SettingViewHolder> {

@@ -9,8 +9,6 @@ import android.accounts.AuthenticatorDescription;
 import android.accounts.AuthenticatorException;
 import android.accounts.OperationCanceledException;
 import android.annotation.SuppressLint;
-import android.app.AndroidAppHelper;
-import android.app.Instrumentation;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -39,11 +37,9 @@ import com.linearity.deviceaddresstweaker.TIM.HookTIMClass;
 import com.linearity.deviceaddresstweaker.Wechat.HookWechatClass;
 import com.linearity.deviceaddresstweaker.bilibili.HookBilibiliClass;
 import com.linearity.deviceaddresstweaker.chaoxing.HookChaoxingClass;
-import com.topjohnwu.superuser.Shell;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -53,12 +49,8 @@ import java.util.concurrent.TimeUnit;
 import de.robv.android.xposed.IXposedHookInitPackageResources;
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.IXposedHookZygoteInit;
-import de.robv.android.xposed.XC_MethodHook;
-import android.content.SharedPreferences;
 
 import de.robv.android.xposed.XSharedPreferences;
-import de.robv.android.xposed.XposedBridge;
-import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_InitPackageResources;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
@@ -69,7 +61,6 @@ public class DeviceAddressTweaker implements IXposedHookLoadPackage, IXposedHook
     public Context appContext = null;
     public String processHead;
     public String modulePath;
-    public static boolean useLogger = true;
 
     public static Bundle EmptyBundle = new Bundle();
     public static Parcelable.Creator<AccountAuthenticatorResponse> CREATOR_AccountAuthenticatorResponse =  new Parcelable.Creator<AccountAuthenticatorResponse>() {
@@ -209,7 +200,7 @@ public class DeviceAddressTweaker implements IXposedHookLoadPackage, IXposedHook
             return;
         }
 
-        LoggerLog("[linearity]Load app packageName:" + lpparam.packageName);
+        LoggerUtils.LoggerLog("[linearity]Load app packageName:" + lpparam.packageName);
         processHead = lpparam.processName.split(":")[0];
         ProcHead2Context.put(processHead, null);
 //        sharedPreferences = new XSharedPreferences("com.linearity.deviceaddresstweaker",processHead + "_linearity_dat_settings");
@@ -239,28 +230,6 @@ public class DeviceAddressTweaker implements IXposedHookLoadPackage, IXposedHook
             sb.append(str.charAt(number));
         }
         return sb.toString();
-    }
-
-    public static void LoggerLog(Object log){
-        if (log != null){
-            LoggerLog("[linearity]", log.toString());
-        }else {LoggerLog("[linearity]", "null");}
-    }
-    public static void LoggerLog(String log){
-        LoggerLog("[linearity]", log);
-    }
-    public static void LoggerLog(Exception e){
-        LoggerLog("[linearity]", e);
-    }
-    public static void LoggerLog(String prefix, String log){
-        if (useLogger){
-            XposedBridge.log(prefix + log);//not best?
-        }
-    }
-    public static void LoggerLog(String prefix, Exception e){
-        if (useLogger){
-            XposedBridge.log(prefix + e);//not best?
-        }
     }
 
     @Override

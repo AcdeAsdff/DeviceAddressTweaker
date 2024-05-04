@@ -1,7 +1,6 @@
 package com.linearity.deviceaddresstweaker.AndroidHooks.android.net;
 
 import static android.net.ConnectivityDiagnosticsManager.DataStallReport.DETECTION_METHOD_DNS_EVENTS;
-import static android.net.LocalSocketAddress.Namespace.FILESYSTEM;
 import static android.net.MacAddress.TYPE_BROADCAST;
 import static android.net.NetworkCapabilities.TRANSPORT_BLUETOOTH;
 import static android.net.NetworkCapabilities.TRANSPORT_CELLULAR;
@@ -36,8 +35,6 @@ import android.net.Uri;
 import android.net.VpnManager;
 import android.net.VpnService;
 import android.os.Build;
-import android.os.Parcel;
-import android.os.Parcelable;
 import android.os.PersistableBundle;
 import android.telephony.TelephonyManager;
 
@@ -50,12 +47,10 @@ import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
-import javax.crypto.Mac;
 import javax.net.SocketFactory;
 
 import de.robv.android.xposed.XC_MethodHook;
@@ -64,7 +59,7 @@ import android.content.SharedPreferences;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
-import static com.linearity.deviceaddresstweaker.DeviceAddressTweaker.LoggerLog;
+import static com.linearity.deviceaddresstweaker.LoggerUtils.LoggerLog;
 import static com.linearity.deviceaddresstweaker.JavaHooks.java.io.HookIO.checkBannedInFile;
 import static com.linearity.deviceaddresstweaker.JavaHooks.java.io.HookIO.checkReplaceFile;
 

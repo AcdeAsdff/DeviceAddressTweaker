@@ -20,6 +20,7 @@ import android.os.Parcel;
 import android.os.UserHandle;
 
 import com.linearity.deviceaddresstweaker.DeviceAddressTweaker;
+import com.linearity.deviceaddresstweaker.LoggerUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -30,7 +31,7 @@ import java.util.concurrent.TimeUnit;
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XC_MethodReplacement;
 import android.content.SharedPreferences;
-import de.robv.android.xposed.XposedBridge;
+
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
@@ -64,7 +65,7 @@ public class HookAccountClass {
                             }
                     );
                 } catch (Exception e) {
-                    LoggerLog(e);
+                    LoggerUtils.LoggerLog(e);
                 }
                 try {
                     XposedHelpers.findAndHookMethod(
@@ -80,7 +81,7 @@ public class HookAccountClass {
                             }
                     );
                 } catch (Exception e) {
-                    LoggerLog(e);
+                    LoggerUtils.LoggerLog(e);
                 }
                 try {
                     XposedHelpers.findAndHookMethod(
@@ -96,7 +97,7 @@ public class HookAccountClass {
                             }
                     );
                 } catch (Exception e) {
-                    LoggerLog(e);
+                    LoggerUtils.LoggerLog(e);
                 }
                 try {
                     XposedHelpers.findAndHookMethod(
@@ -112,7 +113,7 @@ public class HookAccountClass {
                             }
                     );
                 } catch (Exception e) {
-                    LoggerLog(e);
+                    LoggerUtils.LoggerLog(e);
                 }
                 try {
                     XposedHelpers.findAndHookMethod(
@@ -128,7 +129,7 @@ public class HookAccountClass {
                             }
                     );
                 } catch (Exception e) {
-                    LoggerLog(e);
+                    LoggerUtils.LoggerLog(e);
                 }
                 try {
                     XposedHelpers.findAndHookMethod(
@@ -144,7 +145,7 @@ public class HookAccountClass {
                             }
                     );
                 } catch (Exception e) {
-                    LoggerLog(e);
+                    LoggerUtils.LoggerLog(e);
                 }
                 try {
                     XposedHelpers.findAndHookMethod(
@@ -160,7 +161,7 @@ public class HookAccountClass {
                             }
                     );
                 } catch (Exception e) {
-                    LoggerLog(e);
+                    LoggerUtils.LoggerLog(e);
                 }
             }
             if (HookAccount){
@@ -173,7 +174,7 @@ public class HookAccountClass {
                             CREATOR
                     );
                 } catch (Exception e) {
-                    LoggerLog(e);
+                    LoggerUtils.LoggerLog(e);
                 }
                 try{
                     XposedHelpers.findAndHookMethod(
@@ -189,7 +190,7 @@ public class HookAccountClass {
                             }
                     );
                 }catch (Exception e) {
-                    LoggerLog(e);
+                    LoggerUtils.LoggerLog(e);
                 }
                 try{
                     XposedHelpers.findAndHookMethod(
@@ -204,7 +205,7 @@ public class HookAccountClass {
                             }
                     );
                 }catch (Exception e) {
-                    LoggerLog(e);
+                    LoggerUtils.LoggerLog(e);
                 }
                 try{
                     XposedHelpers.findAndHookMethod(
@@ -220,7 +221,7 @@ public class HookAccountClass {
                             }
                     );
                 }catch (Exception e) {
-                    LoggerLog(e);
+                    LoggerUtils.LoggerLog(e);
                 }
                 try{
                     XposedHelpers.findAndHookMethod(
@@ -235,7 +236,7 @@ public class HookAccountClass {
                             }
                     );
                 }catch (Exception e) {
-                    LoggerLog(e);
+                    LoggerUtils.LoggerLog(e);
                 }
                 try{
                     XposedHelpers.findAndHookMethod(
@@ -250,7 +251,7 @@ public class HookAccountClass {
                             }
                     );
                 }catch (Exception e) {
-                    LoggerLog(e);
+                    LoggerUtils.LoggerLog(e);
                 }
                 try{
                     XposedHelpers.findAndHookMethod(
@@ -266,7 +267,7 @@ public class HookAccountClass {
                             }
                     );
                 }catch (Exception e) {
-                    LoggerLog(e);
+                    LoggerUtils.LoggerLog(e);
                 }
             }
             if (HookAccountManager){
@@ -286,7 +287,7 @@ public class HookAccountClass {
                             }
                     );
                 }catch (Exception e) {
-                    LoggerLog(e);
+                    LoggerUtils.LoggerLog(e);
                 }
                 try{
                     XposedHelpers.findAndHookMethod(
@@ -302,7 +303,7 @@ public class HookAccountClass {
                             }
                     );
                 }catch (Exception e) {
-                    LoggerLog(e);
+                    LoggerUtils.LoggerLog(e);
                 }
                 try{
                     XposedHelpers.findAndHookMethod(
@@ -318,7 +319,7 @@ public class HookAccountClass {
                             }
                     );
                 }catch (Exception e) {
-                    LoggerLog(e);
+                    LoggerUtils.LoggerLog(e);
                 }
                 try{
                     XposedHelpers.findAndHookMethod(
@@ -333,7 +334,7 @@ public class HookAccountClass {
                             }
                     );
                 }catch (Exception e) {
-                    LoggerLog(e);
+                    LoggerUtils.LoggerLog(e);
                 }
                 try{
                     XposedHelpers.findAndHookMethod(
@@ -349,7 +350,7 @@ public class HookAccountClass {
                             }
                     );
                 }catch (Exception e) {
-                    LoggerLog(e);
+                    LoggerUtils.LoggerLog(e);
                 }
                 try{
                     XposedHelpers.findAndHookMethod(
@@ -364,7 +365,7 @@ public class HookAccountClass {
                             }
                     );
                 }catch (Exception e) {
-                    LoggerLog(e);
+                    LoggerUtils.LoggerLog(e);
                 }
                 try{
                     XposedHelpers.findAndHookMethod(
@@ -380,7 +381,7 @@ public class HookAccountClass {
                             }
                     );
                 }catch (Exception e) {
-                    LoggerLog(e);
+                    LoggerUtils.LoggerLog(e);
                 }
                 try{
                     XposedHelpers.findAndHookMethod(
@@ -396,7 +397,7 @@ public class HookAccountClass {
                             }
                     );
                 }catch (Exception e) {
-                    LoggerLog(e);
+                    LoggerUtils.LoggerLog(e);
                 }
                 try{
                     XposedHelpers.findAndHookMethod(
@@ -412,7 +413,7 @@ public class HookAccountClass {
                             }
                     );
                 }catch (Exception e) {
-                    LoggerLog(e);
+                    LoggerUtils.LoggerLog(e);
                 }
                 try{
                     XposedHelpers.findAndHookMethod(
@@ -428,7 +429,7 @@ public class HookAccountClass {
                             }
                     );
                 }catch (Exception e) {
-                    LoggerLog(e);
+                    LoggerUtils.LoggerLog(e);
                 }
                 try{
                     XposedHelpers.findAndHookMethod(
@@ -444,7 +445,7 @@ public class HookAccountClass {
                             }
                     );
                 }catch (Exception e) {
-                    LoggerLog(e);
+                    LoggerUtils.LoggerLog(e);
                 }
                 try{
                     XposedHelpers.findAndHookMethod(
@@ -461,7 +462,7 @@ public class HookAccountClass {
                             }
                     );
                 }catch (Exception e) {
-                    LoggerLog(e);
+                    LoggerUtils.LoggerLog(e);
                 }
                 try{
                     XposedHelpers.findAndHookMethod(
@@ -478,7 +479,7 @@ public class HookAccountClass {
                             }
                     );
                 }catch (Exception e) {
-                    LoggerLog(e);
+                    LoggerUtils.LoggerLog(e);
                 }
                 try{
                     XposedHelpers.findAndHookMethod(
@@ -494,7 +495,7 @@ public class HookAccountClass {
                             }
                     );
                 }catch (Exception e) {
-                    LoggerLog(e);
+                    LoggerUtils.LoggerLog(e);
                 }
                 try{
                     XposedHelpers.findAndHookMethod(
@@ -510,7 +511,7 @@ public class HookAccountClass {
                             }
                     );
                 }catch (Exception e) {
-                    LoggerLog(e);
+                    LoggerUtils.LoggerLog(e);
                 }
                 try{
                     XposedHelpers.findAndHookMethod(
@@ -526,7 +527,7 @@ public class HookAccountClass {
                             }
                     );
                 }catch (Exception e) {
-                    LoggerLog(e);
+                    LoggerUtils.LoggerLog(e);
                 }
                 try{
                     XposedHelpers.findAndHookMethod(
@@ -542,7 +543,7 @@ public class HookAccountClass {
                             }
                     );
                 }catch (Exception e) {
-                    LoggerLog(e);
+                    LoggerUtils.LoggerLog(e);
                 }
                 try{
                     XposedHelpers.findAndHookMethod(
@@ -558,7 +559,7 @@ public class HookAccountClass {
                             }
                     );
                 }catch (Exception e) {
-                    LoggerLog(e);
+                    LoggerUtils.LoggerLog(e);
                 }
                 try{
                     XposedHelpers.findAndHookMethod(
@@ -574,7 +575,7 @@ public class HookAccountClass {
                             }
                     );
                 }catch (Exception e) {
-                    LoggerLog(e);
+                    LoggerUtils.LoggerLog(e);
                 }
                 try{
                     XposedHelpers.findAndHookMethod(
@@ -590,7 +591,7 @@ public class HookAccountClass {
                             }
                     );
                 }catch (Exception e) {
-                    LoggerLog(e);
+                    LoggerUtils.LoggerLog(e);
                 }
                 try{
                     XposedHelpers.findAndHookMethod(
@@ -632,7 +633,7 @@ public class HookAccountClass {
                             }
                     );
                 }catch (Exception e) {
-                    LoggerLog(e);
+                    LoggerUtils.LoggerLog(e);
                 }
                 try{
                     XposedHelpers.findAndHookMethod(
@@ -648,7 +649,7 @@ public class HookAccountClass {
                             }
                     );
                 }catch (Exception e) {
-                    LoggerLog(e);
+                    LoggerUtils.LoggerLog(e);
                 }
                 try{
                     XposedHelpers.findAndHookMethod(
@@ -664,7 +665,7 @@ public class HookAccountClass {
                             }
                     );
                 }catch (Exception e) {
-                    LoggerLog(e);
+                    LoggerUtils.LoggerLog(e);
                 }
                 try{
                     XposedHelpers.findAndHookMethod(
@@ -680,7 +681,7 @@ public class HookAccountClass {
                             }
                     );
                 }catch (Exception e) {
-                    LoggerLog(e);
+                    LoggerUtils.LoggerLog(e);
                 }
                 try{
                     XposedHelpers.findAndHookMethod(
@@ -696,7 +697,7 @@ public class HookAccountClass {
                             }
                     );
                 }catch (Exception e) {
-                    LoggerLog(e);
+                    LoggerUtils.LoggerLog(e);
                 }
                 try{
                     XposedHelpers.findAndHookMethod(
@@ -712,7 +713,7 @@ public class HookAccountClass {
                             }
                     );
                 }catch (Exception e) {
-                    LoggerLog(e);
+                    LoggerUtils.LoggerLog(e);
                 }
                 try{
                     XposedHelpers.findAndHookMethod(
@@ -728,7 +729,7 @@ public class HookAccountClass {
                             }
                     );
                 }catch (Exception e) {
-                    LoggerLog(e);
+                    LoggerUtils.LoggerLog(e);
                 }
                 try{
                     XposedHelpers.findAndHookMethod(
@@ -744,7 +745,7 @@ public class HookAccountClass {
                             }
                     );
                 }catch (Exception e) {
-                    LoggerLog(e);
+                    LoggerUtils.LoggerLog(e);
                 }
                 try{
                     XposedHelpers.findAndHookMethod(
@@ -760,7 +761,7 @@ public class HookAccountClass {
                             }
                     );
                 }catch (Exception e) {
-                    LoggerLog(e);
+                    LoggerUtils.LoggerLog(e);
                 }
                 try{
                     XposedHelpers.findAndHookMethod(
@@ -776,7 +777,7 @@ public class HookAccountClass {
                             }
                     );
                 }catch (Exception e) {
-                    LoggerLog(e);
+                    LoggerUtils.LoggerLog(e);
                 }
                 try{
                     XposedHelpers.findAndHookMethod(
@@ -792,7 +793,7 @@ public class HookAccountClass {
                             }
                     );
                 }catch (Exception e) {
-                    LoggerLog(e);
+                    LoggerUtils.LoggerLog(e);
                 }
                 try{
                     XposedHelpers.findAndHookMethod(
@@ -808,7 +809,7 @@ public class HookAccountClass {
                             }
                     );
                 }catch (Exception e) {
-                    LoggerLog(e);
+                    LoggerUtils.LoggerLog(e);
                 }
                 try{
                     XposedHelpers.findAndHookMethod(
@@ -824,7 +825,7 @@ public class HookAccountClass {
                             }
                     );
                 }catch (Exception e) {
-                    LoggerLog(e);
+                    LoggerUtils.LoggerLog(e);
                 }
                 try{
                     XposedHelpers.findAndHookMethod(
@@ -840,7 +841,7 @@ public class HookAccountClass {
                             }
                     );
                 }catch (Exception e) {
-                    LoggerLog(e);
+                    LoggerUtils.LoggerLog(e);
                 }
                 try{
                     XposedHelpers.findAndHookMethod(
@@ -857,7 +858,7 @@ public class HookAccountClass {
                             }
                     );
                 }catch (Exception e) {
-                    LoggerLog(e);
+                    LoggerUtils.LoggerLog(e);
                 }
                 try{
                     XposedHelpers.findAndHookMethod(
@@ -874,7 +875,7 @@ public class HookAccountClass {
                             }
                     );
                 }catch (Exception e) {
-                    LoggerLog(e);
+                    LoggerUtils.LoggerLog(e);
                 }
                 try{
                     XposedHelpers.findAndHookMethod(
@@ -891,7 +892,7 @@ public class HookAccountClass {
                             }
                     );
                 }catch (Exception e) {
-                    LoggerLog(e);
+                    LoggerUtils.LoggerLog(e);
                 }
                 try{
                     XposedHelpers.findAndHookMethod(
@@ -908,7 +909,7 @@ public class HookAccountClass {
                             }
                     );
                 }catch (Exception e) {
-                    LoggerLog(e);
+                    LoggerUtils.LoggerLog(e);
                 }
                 try{
                     XposedHelpers.findAndHookMethod(
@@ -926,7 +927,7 @@ public class HookAccountClass {
                             }
                     );
                 }catch (Exception e) {
-                    LoggerLog(e);
+                    LoggerUtils.LoggerLog(e);
                 }
                 try{
                     XposedHelpers.findAndHookMethod(
@@ -943,7 +944,7 @@ public class HookAccountClass {
                             }
                     );
                 }catch (Exception e) {
-                    LoggerLog(e);
+                    LoggerUtils.LoggerLog(e);
                 }
                 try{
                     XposedHelpers.findAndHookMethod(
@@ -960,7 +961,7 @@ public class HookAccountClass {
                             }
                     );
                 }catch (Exception e) {
-                    LoggerLog(e);
+                    LoggerUtils.LoggerLog(e);
                 }
                 try{
                     XposedHelpers.findAndHookMethod(
@@ -977,7 +978,7 @@ public class HookAccountClass {
                             }
                     );
                 }catch (Exception e) {
-                    LoggerLog(e);
+                    LoggerUtils.LoggerLog(e);
                 }
                 try{
                     XposedHelpers.findAndHookMethod(
@@ -992,7 +993,7 @@ public class HookAccountClass {
                             }
                     );
                 }catch (Exception e) {
-                    LoggerLog(e);
+                    LoggerUtils.LoggerLog(e);
                 }
                 try{
                     XposedHelpers.findAndHookMethod(
@@ -1008,7 +1009,7 @@ public class HookAccountClass {
                             }
                     );
                 }catch (Exception e) {
-                    LoggerLog(e);
+                    LoggerUtils.LoggerLog(e);
                 }
                 try{
                     XposedHelpers.findAndHookMethod(
@@ -1024,7 +1025,7 @@ public class HookAccountClass {
                             }
                     );
                 }catch (Exception e) {
-                    LoggerLog(e);
+                    LoggerUtils.LoggerLog(e);
                 }
                 try{
                     XposedHelpers.findAndHookMethod(
@@ -1040,7 +1041,7 @@ public class HookAccountClass {
                             }
                     );
                 }catch (Exception e) {
-                    LoggerLog(e);
+                    LoggerUtils.LoggerLog(e);
                 }
                 try{
                     XposedHelpers.findAndHookMethod(
@@ -1058,7 +1059,7 @@ public class HookAccountClass {
                             }
                     );
                 }catch (Exception e) {
-                    LoggerLog(e);
+                    LoggerUtils.LoggerLog(e);
                 }
                 try{
                     XposedHelpers.findAndHookMethod(
@@ -1075,7 +1076,7 @@ public class HookAccountClass {
                             }
                     );
                 }catch (Exception e) {
-                    LoggerLog(e);
+                    LoggerUtils.LoggerLog(e);
                 }
                 try{
                     XposedHelpers.findAndHookMethod(
@@ -1092,7 +1093,7 @@ public class HookAccountClass {
                             }
                     );
                 }catch (Exception e) {
-                    LoggerLog(e);
+                    LoggerUtils.LoggerLog(e);
                 }
                 try{
                     XposedHelpers.findAndHookMethod(
@@ -1108,7 +1109,7 @@ public class HookAccountClass {
                             }
                     );
                 }catch (Exception e) {
-                    LoggerLog(e);
+                    LoggerUtils.LoggerLog(e);
                 }
                 try{
                     XposedHelpers.findAndHookMethod(
@@ -1124,7 +1125,7 @@ public class HookAccountClass {
                             }
                     );
                 }catch (Exception e) {
-                    LoggerLog(e);
+                    LoggerUtils.LoggerLog(e);
                 }
                 try{
                     XposedHelpers.findAndHookMethod(
@@ -1140,7 +1141,7 @@ public class HookAccountClass {
                             }
                     );
                 }catch (Exception e) {
-                    LoggerLog(e);
+                    LoggerUtils.LoggerLog(e);
                 }
                 try{
                     XposedHelpers.findAndHookMethod(
@@ -1158,7 +1159,7 @@ public class HookAccountClass {
                             }
                     );
                 }catch (Exception e) {
-                    LoggerLog(e);
+                    LoggerUtils.LoggerLog(e);
                 }
                 try{
                     XposedHelpers.findAndHookMethod(
@@ -1176,7 +1177,7 @@ public class HookAccountClass {
                             }
                     );
                 }catch (Exception e) {
-                    LoggerLog(e);
+                    LoggerUtils.LoggerLog(e);
                 }
                 try{
                     XposedHelpers.findAndHookMethod(
@@ -1193,7 +1194,7 @@ public class HookAccountClass {
                             }
                     );
                 }catch (Exception e) {
-                    LoggerLog(e);
+                    LoggerUtils.LoggerLog(e);
                 }
                 try{
                     XposedHelpers.findAndHookMethod(
@@ -1210,7 +1211,7 @@ public class HookAccountClass {
                             }
                     );
                 }catch (Exception e) {
-                    LoggerLog(e);
+                    LoggerUtils.LoggerLog(e);
                 }
                 try{
                     XposedHelpers.findAndHookMethod(
@@ -1227,7 +1228,7 @@ public class HookAccountClass {
                             }
                     );
                 }catch (Exception e) {
-                    LoggerLog(e);
+                    LoggerUtils.LoggerLog(e);
                 }
                 try{
                     XposedHelpers.findAndHookMethod(
@@ -1244,7 +1245,7 @@ public class HookAccountClass {
                             }
                     );
                 }catch (Exception e) {
-                    LoggerLog(e);
+                    LoggerUtils.LoggerLog(e);
                 }
             }
             if (HookAccountAuthenticatorResponse){
@@ -1262,7 +1263,7 @@ public class HookAccountClass {
                             }
                     );
                 }catch (Exception e) {
-                    LoggerLog(e);
+                    LoggerUtils.LoggerLog(e);
                 }
                 try{
                     XposedHelpers.findAndHookMethod(
@@ -1277,7 +1278,7 @@ public class HookAccountClass {
                             }
                     );
                 }catch (Exception e) {
-                    LoggerLog(e);
+                    LoggerUtils.LoggerLog(e);
                 }
                 try{
                     XposedHelpers.findAndHookMethod(
@@ -1293,7 +1294,7 @@ public class HookAccountClass {
                             }
                     );
                 }catch (Exception e) {
-                    LoggerLog(e);
+                    LoggerUtils.LoggerLog(e);
                 }
                 try{
                     XposedHelpers.findAndHookMethod(
@@ -1309,7 +1310,7 @@ public class HookAccountClass {
                             }
                     );
                 }catch (Exception e) {
-                    LoggerLog(e);
+                    LoggerUtils.LoggerLog(e);
                 }
                 try{
                     XposedHelpers.setStaticObjectField(
@@ -1317,7 +1318,7 @@ public class HookAccountClass {
                             "CREATOR",
                             CREATOR_AccountAuthenticatorResponse);
                 }catch (Exception e) {
-                    LoggerLog(e);
+                    LoggerUtils.LoggerLog(e);
                 }
             }
             if (HookAuthenticatorDescription){
@@ -1341,7 +1342,7 @@ public class HookAccountClass {
                             }
                     );
                 }catch (Exception e) {
-                    LoggerLog(e);
+                    LoggerUtils.LoggerLog(e);
                 }
                 try{
                     XposedHelpers.findAndHookConstructor(
@@ -1362,7 +1363,7 @@ public class HookAccountClass {
                             }
                     );
                 }catch (Exception e) {
-                    LoggerLog(e);
+                    LoggerUtils.LoggerLog(e);
                 }
                 try{
                     XposedHelpers.findAndHookMethod(
@@ -1378,7 +1379,7 @@ public class HookAccountClass {
                             }
                     );
                 }catch (Exception e) {
-                    LoggerLog(e);
+                    LoggerUtils.LoggerLog(e);
                 }
                 try{
                     XposedHelpers.findAndHookMethod(
@@ -1394,7 +1395,7 @@ public class HookAccountClass {
                             }
                     );
                 }catch (Exception e) {
-                    LoggerLog(e);
+                    LoggerUtils.LoggerLog(e);
                 }
                 try{
                     XposedHelpers.findAndHookMethod(
@@ -1411,7 +1412,7 @@ public class HookAccountClass {
                             }
                     );
                 }catch (Exception e) {
-                    LoggerLog(e);
+                    LoggerUtils.LoggerLog(e);
                 }
                 try{
                     XposedHelpers.findAndHookMethod(
@@ -1427,7 +1428,7 @@ public class HookAccountClass {
                             }
                     );
                 }catch (Exception e) {
-                    LoggerLog(e);
+                    LoggerUtils.LoggerLog(e);
                 }
                 try{
                     XposedHelpers.findAndHookMethod(
@@ -1443,7 +1444,7 @@ public class HookAccountClass {
                             }
                     );
                 }catch (Exception e) {
-                    LoggerLog(e);
+                    LoggerUtils.LoggerLog(e);
                 }
                 try{
                     XposedHelpers.setStaticObjectField(
@@ -1452,7 +1453,7 @@ public class HookAccountClass {
                             CREATOR_AuthenticatorDescription
                     );
                 }catch (Exception e) {
-                    LoggerLog(e);
+                    LoggerUtils.LoggerLog(e);
                 }
             }
         }

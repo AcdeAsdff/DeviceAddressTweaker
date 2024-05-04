@@ -9,6 +9,7 @@ import java.net.URLStreamHandler;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XC_MethodReplacement;
@@ -16,12 +17,9 @@ import android.content.SharedPreferences;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
-import static com.linearity.deviceaddresstweaker.DeviceAddressTweaker.LoggerLog;
-import android.content.SharedPreferences;
+import static com.linearity.deviceaddresstweaker.LoggerUtils.LoggerLog;
 import static com.linearity.deviceaddresstweaker.JavaHooks.java.io.HookIO.checkBannedInFile;
 import static com.linearity.deviceaddresstweaker.JavaHooks.java.io.HookIO.checkReplaceFile;
-
-import com.linearity.deviceaddresstweaker.DeviceAddressTweaker;
 
 public class HookJavaNetClass {
     public static boolean trackUrlLogger = false;//millions years of war
@@ -312,6 +310,38 @@ public class HookJavaNetClass {
                                         }
                                         param.args[2] = path;
                                     }
+                                }
+                            }
+                    );
+
+                } catch (Exception e) {
+                    LoggerLog(e);
+                }
+                try {
+                    Class<?> urIClass = XposedHelpers.findClass(java.net.URL.class.getName(), lpparam.classLoader);
+                    XposedHelpers.findAndHookMethod(
+                            urIClass,
+                            "isValidProtocol",
+                            String.class,
+                            new XC_MethodReplacement() {
+                                @Override
+                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                    String protocol = (String) param.args[0];
+                                    if (protocol == null || Objects.equals(protocol, "")){return false;}
+                                    int len = protocol.length();
+                                    if (len < 1)
+                                        return false;
+                                    char c = protocol.charAt(0);
+                                    if (!Character.isLetter(c))
+                                        return false;
+                                    for (int i = 1; i < len; i++) {
+                                        c = protocol.charAt(i);
+                                        if (!Character.isLetterOrDigit(c) && c != '.' && c != '+' &&
+                                                c != '-') {
+                                            return false;
+                                        }
+                                    }
+                                    return true;
                                 }
                             }
                     );

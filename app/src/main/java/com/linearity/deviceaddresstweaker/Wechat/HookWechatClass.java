@@ -1,6 +1,6 @@
 package com.linearity.deviceaddresstweaker.Wechat;
 
-import static com.linearity.deviceaddresstweaker.DeviceAddressTweaker.LoggerLog;
+import static com.linearity.deviceaddresstweaker.LoggerUtils.LoggerLog;
 
 import android.app.Application;
 import android.content.Context;

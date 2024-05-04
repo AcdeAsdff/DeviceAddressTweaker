@@ -1,6 +1,6 @@
 package com.linearity.deviceaddresstweaker.chaoxing;
 
-import static com.linearity.deviceaddresstweaker.DeviceAddressTweaker.LoggerLog;
+import static com.linearity.deviceaddresstweaker.LoggerUtils.LoggerLog;
 
 import android.app.ActionBar;
 import android.app.Activity;
@@ -9,8 +9,6 @@ import android.content.SharedPreferences;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.autofill.AutofillManager;
-
-import com.linearity.deviceaddresstweaker.AndroidHooks.android.app.HookAppClass;
 
 import java.lang.reflect.Method;
 import java.util.Objects;
