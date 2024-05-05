@@ -18,6 +18,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import de.robv.android.xposed.XposedBridge;
+import de.robv.android.xposed.XposedHelpers;
 
 public class LoggerUtils {
 
@@ -88,7 +89,7 @@ public class LoggerUtils {
             try {
                 String typeName = f.getType().getTypeName();
                 String typeNameLower = typeName.toLowerCase();
-                Object fobj = f.get(obj);
+                Object fobj = XposedHelpers.getObjectField(obj,f.getName());
                 LoggerLog(prefix + "     fieldName:" + f.getName() + "     " + fobj + "      " + typeName);
                 if (!typeNameLower.contains("java")
                         && !typeNameLower.contains("integer")
@@ -132,7 +133,7 @@ public class LoggerUtils {
                 try {
                     typeName = f.getType().getTypeName();
                     typeNameLower = typeName.toLowerCase();
-                    Object fobj = f.get(obj);
+                    Object fobj = XposedHelpers.getObjectField(obj,f.getName());
                     if (!typeNameLower.startsWith("java")
                             && !typeNameLower.contains("integer")
                             && !typeNameLower.contains("long")
@@ -163,23 +164,23 @@ public class LoggerUtils {
                     }
                     else {
                         if (f.getType().equals(long.class)){
-                            LoggerLog(prefix + "     fieldName:" + f.getName() + "     " + f.getLong(obj) + "      " + typeName);
+                            LoggerLog(prefix + "     fieldName:" + f.getName() + "     " + XposedHelpers.getLongField(obj,f.getName()) + "      " + typeName);
                         }else if (f.getType().equals(int.class)){
-                            LoggerLog(prefix + "     fieldName:" + f.getName() + "     " + f.getInt(obj) + "      " + typeName);
+                            LoggerLog(prefix + "     fieldName:" + f.getName() + "     " + XposedHelpers.getIntField(obj,f.getName()) + "      " + typeName);
                         }else if (f.getType().equals(byte.class)){
-                            LoggerLog(prefix + "     fieldName:" + f.getName() + "     " + f.getByte(obj) + "      " + typeName);
+                            LoggerLog(prefix + "     fieldName:" + f.getName() + "     " + XposedHelpers.getByteField(obj,f.getName()) + "      " + typeName);
                         }else if (f.getType().equals(boolean.class)){
-                            LoggerLog(prefix + "     fieldName:" + f.getName() + "     " + f.getBoolean(obj) + "      " + typeName);
+                            LoggerLog(prefix + "     fieldName:" + f.getName() + "     " + XposedHelpers.getBooleanField(obj,f.getName()) + "      " + typeName);
                         }else if (f.getType().equals(short.class)){
-                            LoggerLog(prefix + "     fieldName:" + f.getName() + "     " + f.getShort(obj) + "      " + typeName);
+                            LoggerLog(prefix + "     fieldName:" + f.getName() + "     " + XposedHelpers.getShortField(obj,f.getName()) + "      " + typeName);
                         }else if (f.getType().equals(double.class)){
-                            LoggerLog(prefix + "     fieldName:" + f.getName() + "     " + f.getDouble(obj) + "      " + typeName);
+                            LoggerLog(prefix + "     fieldName:" + f.getName() + "     " + XposedHelpers.getDoubleField(obj,f.getName()) + "      " + typeName);
                         }else if (f.getType().equals(float.class)){
-                            LoggerLog(prefix + "     fieldName:" + f.getName() + "     " + f.getFloat(obj) + "      " + typeName);
+                            LoggerLog(prefix + "     fieldName:" + f.getName() + "     " + XposedHelpers.getFloatField(obj,f.getName())+ "      " + typeName);
                         }else if (f.getType().equals(char.class)){
-                            LoggerLog(prefix + "     fieldName:" + f.getName() + "     " + f.getChar(obj) + "      " + typeName);
+                            LoggerLog(prefix + "     fieldName:" + f.getName() + "     " + XposedHelpers.getCharField(obj,f.getName()) + "      " + typeName);
                         }else {
-                            LoggerLog(prefix + "     fieldName:" + f.getName() + "     " + f.get(obj) + "      " + typeName);
+                            LoggerLog(prefix + "     fieldName:" + f.getName() + "     " + XposedHelpers.getObjectField(obj,f.getName()) + "      " + typeName);
                         }
                     }
                     if (fobj instanceof Map){
@@ -222,7 +223,7 @@ public class LoggerUtils {
                     try {
                         typeName = f.getType().getTypeName();
                         typeNameLower = typeName.toLowerCase();
-                        Object fobj = f.get(obj);
+                        Object fobj =  XposedHelpers.getObjectField(obj,f.getName());
                         if (!typeNameLower.startsWith("java")
                                 && !typeNameLower.contains("integer")
                                 && !typeNameLower.contains("long")
@@ -253,23 +254,23 @@ public class LoggerUtils {
                         }
                         else {
                             if (f.getType().equals(long.class)){
-                                LoggerLog(prefix + "     fieldName:" + f.getName() + "     " + f.getLong(obj) + "      " + typeName);
+                                LoggerLog(prefix + "     fieldName:" + f.getName() + "     " + XposedHelpers.getLongField(obj,f.getName()) + "      " + typeName);
                             }else if (f.getType().equals(int.class)){
-                                LoggerLog(prefix + "     fieldName:" + f.getName() + "     " + f.getInt(obj) + "      " + typeName);
+                                LoggerLog(prefix + "     fieldName:" + f.getName() + "     " + XposedHelpers.getIntField(obj,f.getName()) + "      " + typeName);
                             }else if (f.getType().equals(byte.class)){
-                                LoggerLog(prefix + "     fieldName:" + f.getName() + "     " + f.getByte(obj) + "      " + typeName);
+                                LoggerLog(prefix + "     fieldName:" + f.getName() + "     " + XposedHelpers.getByteField(obj,f.getName()) + "      " + typeName);
                             }else if (f.getType().equals(boolean.class)){
-                                LoggerLog(prefix + "     fieldName:" + f.getName() + "     " + f.getBoolean(obj) + "      " + typeName);
+                                LoggerLog(prefix + "     fieldName:" + f.getName() + "     " + XposedHelpers.getBooleanField(obj,f.getName()) + "      " + typeName);
                             }else if (f.getType().equals(short.class)){
-                                LoggerLog(prefix + "     fieldName:" + f.getName() + "     " + f.getShort(obj) + "      " + typeName);
+                                LoggerLog(prefix + "     fieldName:" + f.getName() + "     " + XposedHelpers.getShortField(obj,f.getName()) + "      " + typeName);
                             }else if (f.getType().equals(double.class)){
-                                LoggerLog(prefix + "     fieldName:" + f.getName() + "     " + f.getDouble(obj) + "      " + typeName);
+                                LoggerLog(prefix + "     fieldName:" + f.getName() + "     " + XposedHelpers.getDoubleField(obj,f.getName()) + "      " + typeName);
                             }else if (f.getType().equals(float.class)){
-                                LoggerLog(prefix + "     fieldName:" + f.getName() + "     " + f.getFloat(obj) + "      " + typeName);
+                                LoggerLog(prefix + "     fieldName:" + f.getName() + "     " + XposedHelpers.getFloatField(obj,f.getName())+ "      " + typeName);
                             }else if (f.getType().equals(char.class)){
-                                LoggerLog(prefix + "     fieldName:" + f.getName() + "     " + f.getChar(obj) + "      " + typeName);
+                                LoggerLog(prefix + "     fieldName:" + f.getName() + "     " + XposedHelpers.getCharField(obj,f.getName()) + "      " + typeName);
                             }else {
-                                LoggerLog(prefix + "     fieldName:" + f.getName() + "     " + f.get(obj) + "      " + typeName);
+                                LoggerLog(prefix + "     fieldName:" + f.getName() + "     " + XposedHelpers.getObjectField(obj,f.getName()) + "      " + typeName);
                             }
                         }
                         if (fobj instanceof Map){

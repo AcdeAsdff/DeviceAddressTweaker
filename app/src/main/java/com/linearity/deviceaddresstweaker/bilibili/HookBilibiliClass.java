@@ -1,13 +1,21 @@
 package com.linearity.deviceaddresstweaker.bilibili;
 
 import static com.linearity.deviceaddresstweaker.LoggerUtils.LoggerLog;
+import static com.linearity.deviceaddresstweaker.LoggerUtils.showObjectFields;
 
+import android.app.Application;
 import android.content.SharedPreferences;
+import android.os.Environment;
+import android.text.TextUtils;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.File;
+import java.lang.reflect.Array;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +31,7 @@ public class HookBilibiliClass {
     public static void DoHook(XC_LoadPackage.LoadPackageParam lpparam, String procHead, SharedPreferences sharedPreferences){
         if (HookBilibiliClassFlag){
             if (lpparam.processName.split(":")[0].contains("tv.danmaku.bili")){
-                
+                String rootName = "/sdcard/Android/data/tv.danmaku.bili/";
                 try {
                     {
                         //all ads,DISAPPEAR!
@@ -45,124 +53,248 @@ public class HookBilibiliClass {
                             Class<?> ChannelFeedV2Class = XposedHelpers.findClass("com.bilibili.pegasus.api.modelv2.ChannelFeedV2",lpparam.classLoader);
                             Class<?> ViewMaterialClass = XposedHelpers.findClass("com.bapis.bilibili.app.view.v1.ViewMaterial",lpparam.classLoader);
                             Class<?> GarbDataClass = XposedHelpers.findClass("tv.danmaku.bili.ui.garb.model.GarbData",lpparam.classLoader);
-                            Class<?> TabResponseClass = XposedHelpers.findClass("tv.danmaku.bili.ui.main2.resource.MainResourceManager$TabResponse",lpparam.classLoader);
+                            Class<?> GarbData_LoadEquipClass = XposedHelpers.findClass("tv.danmaku.bili.ui.garb.model.GarbData$LoadEquip",lpparam.classLoader);
                             Class<?> GarbDetailClass = XposedHelpers.findClass("tv.danmaku.bili.ui.garb.model.GarbData$GarbDetail",lpparam.classLoader);
+                            Class<?> PureGarbDetailClass = XposedHelpers.findClass("tv.danmaku.bili.ui.garb.model.GarbData$PureGarbDetail",lpparam.classLoader);
+                            Class<?> ColorDetailClass = XposedHelpers.findClass("tv.danmaku.bili.ui.garb.model.GarbData$ColorDetail",lpparam.classLoader);
+                            Class<?> BiliApiDataCallbackClass = XposedHelpers.findClass("com.bilibili.okretro.BiliApiDataCallback",lpparam.classLoader);
+                            Class<?> TabResponseClass = XposedHelpers.findClass("tv.danmaku.bili.ui.main2.resource.MainResourceManager$TabResponse",lpparam.classLoader);
+                            Class<?> BiliContextClass = XposedHelpers.findClass("com.bilibili.base.BiliContext",lpparam.classLoader);
                             Method FastJSON_getIntValue = XposedHelpers.findMethodExact(FastJSONObjectClass,"getIntValue",String.class);
                             Method FastJSON_getString = XposedHelpers.findMethodExact(FastJSONObjectClass,"getString",String.class);
                             Method FastJSON_containsKey = XposedHelpers.findMethodExact(FastJSONObjectClass,"containsKey",Object.class);
                             Method FastJSON_getJSONObject = XposedHelpers.findMethodExact(FastJSONObjectClass,"getJSONObject",String.class);
                             Method FastJSON_getJSONArray = XposedHelpers.findMethodExact(FastJSONObjectClass,"getJSONArray",String.class);
                             Method Okhttp_ResponseBody_string = XposedHelpers.findMethodExact(OkhttpResponseBodyClass,"string");
+                            Method fetchGarbSuccess = XposedHelpers.findMethodExact(BiliApiDataCallbackClass,"onDataSuccess",Object.class);
+                            Constructor<?> PureGarbDetailConstructor = XposedHelpers.findConstructorExact(PureGarbDetailClass);
+                            List<Object> PureGarbDetailList = new ArrayList<>();
+                            PureGarbDetailList.add(PureGarbDetailArrayInit(PureGarbDetailConstructor,0,"white",0,8,false,true,"简洁白",0,0));
+                            PureGarbDetailList.add(PureGarbDetailArrayInit(PureGarbDetailConstructor,0,"pink",0,2,false,true,"少女粉",0,0));
+                            PureGarbDetailList.add(PureGarbDetailArrayInit(PureGarbDetailConstructor,0,"black",0,1,false,true,"主题黑",0,0));
+                            PureGarbDetailList.add(PureGarbDetailArrayInit(PureGarbDetailConstructor,0,"red",0,3,false,true,"高能红",0,0));
+                            PureGarbDetailList.add(PureGarbDetailArrayInit(PureGarbDetailConstructor,0,"yellow",0,4,false,true,"咸蛋黄",0,0));
+                            PureGarbDetailList.add(PureGarbDetailArrayInit(PureGarbDetailConstructor,0,"green",0,5,false,true,"早苗绿",0,0));
+                            PureGarbDetailList.add(PureGarbDetailArrayInit(PureGarbDetailConstructor,0,"blue",0,6,false,true,"宝石蓝",0,0));
+                            PureGarbDetailList.add(PureGarbDetailArrayInit(PureGarbDetailConstructor,0,"purple",0,7,false,true,"罗兰紫",0,0));
 
 
-                            XposedBridge.hookAllMethods(hookClass, "j", new XC_MethodReplacement() {
-                                @Override
-                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                    Object responseBody = param.args[0];
-                                    Object PegasusPageReporter_a2 = XposedHelpers.callStaticMethod(monitor_b,"a");
-                                    if (PegasusPageReporter_a2 != null) {
-                                        XposedHelpers.findMethodExact(PegasusPageReporterClass,"v").invoke(PegasusPageReporter_a2);
-                                    }
-                                    String respStr = (String) XposedHelpers.findMethodExact(OkhttpResponseBodyClass,"string").invoke(responseBody);
-//                                    LoggerLog(respStr);
-                                    JSONObject anotherJSON = new JSONObject(respStr);
-                                    JSONArray anotherJSONArray = anotherJSON.getJSONObject("data").getJSONArray("items");
-                                    JSONArray result = new JSONArray();
-                                    int cards = 0;
-                                    for (int i=0;i<anotherJSONArray.length();i++){
-                                        JSONObject jsonItem = anotherJSONArray.getJSONObject(i);
-                                        if (
-                                                jsonItem.get("card_type").equals("small_cover_v2")
-                                        ){
-                                            result.put(jsonItem);
-                                            cards += 1;
-                                        }
-//                                        LoggerLog(jsonItem);
-                                    }
-                                    anotherJSON.getJSONObject("data").getJSONObject("config").put("autoplay_card",cards);
-                                    anotherJSON.getJSONObject("data").put("items", result);
-                                    respStr = anotherJSON.toString();
-
-                                    Object parseObject = XposedHelpers.callStaticMethod(FastJSONClass, "parseObject",respStr);
-                                    Object generalResponse = XposedHelpers.findConstructorExact(GeneralResponseClass).newInstance();
-
-                                    XposedHelpers.setIntField(generalResponse,"code", (Integer) FastJSON_getIntValue.invoke(parseObject,"code"));
-                                    XposedHelpers.setObjectField(generalResponse,"message", FastJSON_getString.invoke(parseObject,"message"));
-                                    XposedHelpers.setIntField(generalResponse,"ttl", (Integer) FastJSON_getIntValue.invoke(parseObject,"ttl"));
-
-                                    if ((Boolean) FastJSON_containsKey.invoke(parseObject, "data")) {
-                                        Object jSONObject = FastJSON_getJSONObject.invoke(parseObject,"data");//parseObject.getJSONObject("data");
-                                        Object jSONArray = jSONObject != null ? FastJSON_getJSONArray.invoke(jSONObject,"items") : null;
-                                        Object pegasusFeedResponse = XposedHelpers.findConstructorExact(PegasusFeedResponseClass).newInstance();
-                                        XposedHelpers.setObjectField(generalResponse,"data", pegasusFeedResponse);
-
-                                        String string = (String) FastJSON_getString.invoke(jSONObject,"config");
-                                        Object parsedConfig = XposedHelpers.callStaticMethod(FastJSONClass, "parseObject",string, ConfigClass);
-                                        XposedHelpers.setObjectField(pegasusFeedResponse,"config", parsedConfig);
-                                        if (jSONArray != null) {
-                                            Object items = XposedHelpers.findMethodExact(BaseTMApiParserClass,"e",FastJSONArrayClass).invoke(param.thisObject, jSONArray);
-                                            Object data = XposedHelpers.findField(generalResponse.getClass(),"data").get(generalResponse);
-
-                                            XposedHelpers.setObjectField(data, "items",items);
-//                                            generalResponse.data.items = e(jSONArray);
-                                        }
-                                    }
-                                    Object PegasusPageReporter_a3 = XposedHelpers.callStaticMethod(monitor_b,"a");
-                                    if (PegasusPageReporter_a3 != null) {
-                                        XposedHelpers.findMethodExact(PegasusPageReporterClass,"x").invoke(PegasusPageReporter_a2);
-                                    }
-                                    return generalResponse;
-                                }
-                            });
                             {
-                                hookClass = XposedHelpers.findClass("com.bilibili.okretro.converter.a",lpparam.classLoader);
-                                XposedBridge.hookAllMethods(hookClass, "convert", new XC_MethodHook() {
+                                XposedBridge.hookAllMethods(hookClass, "j", new XC_MethodReplacement() {
                                     @Override
-                                    protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                                        super.afterHookedMethod(param);
-                                        Field f = XposedHelpers.findFieldIfExists(param.getResult().getClass(),"data");
-                                        if (f != null){
-                                            Object resultData = f.get(param.getResult());
-                                            if (GarbDataClass.isInstance(resultData)){//Grab Options
-                                                XposedHelpers.setObjectField(resultData,"opGarb",null);
-                                                Object detail = XposedHelpers.getObjectField(resultData,"userGarb");
-                                                //maybe need restart twice rather than once
-                                                {
-                                                    XposedHelpers.setBooleanField(detail,"isOp",false);
-                                                    XposedHelpers.setObjectField(detail,"pkgMd5","e10f4ff37f3d964c6ecb3f8f2c8434c9");
-                                                    XposedHelpers.setObjectField(detail,"pkgUrl","https://i0.hdslb.com/bfs/garb/zip/14e2f377e601481e2befab34e0773c81886b7232.zip");
-                                                    XposedHelpers.setObjectField(detail,"name","初音未来-夜版");
-                                                    XposedHelpers.setLongField(detail,"ver",1625571046L);
-                                                    XposedHelpers.setLongField(detail,"id",2530L);
-                                                    XposedHelpers.setObjectField(detail,"conf",null);
-                                                }//an example
-                                                /*
-                                                {
-                                                    XposedHelpers.setBooleanField(detail,"isOp",false);
-                                                    XposedHelpers.setObjectField(detail,"pkgMd5","cb2b384cb6d8e7635a394f6f3100d53a");
-                                                    XposedHelpers.setObjectField(detail,"pkgUrl","https://i0.hdslb.com/bfs/garb/zip/b8faab964ae2f61671e416cca22bcba546799c6d.zip");
-                                                    //↑I believe this is the only useful one
-                                                    // (can change into your own link if you have a server (like 127.0.0.1:80) XD)
-                                                    XposedHelpers.setObjectField(detail,"name","樱花未来");//sakura miku. XD
-                                                    XposedHelpers.setLongField(detail,"ver",1660720238L);
-                                                    XposedHelpers.setLongField(detail,"id",50874L);
-                                                    XposedHelpers.setObjectField(detail,"conf",null);
-                                                }
-                                                */
-                                                /*
-                                                 And another,you may want to ask your friends
-                                                 for that magic link or just download
-                                                 from the one upper and research it
-                                                 [you will find how to replace image inside easily :)]
-                                                 */
+                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                        Object responseBody = param.args[0];
+                                        Object PegasusPageReporter_a2 = XposedHelpers.callStaticMethod(monitor_b, "a");
+                                        if (PegasusPageReporter_a2 != null) {
+                                            XposedHelpers.findMethodExact(PegasusPageReporterClass, "v").invoke(PegasusPageReporter_a2);
+                                        }
+                                        String respStr = (String) XposedHelpers.findMethodExact(OkhttpResponseBodyClass, "string").invoke(responseBody);
+                                        JSONObject anotherJSON = new JSONObject(respStr);
+                                        JSONArray anotherJSONArray = anotherJSON.getJSONObject("data").getJSONArray("items");
+                                        JSONArray result = new JSONArray();
+                                        int cards = 0;
+                                        for (int i = 0; i < anotherJSONArray.length(); i++) {
+                                            JSONObject jsonItem = anotherJSONArray.getJSONObject(i);
+                                            if (
+                                                    jsonItem.get("card_type").equals("small_cover_v2")
+                                            ) {
+                                                result.put(jsonItem);
+                                                cards += 1;
                                             }
                                         }
-//                                        showObjectFields(param.getResult(),"    ");
-//                                        LoggerLog(new Exception(param.getResult().getClass().getTypeName()));
+                                        anotherJSON.getJSONObject("data").getJSONObject("config").put("autoplay_card", cards);
+                                        anotherJSON.getJSONObject("data").put("items", result);
+                                        respStr = anotherJSON.toString();
+
+                                        Object parseObject = XposedHelpers.callStaticMethod(FastJSONClass, "parseObject", respStr);
+                                        Object generalResponse = XposedHelpers.findConstructorExact(GeneralResponseClass).newInstance();
+
+                                        XposedHelpers.setIntField(generalResponse, "code", (Integer) FastJSON_getIntValue.invoke(parseObject, "code"));
+                                        XposedHelpers.setObjectField(generalResponse, "message", FastJSON_getString.invoke(parseObject, "message"));
+                                        XposedHelpers.setIntField(generalResponse, "ttl", (Integer) FastJSON_getIntValue.invoke(parseObject, "ttl"));
+
+                                        if ((Boolean) FastJSON_containsKey.invoke(parseObject, "data")) {
+                                            Object jSONObject = FastJSON_getJSONObject.invoke(parseObject, "data");//parseObject.getJSONObject("data");
+                                            Object jSONArray = jSONObject != null ? FastJSON_getJSONArray.invoke(jSONObject, "items") : null;
+                                            Object pegasusFeedResponse = XposedHelpers.findConstructorExact(PegasusFeedResponseClass).newInstance();
+                                            XposedHelpers.setObjectField(generalResponse, "data", pegasusFeedResponse);
+
+                                            String string = (String) FastJSON_getString.invoke(jSONObject, "config");
+                                            Object parsedConfig = XposedHelpers.callStaticMethod(FastJSONClass, "parseObject", string, ConfigClass);
+                                            XposedHelpers.setObjectField(pegasusFeedResponse, "config", parsedConfig);
+                                            if (jSONArray != null) {
+                                                Object items = XposedHelpers.findMethodExact(BaseTMApiParserClass, "e", FastJSONArrayClass).invoke(param.thisObject, jSONArray);
+                                                Object data = XposedHelpers.findField(generalResponse.getClass(), "data").get(generalResponse);
+
+                                                XposedHelpers.setObjectField(data, "items", items);
+//                                            generalResponse.data.items = e(jSONArray);
+                                            }
+                                        }
+                                        Object PegasusPageReporter_a3 = XposedHelpers.callStaticMethod(monitor_b, "a");
+                                        if (PegasusPageReporter_a3 != null) {
+                                            XposedHelpers.findMethodExact(PegasusPageReporterClass, "x").invoke(PegasusPageReporter_a2);
+                                        }
+                                        return generalResponse;
                                     }
                                 });
                             }
+                            {
+                                hookClass = XposedHelpers.findClassIfExists("tv.danmaku.android.log.BLog",lpparam.classLoader);
+                                if (hookClass != null){
+                                    XposedBridge.hookAllMethods(hookClass,"i", new XC_MethodReplacement() {
+                                        @Override
+                                        protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                            return null;
+                                        }
+                                    });
+                                }
+                            }
+                            {
+                                {
+                                    {
+                                        hookClass = XposedHelpers.findClassIfExists("tv.danmaku.bili.ui.garb.core.g", lpparam.classLoader);
+                                        if (hookClass != null) {
+                                            XposedBridge.hookAllMethods(hookClass, "x", new XC_MethodHook() {
+                                                @Override
+                                                protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                                                    super.beforeHookedMethod(param);
+                                                    param.setResult(rootName);
+                                                }
+                                            });
+                                            XposedBridge.hookAllMethods(hookClass, "w", new XC_MethodHook() {
+                                                @Override
+                                                protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                                                    super.beforeHookedMethod(param);
+                                                    Object garbDetail = param.args[0];
+                                                    Application application;
+                                                    if (TextUtils.isEmpty((CharSequence) XposedHelpers.getObjectField(garbDetail, "pkgUrl")) || (application = (Application) XposedHelpers.callStaticMethod(BiliContextClass, "application")) == null) {
+                                                        return;
+                                                    }
+                                                    File file = new File((String) XposedHelpers.callMethod(param.thisObject, "j", application, garbDetail));
+                                                    if (!file.exists()) {
+                                                        file.mkdirs();
+                                                    }
+                                                    String valueOf = String.valueOf(XposedHelpers.getLongField(garbDetail, "id"));
+                                                    File file2 = new File(file, valueOf);
+                                                    if (file2.exists()) {
+                                                        param.setResult(null);
+                                                    }
+                                                }
+                                            });
+                                        }
+                                    }
+                                    {
+                                        hookClass = XposedHelpers.findClassIfExists("tv.danmaku.bili.ui.garb.core.j", lpparam.classLoader);
+                                        if (hookClass != null) {
+                                            XposedBridge.hookAllMethods(hookClass, "d", new XC_MethodReplacement() {
+                                                @Override
+                                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                                    String fileName = rootName + "load_equip";
+//                                            LoggerLog(new Exception("not an exception:"+fileName));
+                                                    File f = new File(fileName);
+                                                    if (!f.exists()) {
+                                                        f.mkdirs();
+                                                    }
+                                                    return fileName;
+                                                }
+                                            });
+                                            XposedBridge.hookAllMethods(hookClass, "c", new XC_MethodHook() {
+                                                @Override
+                                                protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                                                    super.beforeHookedMethod(param);
+                                                    Object loadEquip = param.args[0];
+                                                    if (loadEquip == null) {
+                                                        return;
+                                                    }
+                                                    String fileName = rootName + "load_equip";
+                                                    File file = new File(fileName);
+                                                    if (!file.exists()) {
+                                                        file.mkdirs();
+                                                    }
+                                                    File file2 = new File(file, (String) XposedHelpers.callMethod(loadEquip, "getFileName"));
+                                                    if (file2.exists()) {
+                                                        param.setResult(null);
+                                                    }
+                                                }
+                                            });
+                                        }
+                                    }
+                                }//setting garb path
+                                hookClass = XposedHelpers.findClassIfExists("tv.danmaku.bili.ui.garb.model.GarbApiHelper",lpparam.classLoader);
+                                if (hookClass != null){
+                                    XposedBridge.hookAllMethods(hookClass, "a", new XC_MethodReplacement() {
+                                        @Override
+                                        protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+//                                            showObjectFields(param.args[0],"    ");//to check grab using now and fetch info
+                                            Object resultData = XposedHelpers.findConstructorExact(GarbDataClass).newInstance();
+                                            XposedHelpers.setObjectField(resultData,"opGarb",null);
 
+                                            //CONFIG GRABS(will not download again for same id,file path tweaked to /sdcard/Android/data/tv.danmaku.bili/)
+                                            //id decides the storage path
+                                            String name = "初音未来-夜版";
+                                            //"樱花未来"
+                                            String pkgUrl = "https://i0.hdslb.com/bfs/garb/zip/14e2f377e601481e2befab34e0773c81886b7232.zip";
+                                            //"https://i0.hdslb.com/bfs/garb/zip/b8faab964ae2f61671e416cca22bcba546799c6d.zip"
+                                            String pkgMd5 = "e10f4ff37f3d964c6ecb3f8f2c8434c9";
+                                            //"cb2b384cb6d8e7635a394f6f3100d53a"
+                                            long ver = 1625571046L;
+                                            //1660720238L
+                                            long id = 2530L;
+                                            //50874L
+                                            long loadEquipID = 2531L;
+                                            long loadEquipVer = 1598602035L;
+                                            String loadEquipName = "初音未来13周年";
+                                            String loadEquipUrl = "https://i0.hdslb.com/bfs/garb/item/9b12e8b5cc16a4c2e71e91c43796f09d5e132847.webp";
+                                            XposedHelpers.setObjectField(resultData,"pureGarb",PureGarbDetailList);
+                                            {
+                                                XposedHelpers.setObjectField(resultData,"loadEquip",XposedHelpers.findConstructorExact(GarbData_LoadEquipClass).newInstance());
+                                                Object loadEquip = XposedHelpers.getObjectField(resultData,"loadEquip");
+                                                XposedHelpers.setLongField(loadEquip,"id",loadEquipID);
+                                                XposedHelpers.setLongField(loadEquip,"version",loadEquipVer);
+                                                XposedHelpers.setObjectField(loadEquip,"name", loadEquipName);
+                                                XposedHelpers.setObjectField(loadEquip,"url", loadEquipUrl);
+                                            }
+                                            //maybe need restart twice rather than once
+                                            {
+                                                Object colorData = XposedHelpers.findConstructorExact(ColorDetailClass).newInstance();
+                                                {
+                                                    XposedHelpers.setObjectField(colorData,"animateMode","once");
+                                                    XposedHelpers.setObjectField(colorData,"btnBgEndColor","#8edfe3");
+                                                    XposedHelpers.setObjectField(colorData,"btnBgStartColor","#40b7bb");
+                                                    XposedHelpers.setObjectField(colorData,"btnIconColor","#4c4975");
+                                                    XposedHelpers.setBooleanField(colorData,"hasAnimate",true);
+                                                    XposedHelpers.setObjectField(colorData,"headMyselfPlayMode","once");
+                                                    XposedHelpers.setObjectField(colorData,"mode","dark");
+                                                    XposedHelpers.setObjectField(colorData,"primaryColor","#ffffff");
+                                                    XposedHelpers.setObjectField(colorData,"secondaryColor","#4c4974");
+                                                    XposedHelpers.setObjectField(colorData,"sideBgColor","#29244d");
+                                                    XposedHelpers.setObjectField(colorData,"sideLineColor",null);
+                                                    XposedHelpers.setObjectField(colorData,"tailColor","#ffffff");
+                                                    XposedHelpers.setObjectField(colorData,"tailIconColor",null);
+                                                    XposedHelpers.setObjectField(colorData,"tailIconColorNight",null);
+                                                    XposedHelpers.setObjectField(colorData,"tailIconColorSelected",null);
+                                                    XposedHelpers.setObjectField(colorData,"tailIconColorSelectedNight",null);
+                                                    XposedHelpers.setObjectField(colorData,"tailIconModel","img");
+                                                    XposedHelpers.setObjectField(colorData,"tailSelectedColor","#a2f3f7");
+                                                }
+                                                Object detail = XposedHelpers.findConstructorExact(GarbDetailClass).newInstance();
+                                                XposedHelpers.setObjectField(detail,"colorData",colorData);
+                                                XposedHelpers.setBooleanField(detail,"isOp",false);
+                                                XposedHelpers.setObjectField(detail,"pkgMd5",pkgMd5);
+                                                XposedHelpers.setObjectField(detail,"pkgUrl",pkgUrl);
+                                                XposedHelpers.setObjectField(detail,"name",name);
+                                                XposedHelpers.setLongField(detail,"ver",ver);
+                                                XposedHelpers.setLongField(detail,"id",id);
+                                                XposedHelpers.setObjectField(detail,"conf",null);
+
+                                                XposedHelpers.setObjectField(resultData,"userGarb",detail);
+                                            }
+                                            fetchGarbSuccess.invoke(param.args[2],resultData);
+                                            return null;
+                                        }
+                                    });
+                                }
+                            }
                             {
                                 hookClass = XposedHelpers.findClass("com.bilibili.gripper.router.TribeFawkesTask",lpparam.classLoader);
                                 XposedBridge.hookAllMethods(hookClass, "a", new XC_MethodReplacement() {
@@ -227,7 +359,6 @@ public class HookBilibiliClass {
                                     }
                                 });
                             }
-
                             {
                                 hookClass = XposedHelpers.findClass("com.bapis.bilibili.app.view.v1.ViewReply",lpparam.classLoader);
                                 XposedBridge.hookAllMethods(hookClass, "hasCmUnderPlayer", new XC_MethodReplacement() {
@@ -255,8 +386,8 @@ public class HookBilibiliClass {
                                     }
                                 });
                             }
-                            hookClass = XposedHelpers.findClassIfExists("com.bilibili.search.result.m", lpparam.classLoader);
                             {
+                                hookClass = XposedHelpers.findClassIfExists("com.bilibili.search.result.m", lpparam.classLoader);
                                 XposedBridge.hookAllMethods(hookClass, "a", new XC_MethodReplacement() {
                                     @Override
                                     protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
@@ -284,8 +415,8 @@ public class HookBilibiliClass {
                                     }
                                 });
                             }
-                            hookClass = XposedHelpers.findClassIfExists("com.bilibili.search.discover.e", lpparam.classLoader);
                             {
+                                hookClass = XposedHelpers.findClassIfExists("com.bilibili.search.discover.e", lpparam.classLoader);
                                 XposedBridge.hookAllMethods(hookClass, "a", new XC_MethodReplacement() {
                                     @Override
                                     protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
@@ -1478,10 +1609,61 @@ public class HookBilibiliClass {
                         }
                     }
                     }
+                    {
+                        Class<?> HookClass = XposedHelpers.findClassIfExists("com.bilibili.lib.push.q0", lpparam.classLoader);
+                        if (HookClass != null){
+                            XposedBridge.hookAllMethods(
+                                    HookClass,"i",
+                                    new XC_MethodReplacement() {
+                                        @Override
+                                        protected Object replaceHookedMethod(MethodHookParam param){
+                                            return null;
+                                        }
+                                    }
+                            );
+                        }
+                        for (String className:new String[]{
+                                "com.bilibili.lib.push.HonorPushRegistry",
+                                "com.bilibili.lib.push.OppoPushRegistry",
+                                "com.bilibili.lib.push.HuaweiNewPushRegistry",
+                                "com.bilibili.lib.push.MiPushRegistry",
+                                "com.bilibili.lib.push.VivoPushRegistry",
+                                "com.bilibili.lib.push.t",
+                        }) {
+                            HookClass = XposedHelpers.findClassIfExists(className, lpparam.classLoader);
+                            if (HookClass == null){continue;}
+                            XposedBridge.hookAllMethods(HookClass, "getPushComponents", new XC_MethodReplacement() {
+                                @Override
+                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                    return new Class<?>[0];
+                                }
+                            });
+                            XposedBridge.hookAllMethods(HookClass, "registerPushService", new XC_MethodReplacement() {
+                                @Override
+                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                    return null;
+                                }
+                            });
+                        }
+                    }
                 } catch (Exception e) {
                     LoggerLog(e);
                 }
             }
         }
+    }
+
+    public static Object PureGarbDetailArrayInit(Constructor<?> PureGarbDetailConstructor, long buyTime, String colorName, long dueTime, long id, boolean isBought, boolean isFree, String name, int price, int status) throws InvocationTargetException, IllegalAccessException, InstantiationException {
+        Object result = PureGarbDetailConstructor.newInstance();
+        XposedHelpers.setLongField(result,"buyTime",buyTime);
+        XposedHelpers.setLongField(result,"dueTime",dueTime);
+        XposedHelpers.setLongField(result,"id",id);
+        XposedHelpers.setIntField(result,"price",price);
+        XposedHelpers.setIntField(result,"status",status);
+        XposedHelpers.setBooleanField(result,"isBought",isBought);
+        XposedHelpers.setBooleanField(result,"isFree",isFree);
+        XposedHelpers.setObjectField(result,"colorName",colorName);
+        XposedHelpers.setObjectField(result,"name",name);
+        return result;
     }
 }
