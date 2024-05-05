@@ -17,6 +17,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -60,6 +61,10 @@ public class HookBilibiliClass {
                             Class<?> BiliApiDataCallbackClass = XposedHelpers.findClass("com.bilibili.okretro.BiliApiDataCallback",lpparam.classLoader);
                             Class<?> TabResponseClass = XposedHelpers.findClass("tv.danmaku.bili.ui.main2.resource.MainResourceManager$TabResponse",lpparam.classLoader);
                             Class<?> BiliContextClass = XposedHelpers.findClass("com.bilibili.base.BiliContext",lpparam.classLoader);
+                            Class<?> SplashDataClass = XposedHelpers.findClass("tv.danmaku.bili.ui.splash.ad.model.SplashData",lpparam.classLoader);
+                            Class<?> SplashShowDataClass = XposedHelpers.findClass("tv.danmaku.bili.ui.splash.ad.model.SplashShowData",lpparam.classLoader);
+                            Class<?> BrandSplashDataClass = XposedHelpers.findClass("tv.danmaku.bili.ui.splash.brand.model.BrandSplashData",lpparam.classLoader);
+                            Class<?> FastJSONFeatureClass = XposedHelpers.findClass("com.alibaba.fastjson.parser.Feature",lpparam.classLoader);
                             Method FastJSON_getIntValue = XposedHelpers.findMethodExact(FastJSONObjectClass,"getIntValue",String.class);
                             Method FastJSON_getString = XposedHelpers.findMethodExact(FastJSONObjectClass,"getString",String.class);
                             Method FastJSON_containsKey = XposedHelpers.findMethodExact(FastJSONObjectClass,"containsKey",Object.class);
@@ -69,15 +74,16 @@ public class HookBilibiliClass {
                             Method fetchGarbSuccess = XposedHelpers.findMethodExact(BiliApiDataCallbackClass,"onDataSuccess",Object.class);
                             Constructor<?> PureGarbDetailConstructor = XposedHelpers.findConstructorExact(PureGarbDetailClass);
                             List<Object> PureGarbDetailList = new ArrayList<>();
-                            PureGarbDetailList.add(PureGarbDetailArrayInit(PureGarbDetailConstructor,0,"white",0,8,false,true,"简洁白",0,0));
-                            PureGarbDetailList.add(PureGarbDetailArrayInit(PureGarbDetailConstructor,0,"pink",0,2,false,true,"少女粉",0,0));
-                            PureGarbDetailList.add(PureGarbDetailArrayInit(PureGarbDetailConstructor,0,"black",0,1,false,true,"主题黑",0,0));
-                            PureGarbDetailList.add(PureGarbDetailArrayInit(PureGarbDetailConstructor,0,"red",0,3,false,true,"高能红",0,0));
-                            PureGarbDetailList.add(PureGarbDetailArrayInit(PureGarbDetailConstructor,0,"yellow",0,4,false,true,"咸蛋黄",0,0));
-                            PureGarbDetailList.add(PureGarbDetailArrayInit(PureGarbDetailConstructor,0,"green",0,5,false,true,"早苗绿",0,0));
-                            PureGarbDetailList.add(PureGarbDetailArrayInit(PureGarbDetailConstructor,0,"blue",0,6,false,true,"宝石蓝",0,0));
-                            PureGarbDetailList.add(PureGarbDetailArrayInit(PureGarbDetailConstructor,0,"purple",0,7,false,true,"罗兰紫",0,0));
-
+                            {
+                                PureGarbDetailList.add(PureGarbDetailArrayInit(PureGarbDetailConstructor, 0, "white", 0, 8, false, true, "简洁白", 0, 0));
+                                PureGarbDetailList.add(PureGarbDetailArrayInit(PureGarbDetailConstructor, 0, "pink", 0, 2, false, true, "少女粉", 0, 0));
+                                PureGarbDetailList.add(PureGarbDetailArrayInit(PureGarbDetailConstructor, 0, "black", 0, 1, false, true, "主题黑", 0, 0));
+                                PureGarbDetailList.add(PureGarbDetailArrayInit(PureGarbDetailConstructor, 0, "red", 0, 3, false, true, "高能红", 0, 0));
+                                PureGarbDetailList.add(PureGarbDetailArrayInit(PureGarbDetailConstructor, 0, "yellow", 0, 4, false, true, "咸蛋黄", 0, 0));
+                                PureGarbDetailList.add(PureGarbDetailArrayInit(PureGarbDetailConstructor, 0, "green", 0, 5, false, true, "早苗绿", 0, 0));
+                                PureGarbDetailList.add(PureGarbDetailArrayInit(PureGarbDetailConstructor, 0, "blue", 0, 6, false, true, "宝石蓝", 0, 0));
+                                PureGarbDetailList.add(PureGarbDetailArrayInit(PureGarbDetailConstructor, 0, "purple", 0, 7, false, true, "罗兰紫", 0, 0));
+                            }
 
                             {
                                 XposedBridge.hookAllMethods(hookClass, "j", new XC_MethodReplacement() {
@@ -139,11 +145,136 @@ public class HookBilibiliClass {
                                 });
                             }
                             {
+                                hookClass = XposedHelpers.findClass("com.bilibili.biligame.abtest.AbTestHelper",lpparam.classLoader);
+                                XposedBridge.hookAllMethods(hookClass, "getAllExpInfo", new XC_MethodReplacement() {
+                                    @Override
+                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                        return null;
+                                    }
+                                });
+
+                                hookClass = XposedHelpers.findClass("com.bilibili.biligame.helper.GameCopyWritingConfig",lpparam.classLoader);
+                                XposedBridge.hookAllMethods(hookClass, "a", new XC_MethodReplacement() {
+                                    @Override
+                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                        return null;
+                                    }
+                                });
+
+                                hookClass = XposedHelpers.findClass("tv.danmaku.bili.ui.splash.ad.c0",lpparam.classLoader);
+                                XposedBridge.hookAllMethods(hookClass, "p", new XC_MethodReplacement() {
+                                    @Override
+                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                        Object result = XposedHelpers.findConstructorExact(SplashShowDataClass).newInstance();
+                                        XposedHelpers.setObjectField(result,"splashRequestId","1714881574374q172a27a174a101q1504");
+                                        XposedHelpers.setObjectField(result,"strategyList",new ArrayList<>());
+                                        return result;
+                                    }
+                                });
+
+                                XposedBridge.hookAllMethods(hookClass, "t", new XC_MethodReplacement() {
+                                    @Override
+                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                        Object result = XposedHelpers.findConstructorExact(SplashDataClass).newInstance();
+                                        XposedHelpers.setObjectField(result,"splashRequestId","1714881574374q172a27a174a101q1504");
+                                        XposedHelpers.setIntField(result,"intervalForShow",0);
+                                        XposedHelpers.setIntField(result,"intervalForUpdate",0);
+                                        XposedHelpers.setIntField(result,"maxCount",0);
+                                        XposedHelpers.setObjectField(result,"keepIds",new ArrayList<Long>());
+                                        XposedHelpers.setObjectField(result,"splashList",new ArrayList<>());
+                                        XposedHelpers.setObjectField(result,"strategyList",new ArrayList<>());
+                                        return result;
+                                    }
+                                });
+                                hookClass = XposedHelpers.findClass("tv.danmaku.bili.ui.splash.brand.BrandSplashHelper",lpparam.classLoader);
+                                XposedHelpers.setStaticLongField(BrandSplashDataClass,"DEFAULT_PULL_INTERVAL",0);
+                                XposedBridge.hookAllMethods(hookClass, "J", new XC_MethodReplacement() {
+                                    @Override
+                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                        Object result = XposedHelpers.findConstructorExact(BrandSplashDataClass).newInstance();
+                                        XposedHelpers.setLongField(result,"pullInterval",0L);
+                                        XposedHelpers.setIntField(result,"forceShowTimes",0);
+                                        XposedHelpers.setObjectField(result,"brandList",new ArrayList<>());
+                                        XposedHelpers.setObjectField(result,"collectionList",new ArrayList<>());
+                                        XposedHelpers.setObjectField(result,"preloadList",new ArrayList<>());
+                                        XposedHelpers.setObjectField(result,"queryList",new ArrayList<>());
+                                        XposedHelpers.setObjectField(result,"showList",new ArrayList<>());
+                                        XposedHelpers.setObjectField(result,"rule","order");
+                                        XposedHelpers.setObjectField(result,"hasNewSplash",Boolean.FALSE);
+                                        XposedHelpers.setObjectField(result,"newSplashHash","");
+                                        XposedHelpers.setObjectField(result,"forceShowHash","");
+                                        XposedHelpers.setBooleanField(result,"forcibly",false);
+                                        return result;
+                                    }
+                                });
+                                XposedBridge.hookAllMethods(hookClass, "m", new XC_MethodReplacement() {
+                                    @Override
+                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                        Object result = XposedHelpers.findConstructorExact(BrandSplashDataClass).newInstance();
+                                        XposedHelpers.setLongField(result,"pullInterval",0L);
+                                        XposedHelpers.setIntField(result,"forceShowTimes",0);
+                                        XposedHelpers.setObjectField(result,"brandList",new ArrayList<>());
+                                        XposedHelpers.setObjectField(result,"collectionList",new ArrayList<>());
+                                        XposedHelpers.setObjectField(result,"preloadList",new ArrayList<>());
+                                        XposedHelpers.setObjectField(result,"queryList",new ArrayList<>());
+                                        XposedHelpers.setObjectField(result,"showList",new ArrayList<>());
+                                        XposedHelpers.setObjectField(result,"rule","order");
+                                        XposedHelpers.setObjectField(result,"hasNewSplash",Boolean.FALSE);
+                                        XposedHelpers.setObjectField(result,"newSplashHash","");
+                                        XposedHelpers.setObjectField(result,"forceShowHash","");
+                                        XposedHelpers.setBooleanField(result,"forcibly",false);
+                                        return result;
+                                    }
+                                });
+
+                                hookClass = XposedHelpers.findClass("com.bilibili.adcommon.event.b",lpparam.classLoader);
+
+                                XposedBridge.hookAllMethods(hookClass, "h", new XC_MethodReplacement() {
+                                    @Override
+                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                        return null;
+                                    }
+                                });
+
+                                hookClass = XposedHelpers.findClass("com.bilibili.adcommon.commercial.t",lpparam.classLoader);
+
+                                XposedBridge.hookAllMethods(hookClass, "l", new XC_MethodReplacement() {
+                                    @Override
+                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                        return null;
+                                    }
+                                });
+                            }
+                            {
+//                                hookClass = XposedHelpers.findClass("com.bilibili.okretro.converter.a",lpparam.classLoader);
+//                                XposedBridge.hookAllMethods(hookClass, "convert", new XC_MethodReplacement() {
+//                                    @Override
+//                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+//                                        String prefix = "";
+//                                        String respStr = (String) Okhttp_ResponseBody_string.invoke(param.args[0]);
+//                                        Type a = (Type) XposedHelpers.getObjectField(param.thisObject,"a");
+//                                        int b = XposedHelpers.getStaticIntField(param.thisObject.getClass(),"b");
+//                                        Object[] features = (Object[]) Array.newInstance(FastJSONFeatureClass,0);
+//                                        Object result = XposedHelpers.callStaticMethod(FastJSONClass,"parseObject",respStr,a,b,features);
+//                                        Object data;
+//                                        if (XposedHelpers.findFieldIfExists(result.getClass(),"data") != null){
+//                                        if (result != null && (data=XposedHelpers.getObjectField(result,"data")) != null){
+//                                            prefix = data.getClass().getTypeName();
+//                                        }
+//                                        }else {
+//                                            prefix = result.getClass().getTypeName();
+//                                        }
+//                                        LoggerLog(new Exception(prefix + " | " + respStr));
+//                                        return result;
+//                                    }
+//                                });
+                            }
+                            {
                                 hookClass = XposedHelpers.findClassIfExists("tv.danmaku.android.log.BLog",lpparam.classLoader);
                                 if (hookClass != null){
                                     XposedBridge.hookAllMethods(hookClass,"i", new XC_MethodReplacement() {
                                         @Override
-                                        protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                        protected Object replaceHookedMethod(MethodHookParam param) {
                                             return null;
                                         }
                                     });
