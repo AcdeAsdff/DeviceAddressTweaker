@@ -1,6 +1,8 @@
 package com.linearity.deviceaddresstweaker.Wechat;
 
-import static com.linearity.deviceaddresstweaker.LoggerUtils.LoggerLog;
+import static com.linearity.utils.HookUtils.findAndHookMethodIfExists;
+import static com.linearity.utils.ReturnReplacements.returnTrue;
+import static com.linearity.utils.LoggerUtils.LoggerLog;
 
 import android.app.Application;
 import android.content.Context;
@@ -19,19 +21,11 @@ public class HookWechatClass {
                 Class<?> dumpClass = XposedHelpers.findClass("com.tencent.mm.pluginsdk.model.app.h0", lpparam.classLoader);
 //                LoggerLog(Arrays.toString(dumpClass.getMethods()));
 //                    Class<?> fclass2 = XposedHelpers.findClass("com.tencent.mm.pluginsdk.model.app.g", lpparam.classLoader);
-                XposedBridge.hookAllMethods(dumpClass, "a",
-//                            Context.class, fclass2, String.class, boolean.class,
-                        new XC_MethodHook(114514) {
-                            @Override
-                            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-//                                LoggerLog("[linearity]BeforeSignHook: " + param.args[0] + " " + param.args[1] + " " + param.args[2] + " ");
-                                param.setResult(true);
-                            }
-                        });
+                XposedBridge.hookAllMethods(dumpClass, "a",returnTrue);
 
                 if (false) {
                     LoggerLog( "[linearity]HookToastReady");
-                    XposedHelpers.findAndHookMethod(XposedHelpers.findClass("android.widget.Toast", lpparam.classLoader), "makeText", Context.class, CharSequence.class, int.class, new XC_MethodHook(114514) {
+                    findAndHookMethodIfExists(XposedHelpers.findClass("android.widget.Toast", lpparam.classLoader), "makeText", Context.class, CharSequence.class, int.class, new XC_MethodHook(114514) {
                         @Override
                         protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                             LoggerLog("[linearity]BeforeToastHook: " + param.args[0] + " " + param.args[1] + " " + param.args[2] + " ");

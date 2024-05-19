@@ -1,7 +1,5 @@
 package com.linearity.deviceaddresstweaker.AndroidHooks.android.os.storage;
 
-import static com.linearity.deviceaddresstweaker.LoggerUtils.LoggerLog;
-
 import android.content.SharedPreferences;
 
 import de.robv.android.xposed.callbacks.XC_LoadPackage;

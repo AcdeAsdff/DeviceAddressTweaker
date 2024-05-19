@@ -1,6 +1,6 @@
 package com.linearity.deviceaddresstweaker;
 
-import static com.linearity.deviceaddresstweaker.LoggerUtils.LoggerLog;
+import static com.linearity.utils.LoggerUtils.LoggerLog;
 
 import android.content.Context;
 import android.content.SharedPreferences;

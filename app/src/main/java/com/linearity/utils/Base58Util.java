@@ -1,4 +1,4 @@
-package com.linearity.deviceaddresstweaker;
+package com.linearity.utils;
 
 import java.util.Arrays;
 

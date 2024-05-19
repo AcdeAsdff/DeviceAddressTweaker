@@ -1,7 +1,9 @@
 package com.linearity.deviceaddresstweaker.AndroidHooks.android.location;
 
 import android.location.Location;
-import static com.linearity.deviceaddresstweaker.LoggerUtils.LoggerLog;
+
+import static com.linearity.utils.HookUtils.findAndHookMethodIfExists;
+import static com.linearity.utils.LoggerUtils.LoggerLog;
 
 import de.robv.android.xposed.XC_MethodHook;
 import android.content.SharedPreferences;
@@ -13,46 +15,46 @@ public class HookLocationClass {
     public static boolean HookLocation = true;
 
     public static void DoHook(XC_LoadPackage.LoadPackageParam lpparam, String procHead, SharedPreferences sharedPreferences){
+        Class<?> hookClass;
         HookLocation = sharedPreferences.getBoolean("HookLocationClass_HookLocation", true);
         if (HookLocation){
-            //      Location.class getLatitude()
-            try {
-                XposedHelpers.findAndHookMethod(
-                        Location.class.getName(),
-                        lpparam.classLoader,
-                        "getLatitude",
-                        new XC_MethodHook(114514) {
-                            @Override
-                            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                                //LoggerLog(lpparam.packageName + "调用Location.class getLatitude()" + param.getResult());
-                                param.setResult(0.);
-                            }
-                        }
-                );
-            } catch (Exception e) {
-                LoggerLog(e);
-            }
+            hookClass = XposedHelpers.findClassIfExists(Location.class.getName(), lpparam.classLoader);
+            if (hookClass != null) {
+                try {
+                    //      Location.class getLatitude()
+                    {
+                        findAndHookMethodIfExists(hookClass,
+                                "getLatitude",
+                                new XC_MethodHook(114514) {
+                                    @Override
+                                    protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                                        //LoggerLog(lpparam.packageName + "调用Location.class getLatitude()" + param.getResult());
+                                        param.setResult(0.);
+                                    }
+                                }
+                        );
+                    }
 //      Location.class getLongitude()
-            try {
-                XposedHelpers.findAndHookMethod(
-                        Location.class.getName(),
-                        lpparam.classLoader,
-                        "getLongitude",
-                        new XC_MethodHook(114514) {
-                            @Override
-                            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                                //LoggerLog(lpparam.packageName + "调用Location.class getLongitude()" + param.getResult());
-                                param.setResult(0.);
-                            }
-                        }
-                );
-            } catch (Exception e) {
-                LoggerLog(e);
+                    {
+                        findAndHookMethodIfExists(hookClass,
+                                "getLongitude",
+                                new XC_MethodHook(114514) {
+                                    @Override
+                                    protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                                        //LoggerLog(lpparam.packageName + "调用Location.class getLongitude()" + param.getResult());
+                                        param.setResult(0.);
+                                    }
+                                }
+                        );
+                    }
+                } catch (Exception e) {
+                    LoggerLog(e);
+                }
             }
         }
         ////      LocationManager.class getLastKnownLocation()
 //        try {
-//            XposedHelpers.findAndHookMethod(
+//            findAndHookMethodIfExists(
 //                    LocationManager.class.getName(),
 //                    lpparam.classLoader,
 //                    "getLastKnownLocation",

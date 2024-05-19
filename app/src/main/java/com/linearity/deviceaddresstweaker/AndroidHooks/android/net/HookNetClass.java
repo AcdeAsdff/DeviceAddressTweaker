@@ -10,8 +10,6 @@ import static android.net.NetworkCapabilities.TRANSPORT_VPN;
 import static android.net.NetworkCapabilities.TRANSPORT_WIFI;
 import static android.net.NetworkCapabilities.TRANSPORT_WIFI_AWARE;
 
-import static com.linearity.deviceaddresstweaker.DeviceAddressTweaker.getRandomString;
-
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityDiagnosticsManager;
@@ -39,7 +37,8 @@ import android.os.PersistableBundle;
 import android.telephony.TelephonyManager;
 
 import com.linearity.deviceaddresstweaker.AndroidHooks.android.net.wifi.HookWifiClass;
-import com.linearity.deviceaddresstweaker.DeviceAddressTweaker;
+import com.linearity.utils.HookUtils;
+import com.linearity.utils.ReturnReplacements;
 
 import java.io.File;
 import java.lang.reflect.Constructor;
@@ -59,3257 +58,2224 @@ import android.content.SharedPreferences;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
-import static com.linearity.deviceaddresstweaker.LoggerUtils.LoggerLog;
+
+import static com.linearity.utils.ReturnReplacements.returnByteArr114514;
+import static com.linearity.utils.ReturnReplacements.returnFalse;
+import static com.linearity.utils.LoggerUtils.LoggerLog;
 import static com.linearity.deviceaddresstweaker.JavaHooks.java.io.HookIO.checkBannedInFile;
 import static com.linearity.deviceaddresstweaker.JavaHooks.java.io.HookIO.checkReplaceFile;
 
 public class HookNetClass {
-
-    public static Intent VPNEstablishIntent =
-            new Intent().
-                    setClassName("com.android.vpndialogs","com.android.vpndialogs.ConfirmDialog");
-    public static String NetworkReq2Str =
-            "[ NONE id=0, " +
-                    "[ Transports: CELLULAR " +
-                    "Capabilities: NOT_METERED" +
-                    "&INTERNET" +
-                    "&NOT_RESTRICTED&TRUSTED" +
-                    "&NOT_VPN&VALIDATED" +
-                    "&NOT_ROAMING" +
-                    "&FOREGROUND" +
-                    "&NOT_CONGESTED" +
-                    "&NOT_SUSPENDED" +
-                    "&NOT_VCN_MANAGED " +
-                    "LinkUpBandwidth>=1145141919810Kbps " +
-                    "LinkDnBandwidth>=1145141919810Kbps " +
-                    "TransportInfo: <114514> " +
-                    "SignalStrength: -1145141919810]";
-    public static String NetworkCap2Str =
-            "[ Transports: CELLULAR " +
-                    "Capabilities: " +
-                    "NOT_METERED&INTERNET" +
-                    "&NOT_RESTRICTED" +
-                    "&TRUSTED" +
-                    "&NOT_VPN" +
-                    "&VALIDATED" +
-                    "&NOT_ROAMING&FOREGROUND" +
-                    "&NOT_CONGESTED" +
-                    "&NOT_SUSPENDED" +
-                    "&NOT_VCN_MANAGED " +
-                    "LinkUpBandwidth>=1145141919810Kbps " +
-                    "LinkDnBandwidth>=1145141919810Kbps " +
-                    "TransportInfo: <114514> " +
-                    "SignalStrength: -1145141919810]";
-    public static String NetworkInfo2Str = "" +
-            "[type: MOBILE[LTE], " +
-            "state: CONNECTED/CONNECTED, " +
-            "reason: (unspecified), " +
-            "extra: , " +
-            "failover: false, " +
-            "available: true, " +
-            "roaming: false]";
-    public static int[] intArray114514 = new int[]{1,1,4,5,1,4};
-    public static int[] EnterpriseIds = new int[]{1,2,3,4,5};
-    public static int[] netCapIntArray = new int[]{
-            0,1,2,3,4,
-            5,6,7,8,9,
-            10,11,12,13,14,
-            15,16,
-//            17,
-            18,19,20,
-//            21,
-            23,
-//            25,29,32,
-            33,34,35
-    };
-    public static int[] transportTypes = new int[]{TRANSPORT_CELLULAR};
-    public static SocketFactory defaultSocketFactory = SocketFactory.getDefault();
-    public static InetAddress[] inetAddresses = new InetAddress[0];
-    public static byte[] byteArray114514 = new byte[]{1,1,4,5,1,4};
-    public static String macAddr114514 = "01:01:04:05:01:04";
-    public static String macAddrOui114 = "01:01:04";
-    public static List<LinkAddress> emptyLinkAddressList = new ArrayList<>();
-    public static List<InetAddress> emptyInetAddressList = new ArrayList<>();
-    public static List<RouteInfo> emptyRouteInfoList = new ArrayList<>();
-    public static ProxyInfo fakeProxyInfo = ProxyInfo.buildDirectProxy("114514.1919810.jp",Integer.MAX_VALUE);
-    public static MacAddress macAddress114514 = MacAddress.fromBytes(byteArray114514);
-
-    public static String LinkPropertiesStr = "{LinkAddresses: [ ] DnsAddresses: [ ] Domains: null MTU: 0 Routes: [ ]}";
-    public static String[] emptyStringArray = new String[0];
-    public static List<String> emptyStringList = new ArrayList<>();
-
-    public static boolean HookNet = true;
-    public static boolean HookNetworkCapabilities = true;
-    public static boolean HookNetworkInfo = true;
-    public static boolean HookConnectivityManager = true;
-    public static boolean HookPlatformVpnProfile = true;
-    public static boolean HookVpnManager = true;
-    public static boolean HookInetAddress = true;
-    public static boolean HookVpnService = true;
-    public static boolean HookTelephonyNetworkSpecifier = true;
-    public static boolean HookRouteInfo = true;
-    public static boolean HookProxyInfo = true;
-    public static boolean HookProxy = true;
-    public static boolean HookNetworkRequest = true;
-    public static boolean HookNetwork = true;
-    public static boolean HookMacAddress = true;
-    public static boolean HookLocalSocketAddress = true;
-    public static boolean HookLinkProperties = true;
-    public static boolean HookLinkAddress = true;
-    public static boolean HookIpSecTransform = true;
-    public static boolean HookIpPrefix = true;
-    public static boolean HookIkev2VpnProfile = true;
-    public static boolean HookConnectivityDiagnosticsManager = true;
-    public static boolean HookCaptivePortal = true;
-    public static boolean HookUri = true;
-    public static boolean HookDnsResolver = false;
-    public static boolean HookDhcpInfo = false;
-    public static ProxyInfo proxyInfo = null;
-    public static void DoHook(XC_LoadPackage.LoadPackageParam lpparam, String procHead, SharedPreferences sharedPreferences){
-        {
-            HookNet = sharedPreferences.getBoolean("HookNetClass_HookNet", true);
-            HookNetworkCapabilities = sharedPreferences.getBoolean("HookNetClass_HookNetworkCapabilities", true);
-            HookNetworkInfo = sharedPreferences.getBoolean("HookNetClass_HookNetworkInfo", true);
-            HookConnectivityManager = sharedPreferences.getBoolean("HookNetClass_HookConnectivityManager", true);
-            HookPlatformVpnProfile = sharedPreferences.getBoolean("HookNetClass_HookPlatformVpnProfile", true);
-            HookVpnManager = sharedPreferences.getBoolean("HookNetClass_HookVpnManager", true);
-            HookInetAddress = sharedPreferences.getBoolean("HookNetClass_HookInetAddress", true);
-            HookVpnService = sharedPreferences.getBoolean("HookNetClass_HookVpnService", true);
-            HookTelephonyNetworkSpecifier = sharedPreferences.getBoolean("HookNetClass_HookTelephonyNetworkSpecifier", true);
-            HookRouteInfo = sharedPreferences.getBoolean("HookNetClass_HookRouteInfo", true);
-            HookProxyInfo = sharedPreferences.getBoolean("HookNetClass_HookProxyInfo", true);
-            HookProxy = sharedPreferences.getBoolean("HookNetClass_HookProxy", true);
-            HookNetworkRequest = sharedPreferences.getBoolean("HookNetClass_HookNetworkRequest", true);
-            HookNetwork = sharedPreferences.getBoolean("HookNetClass_HookNetwork", true);
-            HookMacAddress = sharedPreferences.getBoolean("HookNetClass_HookMacAddress", true);
-            HookLocalSocketAddress = sharedPreferences.getBoolean("HookNetClass_HookLocalSocketAddress", true);
-            HookLinkProperties = sharedPreferences.getBoolean("HookNetClass_HookLinkProperties", true);
-            HookLinkAddress = sharedPreferences.getBoolean("HookNetClass_HookLinkAddress", true);
-            HookIpSecTransform = sharedPreferences.getBoolean("HookNetClass_HookIpSecTransform", true);
-            HookIpPrefix = sharedPreferences.getBoolean("HookNetClass_HookIpPrefix", true);
-            HookIkev2VpnProfile = sharedPreferences.getBoolean("HookNetClass_HookIkev2VpnProfile", true);
-            HookConnectivityDiagnosticsManager = sharedPreferences.getBoolean("HookNetClass_HookConnectivityDiagnosticsManager", true);
-            HookCaptivePortal = sharedPreferences.getBoolean("HookNetClass_HookCaptivePortal", true);
-            HookUri = sharedPreferences.getBoolean("HookNetClass_HookUri", true);
-            HookDnsResolver = sharedPreferences.getBoolean("HookNetClass_HookDnsResolver", false);
-            HookDhcpInfo = sharedPreferences.getBoolean("HookNetClass_HookDhcpInfo", false);
-        }
-        InetAddress emptyInetAddress = null;
-        RouteInfo emptyRouteInfo = null;
-        ProxyInfo proxyInfo = null;
-        IpPrefix ipPrefix = null;
-        Network fakeNetwork = null;
-        try {
-
-            Constructor<?> InetAddressConstructor = XposedHelpers.findConstructorExact(
-                    InetAddress.class.getName(),
-                    lpparam.classLoader);
-            emptyInetAddress = (InetAddress) InetAddressConstructor.newInstance();
-            proxyInfo = ProxyInfo.buildDirectProxy(getRandomString(20),Integer.MIN_VALUE);
-//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-//                ipPrefix = new IpPrefix(emptyInetAddress, 127);
-//            }
-        } catch (Exception e) {
-            LoggerLog(e);
-        }
-
-
-        if (HookNet){
-            HookWifiClass.DoHook(lpparam,procHead,sharedPreferences);//working here
-            if (HookCaptivePortal){
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            android.net.CaptivePortal.class.getName(),
-                            lpparam.classLoader,
-                            "describeContents",
-                            new XC_MethodReplacement(114514) {
-                                @Override
-                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                    return 0;
-                                }
-                            }
-                    );
-                } catch (Exception e) {
-                    LoggerLog(e);
-                }
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            android.net.CaptivePortal.class.getName(),
-                            lpparam.classLoader,
-                            "ignoreNetwork",
-                            new XC_MethodReplacement(114514) {
-                                @Override
-                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                    return null;
-                                }
-                            }
-                    );
-                } catch (Exception e) {
-                    LoggerLog(e);
-                }
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            android.net.CaptivePortal.class.getName(),
-                            lpparam.classLoader,
-                            "reportCaptivePortalDismissed",
-                            new XC_MethodReplacement(114514) {
-                                @Override
-                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                    return null;
-                                }
-                            }
-                    );
-                } catch (Exception e) {
-                    LoggerLog(e);
-                }
+        
+        public static Intent VPNEstablishIntent =
+                new Intent().
+                        setClassName("com.android.vpndialogs","com.android.vpndialogs.ConfirmDialog");
+        public static String NetworkReq2Str =
+                "[ NONE id=0, " +
+                        "[ Transports: CELLULAR " +
+                        "Capabilities: NOT_METERED" +
+                        "&INTERNET" +
+                        "&NOT_RESTRICTED&TRUSTED" +
+                        "&NOT_VPN&VALIDATED" +
+                        "&NOT_ROAMING" +
+                        "&FOREGROUND" +
+                        "&NOT_CONGESTED" +
+                        "&NOT_SUSPENDED" +
+                        "&NOT_VCN_MANAGED " +
+                        "LinkUpBandwidth>=1145141919810Kbps " +
+                        "LinkDnBandwidth>=1145141919810Kbps " +
+                        "TransportInfo: <114514> " +
+                        "SignalStrength: -1145141919810]";
+        public static String NetworkCap2Str =
+                "[ Transports: CELLULAR " +
+                        "Capabilities: " +
+                        "NOT_METERED&INTERNET" +
+                        "&NOT_RESTRICTED" +
+                        "&TRUSTED" +
+                        "&NOT_VPN" +
+                        "&VALIDATED" +
+                        "&NOT_ROAMING&FOREGROUND" +
+                        "&NOT_CONGESTED" +
+                        "&NOT_SUSPENDED" +
+                        "&NOT_VCN_MANAGED " +
+                        "LinkUpBandwidth>=1145141919810Kbps " +
+                        "LinkDnBandwidth>=1145141919810Kbps " +
+                        "TransportInfo: <114514> " +
+                        "SignalStrength: -1145141919810]";
+        public static String NetworkInfo2Str = "" +
+                "[type: MOBILE[LTE], " +
+                "state: CONNECTED/CONNECTED, " +
+                "reason: (unspecified), " +
+                "extra: , " +
+                "failover: false, " +
+                "available: true, " +
+                "roaming: false]";
+        public static int[] intArray114514 = new int[]{1,1,4,5,1,4};
+        public static int[] EnterpriseIds = new int[]{1,2,3,4,5};
+        public static int[] netCapIntArray = new int[]{
+                0,1,2,3,4,
+                5,6,7,8,9,
+                10,11,12,13,14,
+                15,16,
+        //            17,
+                18,19,20,
+        //            21,
+                23,
+        //            25,29,32,
+                33,34,35
+        };
+        public static int[] transportTypes = new int[]{TRANSPORT_CELLULAR};
+        public static SocketFactory defaultSocketFactory = SocketFactory.getDefault();
+        public static InetAddress[] inetAddresses = new InetAddress[0];
+        public static byte[] byteArray114514 = new byte[]{1,1,4,5,1,4};
+        public static String macAddr114514 = "01:01:04:05:01:04";
+        public static String macAddrOui114 = "01:01:04";
+        public static List<LinkAddress> emptyLinkAddressList = new ArrayList<>();
+        public static List<InetAddress> emptyInetAddressList = new ArrayList<>();
+        public static List<RouteInfo> emptyRouteInfoList = new ArrayList<>();
+        public static ProxyInfo fakeProxyInfo = ProxyInfo.buildDirectProxy("114514.1919810.jp",Integer.MAX_VALUE);
+        public static MacAddress macAddress114514 = MacAddress.fromBytes(byteArray114514);
+        
+        public static String LinkPropertiesStr = "{LinkAddresses: [ ] DnsAddresses: [ ] Domains: null MTU: 0 Routes: [ ]}";
+        public static String[] emptyStringArray = new String[0];
+        public static List<String> emptyStringList = new ArrayList<>();
+        
+        public static boolean HookNet = true;
+        public static boolean HookNetworkCapabilities = true;
+        public static boolean HookNetworkInfo = true;
+        public static boolean HookConnectivityManager = true;
+        public static boolean HookPlatformVpnProfile = true;
+        public static boolean HookVpnManager = true;
+        public static boolean HookInetAddress = true;
+        public static boolean HookVpnService = true;
+        public static boolean HookTelephonyNetworkSpecifier = true;
+        public static boolean HookRouteInfo = true;
+        public static boolean HookProxyInfo = true;
+        public static boolean HookProxy = true;
+        public static boolean HookNetworkRequest = true;
+        public static boolean HookNetwork = true;
+        public static boolean HookMacAddress = true;
+        public static boolean HookLocalSocketAddress = true;
+        public static boolean HookLinkProperties = true;
+        public static boolean HookLinkAddress = true;
+        public static boolean HookIpSecTransform = true;
+        public static boolean HookIpPrefix = true;
+        public static boolean HookIkev2VpnProfile = true;
+        public static boolean HookConnectivityDiagnosticsManager = true;
+        public static boolean HookCaptivePortal = true;
+        public static boolean HookUri = true;
+        public static boolean HookDnsResolver = false;
+        public static boolean HookDhcpInfo = false;
+        public static ProxyInfo proxyInfo = null;
+        public static void DoHook(XC_LoadPackage.LoadPackageParam lpparam, String procHead, SharedPreferences sharedPreferences){
+            Class<?> hookClass;
+            {
+                HookNet = sharedPreferences.getBoolean("HookNetClass_HookNet", true);
+                HookNetworkCapabilities = sharedPreferences.getBoolean("HookNetClass_HookNetworkCapabilities", true);
+                HookNetworkInfo = sharedPreferences.getBoolean("HookNetClass_HookNetworkInfo", true);
+                HookConnectivityManager = sharedPreferences.getBoolean("HookNetClass_HookConnectivityManager", true);
+                HookPlatformVpnProfile = sharedPreferences.getBoolean("HookNetClass_HookPlatformVpnProfile", true);
+                HookVpnManager = sharedPreferences.getBoolean("HookNetClass_HookVpnManager", true);
+                HookInetAddress = sharedPreferences.getBoolean("HookNetClass_HookInetAddress", true);
+                HookVpnService = sharedPreferences.getBoolean("HookNetClass_HookVpnService", true);
+                HookTelephonyNetworkSpecifier = sharedPreferences.getBoolean("HookNetClass_HookTelephonyNetworkSpecifier", true);
+                HookRouteInfo = sharedPreferences.getBoolean("HookNetClass_HookRouteInfo", true);
+                HookProxyInfo = sharedPreferences.getBoolean("HookNetClass_HookProxyInfo", true);
+                HookProxy = sharedPreferences.getBoolean("HookNetClass_HookProxy", true);
+                HookNetworkRequest = sharedPreferences.getBoolean("HookNetClass_HookNetworkRequest", true);
+                HookNetwork = sharedPreferences.getBoolean("HookNetClass_HookNetwork", true);
+                HookMacAddress = sharedPreferences.getBoolean("HookNetClass_HookMacAddress", true);
+                HookLocalSocketAddress = sharedPreferences.getBoolean("HookNetClass_HookLocalSocketAddress", true);
+                HookLinkProperties = sharedPreferences.getBoolean("HookNetClass_HookLinkProperties", true);
+                HookLinkAddress = sharedPreferences.getBoolean("HookNetClass_HookLinkAddress", true);
+                HookIpSecTransform = sharedPreferences.getBoolean("HookNetClass_HookIpSecTransform", true);
+                HookIpPrefix = sharedPreferences.getBoolean("HookNetClass_HookIpPrefix", true);
+                HookIkev2VpnProfile = sharedPreferences.getBoolean("HookNetClass_HookIkev2VpnProfile", true);
+                HookConnectivityDiagnosticsManager = sharedPreferences.getBoolean("HookNetClass_HookConnectivityDiagnosticsManager", true);
+                HookCaptivePortal = sharedPreferences.getBoolean("HookNetClass_HookCaptivePortal", true);
+                HookUri = sharedPreferences.getBoolean("HookNetClass_HookUri", true);
+                HookDnsResolver = sharedPreferences.getBoolean("HookNetClass_HookDnsResolver", false);
+                HookDhcpInfo = sharedPreferences.getBoolean("HookNetClass_HookDhcpInfo", false);
             }
-            if (HookConnectivityDiagnosticsManager){
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R){
-                    LinkProperties linkProperties = new LinkProperties();
-                    NetworkCapabilities networkCapabilities = new NetworkCapabilities();
-                    try {
-                        XposedHelpers.findAndHookMethod(
-                                ConnectivityDiagnosticsManager.DataStallReport.class.getName(),
-                                lpparam.classLoader,
-                                "getDetectionMethod",
-                                new XC_MethodReplacement(114514) {
-                                    @Override
-                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                        return DETECTION_METHOD_DNS_EVENTS;
-                                    }
-                                }
-                        );
-                    } catch (Exception e) {
-                        LoggerLog(e);
-                    }
-                    try {
-                        XposedHelpers.findAndHookMethod(
-                                ConnectivityDiagnosticsManager.DataStallReport.class.getName(),
-                                lpparam.classLoader,
-                                "equals",
-                                Object.class,
-                                new XC_MethodReplacement(114514) {
-                                    @Override
-                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                        return false;
-                                    }
-                                }
-                        );
-                    } catch (Exception e) {
-                        LoggerLog(e);
-                    }
-                    try {
-                        XposedHelpers.findAndHookMethod(
-                                ConnectivityDiagnosticsManager.DataStallReport.class.getName(),
-                                lpparam.classLoader,
-                                "hashCode",
-                                new XC_MethodReplacement(114514) {
-                                    @Override
-                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                        return Integer.MIN_VALUE;
-                                    }
-                                }
-                        );
-                    } catch (Exception e) {
-                        LoggerLog(e);
-                    }
-                    try {
-                        XposedHelpers.findAndHookMethod(
-                                ConnectivityDiagnosticsManager.DataStallReport.class.getName(),
-                                lpparam.classLoader,
-                                "describeContents",
-                                new XC_MethodReplacement(114514) {
-                                    @Override
-                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                        return 0;
-                                    }
-                                }
-                        );
-                    } catch (Exception e) {
-                        LoggerLog(e);
-                    }
-                    try {
-                        XposedHelpers.findAndHookMethod(
-                                ConnectivityDiagnosticsManager.DataStallReport.class.getName(),
-                                lpparam.classLoader,
-                                "getNetwork",
-                                new XC_MethodReplacement(114514) {
-                                    @Override
-                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                        return fakeNetwork;
-                                    }
-                                }
-                        );
-                    } catch (Exception e) {
-                        LoggerLog(e);
-                    }
-                    try {
-                        XposedHelpers.findAndHookMethod(
-                                ConnectivityDiagnosticsManager.DataStallReport.class.getName(),
-                                lpparam.classLoader,
-                                "getReportTimestamp",
-                                new XC_MethodReplacement(114514) {
-                                    @Override
-                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                        return 1L;
-                                    }
-                                }
-                        );
-                    } catch (Exception e) {
-                        LoggerLog(e);
-                    }
-                    try {
-                        XposedHelpers.findAndHookMethod(
-                                ConnectivityDiagnosticsManager.DataStallReport.class.getName(),
-                                lpparam.classLoader,
-                                "getLinkProperties",
-                                new XC_MethodReplacement(114514) {
-                                    @Override
-                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                        return linkProperties;
-                                    }
-                                }
-                        );
-                    } catch (Exception e) {
-                        LoggerLog(e);
-                    }
-                    try {
-                        XposedHelpers.findAndHookMethod(
-                                ConnectivityDiagnosticsManager.DataStallReport.class.getName(),
-                                lpparam.classLoader,
-                                "getNetworkCapabilities",
-                                new XC_MethodReplacement(114514) {
-                                    @Override
-                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                        return networkCapabilities;
-                                    }
-                                }
-                        );
-                    } catch (Exception e) {
-                        LoggerLog(e);
-                    }
-                    try {
-                        XposedHelpers.findAndHookMethod(
-                                ConnectivityDiagnosticsManager.DataStallReport.class.getName(),
-                                lpparam.classLoader,
-                                "getStallDetails",
-                                new XC_MethodReplacement(114514) {
-                                    @Override
-                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                        return PersistableBundle.EMPTY;
-                                    }
-                                }
-                        );
-                    } catch (Exception e) {
-                        LoggerLog(e);
-                    }
-
-                    try {
-                        XposedHelpers.findAndHookMethod(
-                                ConnectivityDiagnosticsManager.ConnectivityReport.class.getName(),
-                                lpparam.classLoader,
-                                "equals",
-                                Object.class,
-                                new XC_MethodReplacement(114514) {
-                                    @Override
-                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                        return false;
-                                    }
-                                }
-                        );
-                    } catch (Exception e) {
-                        LoggerLog(e);
-                    }
-                    try {
-                        XposedHelpers.findAndHookMethod(
-                                ConnectivityDiagnosticsManager.ConnectivityReport.class.getName(),
-                                lpparam.classLoader,
-                                "hashCode",
-                                new XC_MethodReplacement(114514) {
-                                    @Override
-                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                        return Integer.MIN_VALUE;
-                                    }
-                                }
-                        );
-                    } catch (Exception e) {
-                        LoggerLog(e);
-                    }
-                    try {
-                        XposedHelpers.findAndHookMethod(
-                                ConnectivityDiagnosticsManager.ConnectivityReport.class.getName(),
-                                lpparam.classLoader,
-                                "describeContents",
-                                new XC_MethodReplacement(114514) {
-                                    @Override
-                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                        return 0;
-                                    }
-                                }
-                        );
-                    } catch (Exception e) {
-                        LoggerLog(e);
-                    }
-                    try {
-                        XposedHelpers.findAndHookMethod(
-                                ConnectivityDiagnosticsManager.ConnectivityReport.class.getName(),
-                                lpparam.classLoader,
-                                "getNetwork",
-                                new XC_MethodReplacement(114514) {
-                                    @Override
-                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                        return fakeNetwork;
-                                    }
-                                }
-                        );
-                    } catch (Exception e) {
-                        LoggerLog(e);
-                    }
-                    try {
-                        XposedHelpers.findAndHookMethod(
-                                ConnectivityDiagnosticsManager.ConnectivityReport.class.getName(),
-                                lpparam.classLoader,
-                                "getReportTimestamp",
-                                new XC_MethodReplacement(114514) {
-                                    @Override
-                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                        return 1L;
-                                    }
-                                }
-                        );
-                    } catch (Exception e) {
-                        LoggerLog(e);
-                    }
-                    try {
-                        XposedHelpers.findAndHookMethod(
-                                ConnectivityDiagnosticsManager.ConnectivityReport.class.getName(),
-                                lpparam.classLoader,
-                                "getLinkProperties",
-                                new XC_MethodReplacement(114514) {
-                                    @Override
-                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                        return linkProperties;
-                                    }
-                                }
-                        );
-                    } catch (Exception e) {
-                        LoggerLog(e);
-                    }
-                    try {
-                        XposedHelpers.findAndHookMethod(
-                                ConnectivityDiagnosticsManager.ConnectivityReport.class.getName(),
-                                lpparam.classLoader,
-                                "getNetworkCapabilities",
-                                new XC_MethodReplacement(114514) {
-                                    @Override
-                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                        return networkCapabilities;
-                                    }
-                                }
-                        );
-                    } catch (Exception e) {
-                        LoggerLog(e);
-                    }
-                    try {
-                        XposedHelpers.findAndHookMethod(
-                                ConnectivityDiagnosticsManager.ConnectivityReport.class.getName(),
-                                lpparam.classLoader,
-                                "getAdditionalInfo",
-                                new XC_MethodReplacement(114514) {
-                                    @Override
-                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                        return PersistableBundle.EMPTY;
-                                    }
-                                }
-                        );
-                    } catch (Exception e) {
-                        LoggerLog(e);
-                    }
-                }
-            }
-            if (HookConnectivityManager){
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            ConnectivityManager.class.getName(),
-                            lpparam.classLoader,
-                            "isNetworkTypeValid",
-                            int.class,
-                            new XC_MethodReplacement(114514) {
-                                @Override
-                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                    int type = (int) param.args[0];
-                                    switch(type){
-                                        case ConnectivityManager.TYPE_WIMAX:
-                                        case ConnectivityManager.TYPE_ETHERNET:
-                                        case ConnectivityManager.TYPE_BLUETOOTH:
-                                        case ConnectivityManager.TYPE_DUMMY:
-                                        case ConnectivityManager.TYPE_VPN:
-                                            return false;
-                                        default:return true;
-                                    }
-                                }
-                            }
-                    );
-                } catch (Exception e) {
-                    LoggerLog(e);
-                }
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            ConnectivityManager.class.getName(),
-                            lpparam.classLoader,
-                            "getNetworkPreference",
-                            new XC_MethodReplacement(114514) {
-                                @Override
-                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                    return 1;
-                                }
-                            }
-                    );
-                } catch (Exception e) {
-                    LoggerLog(e);
-                }
-
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-//                    ProxyInfo proxyInfo = new ProxyInfo(null);
-                    LinkProperties linkProperties = new LinkProperties();
-                    NetworkCapabilities networkCapabilities = new NetworkCapabilities();
-                    NetworkInfo networkInfo =
-                            new NetworkInfo(
-                                    ConnectivityManager.TYPE_MOBILE,
-                                    TelephonyManager.NETWORK_TYPE_LTE,
-                                    "MOBILE",
-                                    "LTE");
-                    NetworkInfo[] allNetworkInfo = new NetworkInfo[]{networkInfo};
-                    try {
-                        XposedHelpers.findAndHookMethod(
-                                ConnectivityManager.class.getName(),
-                                lpparam.classLoader,
-                                "getActiveNetworkInfo",
-                                new XC_MethodReplacement(114514) {
-                                    @Override
-                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                        return networkInfo;
-                                    }
-                                }
-                        );
-                    } catch (Exception e) {
-                        LoggerLog(e);
-                    }
-                    try {
-                        XposedBridge.hookAllMethods(
-                                ConnectivityManager.class,
-                                "getNetworkInfo",
-                                new XC_MethodReplacement(114514) {
-                                    @Override
-                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                        return networkInfo;
-                                    }
-                                }
-                        );
-                    } catch (Exception e) {
-                        LoggerLog(e);
-                    }
-                    try {
-                        XposedHelpers.findAndHookMethod(
-                                ConnectivityManager.class.getName(),
-                                lpparam.classLoader,
-                                "getAllNetworkInfo",
-                                new XC_MethodReplacement(114514) {
-                                    @Override
-                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                        return allNetworkInfo;
-                                    }
-                                }
-                        );
-                    } catch (Exception e) {
-                        LoggerLog(e);
-                    }
-                    try {
-                        XposedHelpers.findAndHookMethod(
-                                ConnectivityManager.class.getName(),
-                                lpparam.classLoader,
-                                "getLinkProperties",
-                                Network.class,
-                                new XC_MethodReplacement(114514) {
-                                    @Override
-                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                        return linkProperties;
-                                    }
-                                }
-                        );
-                    } catch (Exception e) {
-                        LoggerLog(e);
-                    }
-                    try {
-                        XposedHelpers.findAndHookMethod(
-                                ConnectivityManager.class.getName(),
-                                lpparam.classLoader,
-                                "getNetworkCapabilities",
-                                Network.class,
-                                new XC_MethodReplacement(114514) {
-                                    @Override
-                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                        return networkCapabilities;
-                                    }
-                                }
-                        );
-                    } catch (Exception e) {
-                        LoggerLog(e);
-                    }
-                    try {
-                        XposedHelpers.findAndHookMethod(
-                                ConnectivityManager.class.getName(),
-                                lpparam.classLoader,
-                                "getBackgroundDataSetting",
-                                new XC_MethodReplacement(114514) {
-                                    @Override
-                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                        return true;
-                                    }
-                                }
-                        );
-                    } catch (Exception e) {
-                        LoggerLog(e);
-                    }
-                    try {
-                        XposedHelpers.findAndHookMethod(
-                                ConnectivityManager.class.getName(),
-                                lpparam.classLoader,
-                                "addDefaultNetworkActiveListener",
-                                ConnectivityManager.OnNetworkActiveListener.class,
-                                new XC_MethodReplacement(114514) {
-                                    @Override
-                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                        return null;
-                                    }
-                                }
-                        );
-                    } catch (Exception e) {
-                        LoggerLog(e);
-                    }
-                    try {
-                        XposedHelpers.findAndHookMethod(
-                                ConnectivityManager.class.getName(),
-                                lpparam.classLoader,
-                                "removeDefaultNetworkActiveListener",
-                                ConnectivityManager.OnNetworkActiveListener.class,
-                                new XC_MethodReplacement(114514) {
-                                    @Override
-                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                        return null;
-                                    }
-                                }
-                        );
-                    } catch (Exception e) {
-                        LoggerLog(e);
-                    }
-                    try {
-                        XposedHelpers.findAndHookMethod(
-                                ConnectivityManager.class.getName(),
-                                lpparam.classLoader,
-                                "isDefaultNetworkActive",
-                                new XC_MethodReplacement(114514) {
-                                    @Override
-                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                        return true;
-                                    }
-                                }
-                        );
-                    } catch (Exception e) {
-                        LoggerLog(e);
-                    }
-                    try {
-                        XposedHelpers.findAndHookMethod(
-                                ConnectivityManager.class.getName(),
-                                lpparam.classLoader,
-                                "getDefaultProxy",
-//                                new XC_MethodHook(114514) {
-//                                    @Override
-//                                    protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-////                                        super.afterHookedMethod(param);
-//                                        LoggerLog(param.getResult().toString());
-//                                    }
-//                                }
-                                new XC_MethodReplacement(114514) {
-                                    @Override
-                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-//                                        return finalProxyInfo;
-                                        return null;
-                                    }
-                                }
-                        );
-                    } catch (Exception e) {
-                        LoggerLog(e);
-                    }
-                }
-//                getActiveNetwork()
-//                getAllNetworks()//Hook Network
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            ConnectivityManager.class.getName(),
-                            lpparam.classLoader,
-                            "getNetworkWatchlistConfigHash",
-                            new XC_MethodReplacement(114514) {
-                                @Override
-                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                    return null;
-                                }
-                            }
-                    );
-                } catch (Exception e) {
-                    LoggerLog(e);
-                }
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            ConnectivityManager.class.getName(),
-                            lpparam.classLoader,
-                            "getConnectionOwnerUid",
-                            int.class, InetSocketAddress.class,InetSocketAddress.class,
-                            new XC_MethodReplacement(114514) {
-                                @Override
-                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                    return Integer.MAX_VALUE;
-                                }
-                            }
-                    );
-                } catch (Exception e) {
-                    LoggerLog(e);
-                }
-
-            }//maybe not finished
-            //Credentials
-            //DhcpInfo
-            //DnsResolver
-            //EthernetNetworkSpecifier
-            if (HookIkev2VpnProfile){
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R){
-                    try {
-                        XposedHelpers.findAndHookMethod(
-                                android.net.Ikev2VpnProfile.class.getName(),
-                                lpparam.classLoader,
-                                "getServerAddr",
-                                new XC_MethodReplacement(114514) {
-                                    @Override
-                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                        return "1.1.4.5.1.4.19.19.81.0";
-                                    }
-                                }
-                        );
-                    } catch (Exception e) {
-                        LoggerLog(e);
-                    }
-                    try {
-                        XposedHelpers.findAndHookMethod(
-                                android.net.Ikev2VpnProfile.class.getName(),
-                                lpparam.classLoader,
-                                "getUserIdentity",
-                                new XC_MethodReplacement(114514) {
-                                    @Override
-                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                        return "1.1.4.5.1.4.19.19.81.0";
-                                    }
-                                }
-                        );
-                    } catch (Exception e) {
-                        LoggerLog(e);
-                    }
-                    try {
-                        XposedHelpers.findAndHookMethod(
-                                android.net.Ikev2VpnProfile.class.getName(),
-                                lpparam.classLoader,
-                                "getPresharedKey",
-                                new XC_MethodReplacement(114514) {
-                                    @Override
-                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                        return byteArray114514;
-                                    }
-                                }
-                        );
-                    } catch (Exception e) {
-                        LoggerLog(e);
-                    }
-                    try {
-                        XposedHelpers.findAndHookMethod(
-                                android.net.Ikev2VpnProfile.class.getName(),
-                                lpparam.classLoader,
-                                "getServerRootCaCert",
-                                new XC_MethodReplacement(114514) {
-                                    @Override
-                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                        return null;
-                                    }
-                                }
-                        );
-                    } catch (Exception e) {
-                        LoggerLog(e);
-                    }
-                    try {
-                        XposedHelpers.findAndHookMethod(
-                                android.net.Ikev2VpnProfile.class.getName(),
-                                lpparam.classLoader,
-                                "getUsername",
-                                new XC_MethodReplacement(114514) {
-                                    @Override
-                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                        return getRandomString(20);
-                                    }
-                                }
-                        );
-                    } catch (Exception e) {
-                        LoggerLog(e);
-                    }
-                    try {
-                        XposedHelpers.findAndHookMethod(
-                                android.net.Ikev2VpnProfile.class.getName(),
-                                lpparam.classLoader,
-                                "getPassword",
-                                new XC_MethodReplacement(114514) {
-                                    @Override
-                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                        return getRandomString(20);
-                                    }
-                                }
-                        );
-                    } catch (Exception e) {
-                        LoggerLog(e);
-                    }
-                    try {
-                        XposedHelpers.findAndHookMethod(
-                                android.net.Ikev2VpnProfile.class.getName(),
-                                lpparam.classLoader,
-                                "getRsaPrivateKey",
-                                new XC_MethodReplacement(114514) {
-                                    @Override
-                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                        return null;
-                                    }
-                                }
-                        );
-                    } catch (Exception e) {
-                        LoggerLog(e);
-                    }
-                    try {
-                        XposedHelpers.findAndHookMethod(
-                                android.net.Ikev2VpnProfile.class.getName(),
-                                lpparam.classLoader,
-                                "getUserCert",
-                                new XC_MethodReplacement(114514) {
-                                    @Override
-                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                        return null;
-                                    }
-                                }
-                        );
-                    } catch (Exception e) {
-                        LoggerLog(e);
-                    }
-                    try {
-                        XposedHelpers.findAndHookMethod(
-                                android.net.Ikev2VpnProfile.class.getName(),
-                                lpparam.classLoader,
-                                "getProxyInfo",
-                                new XC_MethodReplacement(114514) {
-                                    @Override
-                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                        return null;
-                                    }
-                                }
-                        );
-                    } catch (Exception e) {
-                        LoggerLog(e);
-                    }
-                    try {
-                        XposedHelpers.findAndHookMethod(
-                                android.net.Ikev2VpnProfile.class.getName(),
-                                lpparam.classLoader,
-                                "getAllowedAlgorithms",
-                                new XC_MethodReplacement(114514) {
-                                    @Override
-                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                        return emptyStringList;
-                                    }
-                                }
-                        );
-                    } catch (Exception e) {
-                        LoggerLog(e);
-                    }
-                    try {
-                        XposedHelpers.findAndHookMethod(
-                                android.net.Ikev2VpnProfile.class.getName(),
-                                lpparam.classLoader,
-                                "isBypassable",
-                                new XC_MethodReplacement(114514) {
-                                    @Override
-                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                        return DeviceAddressTweaker.random.nextBoolean();
-                                    }
-                                }
-                        );
-                    } catch (Exception e) {
-                        LoggerLog(e);
-                    }
-                    try {
-                        XposedHelpers.findAndHookMethod(
-                                android.net.Ikev2VpnProfile.class.getName(),
-                                lpparam.classLoader,
-                                "isMetered",
-                                new XC_MethodReplacement(114514) {
-                                    @Override
-                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                        return DeviceAddressTweaker.random.nextBoolean();
-                                    }
-                                }
-                        );
-                    } catch (Exception e) {
-                        LoggerLog(e);
-                    }
-                    try {
-                        XposedHelpers.findAndHookMethod(
-                                android.net.Ikev2VpnProfile.class.getName(),
-                                lpparam.classLoader,
-                                "getMaxMtu",
-                                new XC_MethodReplacement(114514) {
-                                    @Override
-                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                        return 0;
-                                    }
-                                }
-                        );
-                    } catch (Exception e) {
-                        LoggerLog(e);
-                    }
-//                    try {
-//                        XposedHelpers.findAndHookMethod(
-//                                android.net.Ikev2VpnProfile.class.getName(),
-//                                lpparam.classLoader,
-//                                "getIkeTunnelConnectionParams",
-//                                new XC_MethodReplacement(114514) {
-//                                    @Override
-//                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-//                                        return null;
-//                                    }
-//                                }
-//                        );
-//                    } catch (Exception e) {
-//                        LoggerLog(e);
-//                    }
-                    try {
-                        XposedHelpers.findAndHookMethod(
-                                android.net.Ikev2VpnProfile.class.getName(),
-                                lpparam.classLoader,
-                                "hashCode",
-                                new XC_MethodReplacement(114514) {
-                                    @Override
-                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                        return Integer.MIN_VALUE;
-                                    }
-                                }
-                        );
-                    } catch (Exception e) {
-                        LoggerLog(e);
-                    }
-                    try {
-                        XposedHelpers.findAndHookMethod(
-                                android.net.Ikev2VpnProfile.class.getName(),
-                                lpparam.classLoader,
-                                "equals",
-                                Object.class,
-                                new XC_MethodReplacement(114514) {
-                                    @Override
-                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                        return false;
-                                    }
-                                }
-                        );
-                    } catch (Exception e) {
-                        LoggerLog(e);
-                    }
-                    try {
-                        XposedHelpers.findAndHookMethod(
-                                android.net.Ikev2VpnProfile.class.getName(),
-                                lpparam.classLoader,
-                                "certificateFromPemString",
-                                String.class,
-                                new XC_MethodReplacement(114514) {
-                                    @Override
-                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                        return null;
-                                    }
-                                }
-                        );
-                    } catch (Exception e) {
-                        LoggerLog(e);
-                    }
-                    //Builder
-                }
-            }
-            //IpConfiguration
-            if (HookIpPrefix){
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            IpPrefix.class.getName(),
-                            lpparam.classLoader,
-                            "equals",
-                            Object.class,
-                            new XC_MethodReplacement(114514) {
-                                @Override
-                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                    return false;
-                                }
-                            }
-                    );
-                } catch (Exception e) {
-                    LoggerLog(e);
-                }
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            IpPrefix.class.getName(),
-                            lpparam.classLoader,
-                            "hashCode",
-                            new XC_MethodReplacement(114514) {
-                                @Override
-                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                    return Integer.MIN_VALUE;
-                                }
-                            }
-                    );
-                } catch (Exception e) {
-                    LoggerLog(e);
-                }
-                try {
-                    InetAddress finalEmptyInetAddress = emptyInetAddress;
-                    XposedHelpers.findAndHookMethod(
-                            IpPrefix.class.getName(),
-                            lpparam.classLoader,
-                            "getAddress",
-                            new XC_MethodReplacement(114514) {
-                                @Override
-                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                    return finalEmptyInetAddress;
-                                }
-                            }
-                    );
-                } catch (Exception e) {
-                    LoggerLog(e);
-                }
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            IpPrefix.class.getName(),
-                            lpparam.classLoader,
-                            "getRawAddress",
-                            new XC_MethodReplacement(114514) {
-                                @Override
-                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                    return byteArray114514;
-                                }
-                            }
-                    );
-                } catch (Exception e) {
-                    LoggerLog(e);
-                }
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            IpPrefix.class.getName(),
-                            lpparam.classLoader,
-                            "getPrefixLength",
-                            new XC_MethodReplacement(114514) {
-                                @Override
-                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                    return 127;
-                                }
-                            }
-                    );
-                } catch (Exception e) {
-                    LoggerLog(e);
-                }
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            IpPrefix.class.getName(),
-                            lpparam.classLoader,
-                            "describeContents",
-                            new XC_MethodReplacement(114514) {
-                                @Override
-                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                    return 0;
-                                }
-                            }
-                    );
-                } catch (Exception e) {
-                    LoggerLog(e);
-                }
-                //toString:requires api33,but my phone is 32 and i dont want to use virtual env.
-            }
-            //IpSecAlgorithm
-            //IpSecManager
-            if (HookIpSecTransform){
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P){
-                    try {
-                        XposedHelpers.findAndHookMethod(
-                                IpSecTransform.class.getName(),
-                                lpparam.classLoader,
-                                "toString",
-                                new XC_MethodReplacement(114514) {
-                                    @Override
-                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                        return getRandomString(20);
-                                    }
-                                }
-                        );
-                    } catch (Exception e) {
-                        LoggerLog(e);
-                    }
-                    try {
-                        XposedHelpers.findAndHookMethod(
-                                IpSecTransform.class.getName(),
-                                lpparam.classLoader,
-                                "equals",
-                                Object.class,
-                                new XC_MethodReplacement(114514) {
-                                    @Override
-                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                        return false;
-                                    }
-                                }
-                        );
-                    } catch (Exception e) {
-                        LoggerLog(e);
-                    }
-                }
-            }
-            if (HookLinkAddress){
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            LinkAddress.class.getName(),
-                            lpparam.classLoader,
-                            "toString",
-                            new XC_MethodReplacement(114514) {
-                                @Override
-                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                    return "LinkAddresses: []";
-                                }
-                            }
-                    );
-                } catch (Exception e) {
-                    LoggerLog(e);
-                }
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            LinkAddress.class.getName(),
-                            lpparam.classLoader,
-                            "equals",
-                            Object.class,
-                            new XC_MethodReplacement(114514) {
-                                @Override
-                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                    return false;
-                                }
-                            }
-                    );
-                } catch (Exception e) {
-                    LoggerLog(e);
-                }
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            LinkAddress.class.getName(),
-                            lpparam.classLoader,
-                            "hashCode",
-                            new XC_MethodReplacement(114514) {
-                                @Override
-                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                    return Integer.MIN_VALUE;
-                                }
-                            }
-                    );
-                } catch (Exception e) {
-                    LoggerLog(e);
-                }
-                //getAddress
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            LinkAddress.class.getName(),
-                            lpparam.classLoader,
-                            "getFlags",
-                            new XC_MethodReplacement(114514) {
-                                @Override
-                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                    return 1;
-                                }
-                            }
-                    );
-                } catch (Exception e) {
-                    LoggerLog(e);
-                }
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            LinkAddress.class.getName(),
-                            lpparam.classLoader,
-                            "getScope",
-                            new XC_MethodReplacement(114514) {
-                                @Override
-                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                    return 1;
-                                }
-                            }
-                    );
-                } catch (Exception e) {
-                    LoggerLog(e);
-                }
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            LinkAddress.class.getName(),
-                            lpparam.classLoader,
-                            "describeContents",
-                            new XC_MethodReplacement(114514) {
-                                @Override
-                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                    return 0;
-                                }
-                            }
-                    );
-                } catch (Exception e) {
-                    LoggerLog(e);
-                }
-            }
-            if (HookLinkProperties){
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            LinkProperties.class.getName(),
-                            lpparam.classLoader,
-                            "getLinkAddresses",
-                            new XC_MethodReplacement(114514) {
-                                @Override
-                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                    return emptyLinkAddressList;
-                                }
-                            }
-                    );
-                } catch (Exception e) {
-                    LoggerLog(e);
-                }
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            LinkProperties.class.getName(),
-                            lpparam.classLoader,
-                            "setLinkAddresses",
-                            Collection.class,
-                            new XC_MethodReplacement(114514) {
-                                @Override
-                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                    return null;
-                                }
-                            }
-                    );
-                } catch (Exception e) {
-                    LoggerLog(e);
-                }
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            LinkProperties.class.getName(),
-                            lpparam.classLoader,
-                            "setDnsServers",
-                            Collection.class,
-                            new XC_MethodReplacement(114514) {
-                                @Override
-                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                    return null;
-                                }
-                            }
-                    );
-                } catch (Exception e) {
-                    LoggerLog(e);
-                }
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            LinkProperties.class.getName(),
-                            lpparam.classLoader,
-                            "getDnsServers",
-                            new XC_MethodReplacement(114514) {
-                                @Override
-                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                    return emptyInetAddressList;
-                                }
-                            }
-                    );
-                } catch (Exception e) {
-                    LoggerLog(e);
-                }
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            LinkProperties.class.getName(),
-                            lpparam.classLoader,
-                            "isPrivateDnsActive",
-                            new XC_MethodReplacement(114514) {
-                                @Override
-                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                    return true;
-                                }
-                            }
-                    );
-                } catch (Exception e) {
-                    LoggerLog(e);
-                }
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            LinkProperties.class.getName(),
-                            lpparam.classLoader,
-                            "setDhcpServerAddress",
-                            Inet4Address.class,
-                            new XC_MethodReplacement(114514) {
-                                @Override
-                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                    return null;
-                                }
-                            }
-                    );
-                } catch (Exception e) {
-                    LoggerLog(e);
-                }
-                //getDhcpServerAddress
-                //getPrivateDnsServerName
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            LinkProperties.class.getName(),
-                            lpparam.classLoader,
-                            "setDomains",
-                            String.class,
-                            new XC_MethodReplacement(114514) {
-                                @Override
-                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                    return null;
-                                }
-                            }
-                    );
-                } catch (Exception e) {
-                    LoggerLog(e);
-                }
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            LinkProperties.class.getName(),
-                            lpparam.classLoader,
-                            "getDomains",
-                            new XC_MethodReplacement(114514) {
-                                @Override
-                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                    return getRandomString(20);
-                                }
-                            }
-                    );
-                } catch (Exception e) {
-                    LoggerLog(e);
-                }
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            LinkProperties.class.getName(),
-                            lpparam.classLoader,
-                            "setMtu",
-                            int.class,
-                            new XC_MethodReplacement(114514) {
-                                @Override
-                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                    return null;
-                                }
-                            }
-                    );
-                } catch (Exception e) {
-                    LoggerLog(e);
-                }
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            LinkProperties.class.getName(),
-                            lpparam.classLoader,
-                            "getMtu",
-                            new XC_MethodReplacement(114514) {
-                                @Override
-                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                    return Integer.MIN_VALUE;
-                                }
-                            }
-                    );
-                } catch (Exception e) {
-                    LoggerLog(e);
-                }
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            LinkProperties.class.getName(),
-                            lpparam.classLoader,
-                            "getRoutes",
-                            new XC_MethodReplacement(114514) {
-                                @Override
-                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                    return emptyRouteInfoList;
-                                }
-                            }
-                    );
-                } catch (Exception e) {
-                    LoggerLog(e);
-                }
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            LinkProperties.class.getName(),
-                            lpparam.classLoader,
-                            "setHttpProxy",
-                            ProxyInfo.class,
-                            new XC_MethodReplacement(114514) {
-                                @Override
-                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                    return null;
-                                }
-                            }
-                    );
-                } catch (Exception e) {
-                    LoggerLog(e);
-                }
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            LinkProperties.class.getName(),
-                            lpparam.classLoader,
-                            "getHttpProxy",
-                            new XC_MethodReplacement(114514) {
-                                @Override
-                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                    return fakeProxyInfo;
-                                }
-                            }
-                    );
-                } catch (Exception e) {
-                    LoggerLog(e);
-                }
-                //getNat64Prefix
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            LinkProperties.class.getName(),
-                            lpparam.classLoader,
-                            "setNat64Prefix",
-                            IpPrefix.class,
-                            new XC_MethodReplacement(114514) {
-                                @Override
-                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                    return null;
-                                }
-                            }
-                    );
-                } catch (Exception e) {
-                    LoggerLog(e);
-                }
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            LinkProperties.class.getName(),
-                            lpparam.classLoader,
-                            "clear",
-                            new XC_MethodReplacement(114514) {
-                                @Override
-                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                    return null;
-                                }
-                            }
-                    );
-                } catch (Exception e) {
-                    LoggerLog(e);
-                }
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            LinkProperties.class.getName(),
-                            lpparam.classLoader,
-                            "describeContents",
-                            new XC_MethodReplacement(114514) {
-                                @Override
-                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                    return 0;
-                                }
-                            }
-                    );
-                } catch (Exception e) {
-                    LoggerLog(e);
-                }
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            LinkProperties.class.getName(),
-                            lpparam.classLoader,
-                            "toString",
-                            new XC_MethodReplacement(114514) {
-                                @Override
-                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                    return LinkPropertiesStr;
-                                }
-                            }
-                    );
-                } catch (Exception e) {
-                    LoggerLog(e);
-                }
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            LinkProperties.class.getName(),
-                            lpparam.classLoader,
-                            "equals",
-                            Object.class,
-                            new XC_MethodReplacement(114514) {
-                                @Override
-                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                    return false;
-                                }
-                            }
-                    );
-                } catch (Exception e) {
-                    LoggerLog(e);
-                }
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            LinkProperties.class.getName(),
-                            lpparam.classLoader,
-                            "isWakeOnLanSupported",
-                            new XC_MethodReplacement(114514) {
-                                @Override
-                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                    return false;
-                                }
-                            }
-                    );
-                } catch (Exception e) {
-                    LoggerLog(e);
-                }
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            LinkProperties.class.getName(),
-                            lpparam.classLoader,
-                            "hashCode",
-                            new XC_MethodReplacement(114514) {
-                                @Override
-                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                    return Integer.MIN_VALUE;
-                                }
-                            }
-                    );
-                } catch (Exception e) {
-                    LoggerLog(e);
-                }
-
-
-            }
-            //LocalServerSocket
-            //LocalSocket
-            if (HookLocalSocketAddress){
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            LocalSocketAddress.class.getName(),
-                            lpparam.classLoader,
-                            "getName",
-                            new XC_MethodReplacement(114514) {
-                                @Override
-                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                    return getRandomString(20);
-                                }
-                            }
-                    );
-                } catch (Exception e) {
-                    LoggerLog(e);
-                }
-//                try {
-//                    XposedHelpers.findAndHookMethod(
-//                            android.net.LocalSocketAddress.class.getName(),
-//                            lpparam.classLoader,
-//                            "getNamespace",
-//                            new XC_MethodReplacement(114514) {
-//                                @Override
-//                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-//                                    return FILESYSTEM;
-//                                }
-//                            }
-//                    );
-//                } catch (Exception e) {
-//                    LoggerLog(e);
-//                }
-            }
-            if (HookMacAddress) {
-
-                    try {
-                        XposedHelpers.findAndHookMethod(
-                                MacAddress.class.getName(),
-                                lpparam.classLoader,
-                                "getAddressType",
-                                new XC_MethodReplacement(114514) {
-                                    @Override
-                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                        return TYPE_BROADCAST;
-                                    }
-                                }
-                        );
-                    } catch (Exception e) {
-                        LoggerLog(e);
-                    }
-                    try {
-                        XposedHelpers.findAndHookMethod(
-                                MacAddress.class.getName(),
-                                lpparam.classLoader,
-                                "isLocallyAssigned",
-                                new XC_MethodReplacement(114514) {
-                                    @Override
-                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                        return true;
-                                    }
-                                }
-                        );
-                    } catch (Exception e) {
-                        LoggerLog(e);
-                    }
-                    try {
-                        XposedHelpers.findAndHookMethod(
-                                MacAddress.class.getName(),
-                                lpparam.classLoader,
-                                "toByteArray",
-                                new XC_MethodReplacement(114514) {
-                                    @Override
-                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                        return byteArray114514;
-                                    }
-                                }
-                        );
-                    } catch (Exception e) {
-                        LoggerLog(e);
-                    }
-                    try {
-                        XposedHelpers.findAndHookMethod(
-                                MacAddress.class.getName(),
-                                lpparam.classLoader,
-                                "toString",
-                                new XC_MethodReplacement(114514) {
-                                    @Override
-                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                        return macAddr114514;
-                                    }
-                                }
-                        );
-                    } catch (Exception e) {
-                        LoggerLog(e);
-                    }
-                    try {
-                        XposedHelpers.findAndHookMethod(
-                                MacAddress.class.getName(),
-                                lpparam.classLoader,
-                                "toOuiString",
-                                new XC_MethodReplacement(114514) {
-                                    @Override
-                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                        return macAddrOui114;
-                                    }
-                                }
-                        );
-                    } catch (Exception e) {
-                        LoggerLog(e);
-                    }
-                    try {
-                        XposedHelpers.findAndHookMethod(
-                                MacAddress.class.getName(),
-                                lpparam.classLoader,
-                                "hashCode",
-                                new XC_MethodReplacement(114514) {
-                                    @Override
-                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                        return Integer.MIN_VALUE;
-                                    }
-                                }
-                        );
-                    } catch (Exception e) {
-                        LoggerLog(e);
-                    }
-                    try {
-                        XposedHelpers.findAndHookMethod(
-                                MacAddress.class.getName(),
-                                lpparam.classLoader,
-                                "equals",
-                                Object.class,
-                                new XC_MethodReplacement(114514) {
-                                    @Override
-                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                        return false;
-                                    }
-                                }
-                        );
-                    } catch (Exception e) {
-                        LoggerLog(e);
-                    }
-                    try {
-                        XposedHelpers.findAndHookMethod(
-                                MacAddress.class.getName(),
-                                lpparam.classLoader,
-                                "describeContents",
-                                new XC_MethodReplacement(114514) {
-                                    @Override
-                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                        return 0;
-                                    }
-                                }
-                        );
-                    } catch (Exception e) {
-                        LoggerLog(e);
-                    }
-                    try {
-                        XposedHelpers.findAndHookMethod(
-                                MacAddress.class.getName(),
-                                lpparam.classLoader,
-                                "matches",
-                                MacAddress.class,MacAddress.class,
-                                new XC_MethodReplacement(114514) {
-                                    @Override
-                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                        return false;
-                                    }
-                                }
-                        );
-                    } catch (Exception e) {
-                        LoggerLog(e);
-                    }
-                    try {
-                        XposedHelpers.findAndHookMethod(
-                                MacAddress.class.getName(),
-                                lpparam.classLoader,
-                                "getLinkLocalIpv6FromEui48Mac",
-                                new XC_MethodReplacement(114514) {
-                                    @Override
-                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                        return null;
-                                    }
-                                }
-                        );
-                    } catch (Exception e) {
-                        LoggerLog(e);
-                    }
-
-
-            }
-            //MailTo
-            if (HookNetwork){
-                InetAddress finalEmptyInetAddress2 = emptyInetAddress;
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            Network.class.getName(),
-                            lpparam.classLoader,
-                            "getAllByName",
-                            String.class,
-                            new XC_MethodReplacement(114514) {
-                                @Override
-                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                    return inetAddresses;
-                                }
-                            }
-                    );
-                } catch (Exception e) {
-                    LoggerLog(e);
-                }
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            Network.class.getName(),
-                            lpparam.classLoader,
-                            "getByName",
-                            String.class,
-                            new XC_MethodReplacement(114514) {
-                                @Override
-                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                    return finalEmptyInetAddress2;
-                                }
-                            }
-                    );
-                } catch (Exception e) {
-                    LoggerLog(e);
-                }
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            Network.class.getName(),
-                            lpparam.classLoader,
-                            "getSocketFactory",
-                            new XC_MethodReplacement(114514) {
-                                @Override
-                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                    return defaultSocketFactory;
-                                }
-                            }
-                    );
-                } catch (Exception e) {
-                    LoggerLog(e);
-                }
-                //openConnection
-                //bindSocket
-                //fromNetworkHandle
-                //getNetworkHandle
-                //...
-            }
-            if (HookNetworkCapabilities){
-//                try {
-//                    XposedHelpers.findAndHookMethod(
-//                            android.net.NetworkCapabilities.class.getName(),
-//                            lpparam.classLoader,
-//                            "getEnterpriseIds",
-//                            new XC_MethodReplacement(114514) {
-//                                @Override
-//                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-//                                    return EnterpriseIds;
-//                                }
-//                            }
-//                    );
-//                } catch (Exception e) {
-//                    LoggerLog(e);
-//                }
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            NetworkCapabilities.class.getName(),
-                            lpparam.classLoader,
-                            "getCapabilities",
-                            new XC_MethodReplacement(114514) {
-                                @Override
-                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                    return netCapIntArray;
-                                }
-                            }
-                    );
-                } catch (Exception e) {
-                    LoggerLog(e);
-                }
-//                try {
-//                    XposedHelpers.findAndHookMethod(
-//                            android.net.NetworkCapabilities.class.getName(),
-//                            lpparam.classLoader,
-//                            "hasEnterpriseId",
-//                            int.class,
-//                            new XC_MethodReplacement(114514) {
-//                                @Override
-//                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-//                                    return true;
-//                                }
-//                            }
-//                    );
-//                } catch (Exception e) {
-//                    LoggerLog(e);
-//                }
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            NetworkCapabilities.class.getName(),
-                            lpparam.classLoader,
-                            "hasCapability",
-                            int.class,
-                            new XC_MethodReplacement(114514) {
-                                @Override
-                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                    return true;
-                                }
-                            }
-                    );
-                } catch (Exception e) {
-                    LoggerLog(e);
-                }
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            NetworkCapabilities.class.getName(),
-                            lpparam.classLoader,
-                            "hasTransport",
-                            int.class,
-                            new XC_MethodReplacement(114514) {
-                                @Override
-                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                    switch((int) param.args[0]){
-                                        case TRANSPORT_ETHERNET:
-                                        case TRANSPORT_WIFI_AWARE:
-                                        case TRANSPORT_WIFI:
-                                        case TRANSPORT_USB:
-                                        case TRANSPORT_VPN:
-                                        case TRANSPORT_BLUETOOTH:
-                                            return false;
-                                        default: {
-                                            return true;
-                                        }
-                                    }
-                                }
-                            }
-                    );
-                } catch (Exception e) {
-                    LoggerLog(e);
-                }
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            NetworkCapabilities.class.getName(),
-                            lpparam.classLoader,
-                            "getOwnerUid",
-                            new XC_MethodReplacement(114514) {
-                                @Override
-                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                    return Integer.MAX_VALUE;
-                                }
-                            }
-                    );
-                } catch (Exception e) {
-                    LoggerLog(e);
-                }
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            NetworkCapabilities.class.getName(),
-                            lpparam.classLoader,
-                            "getLinkUpstreamBandwidthKbps",
-                            new XC_MethodReplacement(114514) {
-                                @Override
-                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                    return Integer.MAX_VALUE;
-                                }
-                            }
-                    );
-                } catch (Exception e) {
-                    LoggerLog(e);
-                }
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            NetworkCapabilities.class.getName(),
-                            lpparam.classLoader,
-                            "getLinkDownstreamBandwidthKbps",
-                            new XC_MethodReplacement(114514) {
-                                @Override
-                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                    return Integer.MAX_VALUE;
-                                }
-                            }
-                    );
-                } catch (Exception e) {
-                    LoggerLog(e);
-                }
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            NetworkCapabilities.class.getName(),
-                            lpparam.classLoader,
-                            "getSignalStrength",
-                            new XC_MethodReplacement(114514) {
-                                @Override
-                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                    return Integer.MAX_VALUE;
-                                }
-                            }
-                    );
-                } catch (Exception e) {
-                    LoggerLog(e);
-                }
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            NetworkCapabilities.class.getName(),
-                            lpparam.classLoader,
-                            "equals",
-                            Object.class,
-                            new XC_MethodReplacement(114514) {
-                                @Override
-                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                    return false;
-                                }
-                            }
-                    );
-                } catch (Exception e) {
-                    LoggerLog(e);
-                }
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            NetworkCapabilities.class.getName(),
-                            lpparam.classLoader,
-                            "hashCode",
-                            new XC_MethodReplacement(114514) {
-                                @Override
-                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                    return Integer.MAX_VALUE;
-                                }
-                            }
-                    );
-                } catch (Exception e) {
-                    LoggerLog(e);
-                }
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            NetworkCapabilities.class.getName(),
-                            lpparam.classLoader,
-                            "describeContents",
-                            new XC_MethodReplacement(114514) {
-                                @Override
-                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                    return Integer.MAX_VALUE;
-                                }
-                            }
-                    );
-                } catch (Exception e) {
-                    LoggerLog(e);
-                }
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            NetworkCapabilities.class.getName(),
-                            lpparam.classLoader,
-                            "toString",
-                            new XC_MethodReplacement(114514) {
-                                @Override
-                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                    return NetworkCap2Str;
-                                }
-                            }
-                    );
-                } catch (Exception e) {
-                    LoggerLog(e);
-                }
-
-            }
-            if (HookNetworkInfo){
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            NetworkInfo.class.getName(),
-                            lpparam.classLoader,
-                            "getType",
-                            new XC_MethodReplacement(114514) {
-                                @Override
-                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                    return ConnectivityManager.TYPE_MOBILE;
-                                }
-                            }
-                    );
-                } catch (Exception e) {
-                    LoggerLog(e);
-                }
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            NetworkInfo.class.getName(),
-                            lpparam.classLoader,
-                            "getSubtype",
-                            new XC_MethodReplacement(114514) {
-                                @Override
-                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                    return TelephonyManager.NETWORK_TYPE_LTE;
-                                }
-                            }
-                    );
-                } catch (Exception e) {
-                    LoggerLog(e);
-                }
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            NetworkInfo.class.getName(),
-                            lpparam.classLoader,
-                            "getTypeName",
-                            new XC_MethodReplacement(114514) {
-                                @Override
-                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                    return "MOBILE";
-                                }
-                            }
-                    );
-                } catch (Exception e) {
-                    LoggerLog(e);
-                }
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            NetworkInfo.class.getName(),
-                            lpparam.classLoader,
-                            "getSubtypeName",
-                            new XC_MethodReplacement(114514) {
-                                @Override
-                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                    return "LTE";
-                                }
-                            }
-                    );
-                } catch (Exception e) {
-                    LoggerLog(e);
-                }
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            NetworkInfo.class.getName(),
-                            lpparam.classLoader,
-                            "isConnectedOrConnecting",
-                            new XC_MethodReplacement(114514) {
-                                @Override
-                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                    return true;
-                                }
-                            }
-                    );
-                } catch (Exception e) {
-                    LoggerLog(e);
-                }
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            NetworkInfo.class.getName(),
-                            lpparam.classLoader,
-                            "isConnected",
-                            new XC_MethodReplacement(114514) {
-                                @Override
-                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                    return true;
-                                }
-                            }
-                    );
-                } catch (Exception e) {
-                    LoggerLog(e);
-                }
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            NetworkInfo.class.getName(),
-                            lpparam.classLoader,
-                            "isAvailable",
-                            new XC_MethodReplacement(114514) {
-                                @Override
-                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                    return true;
-                                }
-                            }
-                    );
-                } catch (Exception e) {
-                    LoggerLog(e);
-                }
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            NetworkInfo.class.getName(),
-                            lpparam.classLoader,
-                            "isFailover",
-                            new XC_MethodReplacement(114514) {
-                                @Override
-                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                    return false;
-                                }
-                            }
-                    );
-                } catch (Exception e) {
-                    LoggerLog(e);
-                }
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            NetworkInfo.class.getName(),
-                            lpparam.classLoader,
-                            "isRoaming",
-                            new XC_MethodReplacement(114514) {
-                                @Override
-                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                    return false;
-                                }
-                            }
-                    );
-                } catch (Exception e) {
-                    LoggerLog(e);
-                }
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            NetworkInfo.class.getName(),
-                            lpparam.classLoader,
-                            "getState",
-                            new XC_MethodReplacement(114514) {
-                                @Override
-                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                    return NetworkInfo.State.CONNECTED;
-                                }
-                            }
-                    );
-                } catch (Exception e) {
-                    LoggerLog(e);
-                }
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            NetworkInfo.class.getName(),
-                            lpparam.classLoader,
-                            "getDetailedState",
-                            new XC_MethodReplacement(114514) {
-                                @Override
-                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                    return NetworkInfo.DetailedState.CONNECTED;
-                                }
-                            }
-                    );
-                } catch (Exception e) {
-                    LoggerLog(e);
-                }
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            NetworkInfo.class.getName(),
-                            lpparam.classLoader,
-                            "getReason",
-                            new XC_MethodReplacement(114514) {
-                                @Override
-                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                    return null;
-                                }
-                            }
-                    );
-                } catch (Exception e) {
-                    LoggerLog(e);
-                }
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            NetworkInfo.class.getName(),
-                            lpparam.classLoader,
-                            "getExtraInfo",
-                            new XC_MethodReplacement(114514) {
-                                @Override
-                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                    return null;
-                                }
-                            }
-                    );
-                } catch (Exception e) {
-                    LoggerLog(e);
-                }
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            NetworkInfo.class.getName(),
-                            lpparam.classLoader,
-                            "toString",
-                            new XC_MethodReplacement(114514) {
-                                @Override
-                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                    return NetworkInfo2Str;
-                                }
-                            }
-                    );
-                } catch (Exception e) {
-                    LoggerLog(e);
-                }
-            }
-            if (HookNetworkRequest){
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            NetworkRequest.class.getName(),
-                            lpparam.classLoader,
-                            "describeContents",
-                            new XC_MethodReplacement(114514) {
-                                @Override
-                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                    return -Integer.MAX_VALUE;
-                                }
-                            }
-                    );
-
-                } catch (Exception e) {
-                    LoggerLog(e);
-                }
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            NetworkRequest.class.getName(),
-                            lpparam.classLoader,
-                            "hasCapability",
-                            int.class,
-                            new XC_MethodReplacement(114514) {
-                                @Override
-                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                    return true;
-                                }
-                            }
-                    );
-
-                } catch (Exception e) {
-                    LoggerLog(e);
-                }
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            NetworkRequest.class.getName(),
-                            lpparam.classLoader,
-                            "canBeSatisfiedBy",
-                            NetworkCapabilities.class,
-                            new XC_MethodReplacement(114514) {
-                                @Override
-                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                    return true;
-                                }
-                            }
-                    );
-
-                } catch (Exception e) {
-                    LoggerLog(e);
-                }
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            NetworkRequest.class.getName(),
-                            lpparam.classLoader,
-                            "hasTransport",
-                            int.class,
-                            new XC_MethodReplacement(114514) {
-                                @Override
-                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                    switch((int) param.args[0]){
-                                        case TRANSPORT_ETHERNET:
-                                        case TRANSPORT_WIFI_AWARE:
-                                        case TRANSPORT_WIFI:
-                                        case TRANSPORT_USB:
-                                        case TRANSPORT_VPN:
-                                        case TRANSPORT_BLUETOOTH:
-                                            return false;
-                                        default: {
-                                            return true;
-                                        }
-                                    }
-                                }
-                            }
-                    );
-
-                } catch (Exception e) {
-                    LoggerLog(e);
-                }
-                //getNetworkSpecifier
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            NetworkRequest.class.getName(),
-                            lpparam.classLoader,
-                            "toString",
-                            new XC_MethodReplacement(114514) {
-                                @Override
-                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                    return NetworkReq2Str;
-                                }
-                            }
-                    );
-
-                } catch (Exception e) {
-                    LoggerLog(e);
-                }
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            NetworkRequest.class.getName(),
-                            lpparam.classLoader,
-                            "equals",
-                            Object.class,
-                            new XC_MethodReplacement(114514) {
-                                @Override
-                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                    return false;
-                                }
-                            }
-                    );
-
-                } catch (Exception e) {
-                    LoggerLog(e);
-                }
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            NetworkRequest.class.getName(),
-                            lpparam.classLoader,
-                            "hashCode",
-                            new XC_MethodReplacement(114514) {
-                                @Override
-                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                    return Integer.MIN_VALUE;
-                                }
-                            }
-                    );
-
-                } catch (Exception e) {
-                    LoggerLog(e);
-                }
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            NetworkRequest.class.getName(),
-                            lpparam.classLoader,
-                            "getCapabilities",
-                            new XC_MethodReplacement(114514) {
-                                @Override
-                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                    return netCapIntArray;
-                                }
-                            }
-                    );
-                } catch (Exception e) {
-                    LoggerLog(e);
-                }
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            NetworkRequest.class.getName(),
-                            lpparam.classLoader,
-                            "getTransportTypes",
-                            new XC_MethodReplacement(114514) {
-                                @Override
-                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                    return transportTypes;
-                                }
-                            }
-                    );
-                } catch (Exception e) {
-                    LoggerLog(e);
-                }
-            }
-            //NetworkSpecifier(abstract and no callable method)
-            //ParseException
-            if (HookPlatformVpnProfile){
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                    try {
-                        XposedHelpers.findAndHookMethod(
-                                PlatformVpnProfile.class.getName(),
-                                lpparam.classLoader,
-                                "getTypeString",
-                                new XC_MethodReplacement(114514) {
-                                    @Override
-                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                        return "Unknown VPN profile type";
-                                    }
-                                }
-                        );
-                    } catch (Exception e) {
-                        LoggerLog(e);
-                    }
-                    try {
-                        XposedHelpers.findAndHookMethod(
-                                PlatformVpnProfile.class.getName(),
-                                lpparam.classLoader,
-                                "getType",
-                                new XC_MethodReplacement(114514) {
-                                    @Override
-                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                        return Integer.MAX_VALUE;
-                                    }
-                                }
-                        );
-                    } catch (Exception e) {
-                        LoggerLog(e);
-                    }
-//                    try {
-//                        XposedHelpers.findAndHookMethod(
-//                                PlatformVpnProfile.class.getName(),
-//                                lpparam.classLoader,
-//                                "areLocalRoutesExcluded",
-//                                new XC_MethodReplacement(114514) {
-//                                    @Override
-//                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-//                                        return true;
-//                                    }
-//                                }
-//                        );
-//                    } catch (Exception e) {
-//                        LoggerLog(e);
-//                    }
-//                    try {
-//                        XposedHelpers.findAndHookMethod(
-//                                PlatformVpnProfile.class.getName(),
-//                                lpparam.classLoader,
-//                                "isInternetValidationRequired",
-//                                new XC_MethodReplacement(114514) {
-//                                    @Override
-//                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-//                                        return false;
-//                                    }
-//                                }
-//                        );
-//                    } catch (Exception e) {
-//                        LoggerLog(e);
-//                    }
-                }
-            }
-            if (HookProxy){
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            Proxy.class.getName(),
-                            lpparam.classLoader,
-                            "getDefaultPort",
-                            new XC_MethodReplacement(114514) {
-                                @Override
-                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                    return -Integer.MAX_VALUE;
-                                }
-                            }
-                    );
-
-                } catch (Exception e) {
-                    LoggerLog(e);
-                }
-//                try {
-//                    XposedHelpers.findAndHookMethod(
-//                            android.net.Proxy.class.getName(),
-//                            lpparam.classLoader,
-//                            "getDefaultHost",
-//                            new XC_MethodReplacement(114514) {
-//                                @Override
-//                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-//                                    return null;
-//                                }
-//                            }
-//                    );
-//
-//                } catch (Exception e) {
-//                    LoggerLog(e);
-//                }
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            Proxy.class.getName(),
-                            lpparam.classLoader,
-                            "getHost",
-                            Context.class,
-                            new XC_MethodHook(114514) {
-                                @Override
-                                protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                                    super.beforeHookedMethod(param);
-                                    Context context = (Context) param.args[0];
-                                    if (!Objects.equals(context.getPackageName(), lpparam.packageName)){
-                                        param.setResult(null);
-                                    }
-                                }
-                            }
-                    );
-
-                } catch (Exception e) {
-                    LoggerLog(e);
-                }
-                //getPort
-            }
-            if (HookProxyInfo){
-                try {
-                    XposedBridge.hookAllMethods(
-                            ProxyInfo.class,
-                            "buildDirectProxy",
-                            new XC_MethodReplacement(114514) {
-                                @Override
-                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                    return null;
-                                }
-                            }
-                    );
-
-                } catch (Exception e) {
-                    LoggerLog(e);
-                }
-                try {
-                    XposedBridge.hookAllMethods(
-                            ProxyInfo.class,
-                            "buildPacProxy",
-                            new XC_MethodReplacement(114514) {
-                                @Override
-                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                    return null;
-                                }
-                            }
-                    );
-
-                } catch (Exception e) {
-                    LoggerLog(e);
-                }
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            ProxyInfo.class.getName(),
-                            lpparam.classLoader,
-                            "equals",
-                            Object.class,
-                            new XC_MethodReplacement(114514) {
-                                @Override
-                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                    return false;
-                                }
-                            }
-                    );
-                }  catch (Exception e) {
-                    LoggerLog(e);
-                }
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            ProxyInfo.class.getName(),
-                            lpparam.classLoader,
-                            "describeContents",
-                            new XC_MethodReplacement(114514) {
-                                @Override
-                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                    return 0;
-                                }
-                            }
-                    );
-                }  catch (Exception e) {
-                    LoggerLog(e);
-                }
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            ProxyInfo.class.getName(),
-                            lpparam.classLoader,
-                            "hashCode",
-                            new XC_MethodReplacement(114514) {
-                                @Override
-                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                    return Integer.MIN_VALUE;
-                                }
-                            }
-                    );
-                }  catch (Exception e) {
-                    LoggerLog(e);
-                }
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            ProxyInfo.class.getName(),
-                            lpparam.classLoader,
-                            "getHost",
-                            new XC_MethodReplacement(114514) {
-                                @Override
-                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                    return getRandomString(20);
-                                }
-                            }
-                    );
-                }  catch (Exception e) {
-                    LoggerLog(e);
-                }
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            ProxyInfo.class.getName(),
-                            lpparam.classLoader,
-                            "getPort",
-                            new XC_MethodReplacement(114514) {
-                                @Override
-                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                    return Integer.MIN_VALUE;
-                                }
-                            }
-                    );
-                }  catch (Exception e) {
-                    LoggerLog(e);
-                }
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            ProxyInfo.class.getName(),
-                            lpparam.classLoader,
-                            "getExclusionList",
-                            new XC_MethodReplacement(114514) {
-                                @Override
-                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                    return emptyStringArray;
-                                }
-                            }
-                    );
-                }  catch (Exception e) {
-                    LoggerLog(e);
-                }
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            ProxyInfo.class.getName(),
-                            lpparam.classLoader,
-                            "isValid",
-                            new XC_MethodReplacement(114514) {
-                                @Override
-                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                    return true;
-                                }
-                            }
-                    );
-                }  catch (Exception e) {
-                    LoggerLog(e);
-                }
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            ProxyInfo.class.getName(),
-                            lpparam.classLoader,
-                            "getPacFileUrl",
-                            new XC_MethodReplacement(114514) {
-                                @Override
-                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                    return Uri.EMPTY;
-                                }
-                            }
-                    );
-                }  catch (Exception e) {
-                    LoggerLog(e);
-                }
-            }
-            if (HookRouteInfo){
-                IpPrefix finalIpPrefix = ipPrefix;
-                InetAddress finalEmptyInetAddress1 = emptyInetAddress;
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            RouteInfo.class.getName(),
-                            lpparam.classLoader,
-                            "getDestination",
-                            new XC_MethodReplacement(114514) {
-                                @Override
-                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                    return finalIpPrefix;
-                                }
-                            }
-                    );
-
-                } catch (Exception e) {
-                    LoggerLog(e);
-                }
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            RouteInfo.class.getName(),
-                            lpparam.classLoader,
-                            "getGateway",
-                            new XC_MethodReplacement(114514) {
-                                @Override
-                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                    return finalEmptyInetAddress1;
-                                }
-                            }
-                    );
-
-                } catch (Exception e) {
-                    LoggerLog(e);
-                }
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            RouteInfo.class.getName(),
-                            lpparam.classLoader,
-                            "getInterface",
-                            new XC_MethodReplacement(114514) {
-                                @Override
-                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                    return null;
-                                }
-                            }
-                    );
-
-                } catch (Exception e) {
-                    LoggerLog(e);
-                }
-//                try {
-//                    XposedHelpers.findAndHookMethod(
-//                            RouteInfo.class.getName(),
-//                            lpparam.classLoader,
-//                            "getType",
-//                            new XC_MethodReplacement(114514) {
-//                                @Override
-//                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-//                                    return RouteInfo.RTN_UNICAST;
-//                                }
-//                            }
-//                    );
-//
-//                } catch (Exception e) {
-//                    LoggerLog(e);
-//                }
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            RouteInfo.class.getName(),
-                            lpparam.classLoader,
-                            "isDefaultRoute",
-                            new XC_MethodReplacement(114514) {
-                                @Override
-                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                    return DeviceAddressTweaker.random.nextBoolean();
-                                }
-                            }
-                    );
-
-                } catch (Exception e) {
-                    LoggerLog(e);
-                }
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            RouteInfo.class.getName(),
-                            lpparam.classLoader,
-                            "hasGateway",
-                            new XC_MethodReplacement(114514) {
-                                @Override
-                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                    return DeviceAddressTweaker.random.nextBoolean();
-                                }
-                            }
-                    );
-
-                } catch (Exception e) {
-                    LoggerLog(e);
-                }
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            RouteInfo.class.getName(),
-                            lpparam.classLoader,
-                            "matches",
-                            InetAddress.class,
-                            new XC_MethodReplacement(114514) {
-                                @Override
-                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                    return false;
-                                }
-                            }
-                    );
-
-                } catch (Exception e) {
-                    LoggerLog(e);
-                }
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            RouteInfo.class.getName(),
-                            lpparam.classLoader,
-                            "toString",
-                            new XC_MethodReplacement(114514) {
-                                @Override
-                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                    return "::/0 -> null 114514 mtu 0";
-                                }
-                            }
-                    );
-
-                } catch (Exception e) {
-                    LoggerLog(e);
-                }
-            }
-            //SocketKeepalive
-            //SSLCertificateSocketFactory
-            //SSLSessionCache
-            //StaticIpConfiguration,do we really need this?
-            if (HookTelephonyNetworkSpecifier){
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R){
-                    try {
-                        XposedHelpers.findAndHookMethod(
-                                TelephonyNetworkSpecifier.class.getName(),
-                                lpparam.classLoader,
-                                "getSubscriptionId",
-                                new XC_MethodReplacement(114514) {
-                                    @Override
-                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                        return -Integer.MAX_VALUE;
-                                    }
-                                }
-                        );
-
-                    } catch (Exception e) {
-                        LoggerLog(e);
-                    }
-                    try {
-                        XposedHelpers.findAndHookMethod(
-                                TelephonyNetworkSpecifier.class.getName(),
-                                lpparam.classLoader,
-                                "hashCode",
-                                new XC_MethodReplacement(114514) {
-                                    @Override
-                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                        return Integer.MIN_VALUE;
-                                    }
-                                }
-                        );
-
-                    } catch (Exception e) {
-                        LoggerLog(e);
-                    }
-                    try {
-                        XposedHelpers.findAndHookMethod(
-                                TelephonyNetworkSpecifier.class.getName(),
-                                lpparam.classLoader,
-                                "equals",
-                                Object.class,
-                                new XC_MethodReplacement(114514) {
-                                    @Override
-                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                        return false;
-                                    }
-                                }
-                        );
-
-                    } catch (Exception e) {
-                        LoggerLog(e);
-                    }
-                    try {
-                        XposedHelpers.findAndHookMethod(
-                                TelephonyNetworkSpecifier.class.getName(),
-                                lpparam.classLoader,
-                                "toString",
-                                new XC_MethodReplacement(114514) {
-                                    @Override
-                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                        return "TelephonyNetworkSpecifier [mSubId = 0x80000000]";
-                                    }
-                                }
-                        );
-
-                    } catch (Exception e) {
-                        LoggerLog(e);
-                    }
-                }
-            }
-            //trafficStats,maybe u want to listen to this (with a listener).
-            if (HookUri){
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            android.net.Uri.class.getName(),
-                            lpparam.classLoader,
-                            "fromFile",
-                            File.class,
-                            new XC_MethodHook(114514) {
-                                @Override
-                                protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                                    super.beforeHookedMethod(param);
-                                    if(param.args[0] == null){return;}
-                                    File file = (File) param.args[0];
-                                    String path = file.getAbsolutePath();
-                                    path = checkReplaceFile(path, lpparam);
-                                    if (!checkBannedInFile(path,lpparam)){
-                                        param.args[0] = new File("/");
-                                        return;
-                                    }
-                                    param.args[0] = new File(path);
-                                }
-                            }
-                    );
-
-                } catch (Exception e) {
-                    LoggerLog(e);
-                }
-            }//not finished
-            if (HookVpnManager){
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            VpnManager.class.getName(),
-                            lpparam.classLoader,
-                            "getIntentForConfirmation",
-                            new XC_MethodReplacement(114514) {
-                                @Override
-                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                    return VPNEstablishIntent;
-                                }
-                            }
-                    );
-
+            InetAddress emptyInetAddress = null;
+            RouteInfo emptyRouteInfo = null;
+            ProxyInfo proxyInfo = null;
+            IpPrefix ipPrefix = null;
+            Network fakeNetwork = null;
+            try {
+        
+                Constructor<?> InetAddressConstructor = XposedHelpers.findConstructorExact(
+                        InetAddress.class.getName(),
+                        lpparam.classLoader);
+                emptyInetAddress = (InetAddress) InetAddressConstructor.newInstance();
+                proxyInfo = ProxyInfo.buildDirectProxy(ReturnReplacements.getRandomString(20),Integer.MIN_VALUE);
+        //            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        //                ipPrefix = new IpPrefix(emptyInetAddress, 127);
+        //            }
             } catch (Exception e) {
                 LoggerLog(e);
             }
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            VpnManager.class.getName(),
-                            lpparam.classLoader,
-                            "provisionVpnProfile",
-                            PlatformVpnProfile.class,
-                            new XC_MethodReplacement(114514) {
-                                @Override
-                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                    return VPNEstablishIntent;
+        
+        
+            if (HookNet){
+                HookWifiClass.DoHook(lpparam,procHead,sharedPreferences);//working here
+                if (HookCaptivePortal){
+                    hookClass = XposedHelpers.findClassIfExists(android.net.CaptivePortal.class.getName(),
+                            lpparam.classLoader);
+                     if (hookClass != null){
+                         try {
+                             {
+                                 HookUtils.findAndHookMethodIfExists(hookClass,
+                                         "describeContents", ReturnReplacements.returnIntegerZero
+                                 );
+                             }
+                             {
+                                 HookUtils.findAndHookMethodIfExists(hookClass,
+                                         "ignoreNetwork", ReturnReplacements.returnNull
+                                 );
+                             }
+                             {
+                                 HookUtils.findAndHookMethodIfExists(hookClass,
+                                         "reportCaptivePortalDismissed", ReturnReplacements.returnNull
+                                 );
+                             }
+                         }catch (Exception e){LoggerLog(e);}
+                     }
+                }
+                if (HookConnectivityDiagnosticsManager){
+                    hookClass = XposedHelpers.findClassIfExists(ConnectivityDiagnosticsManager.DataStallReport.class.getName(), lpparam.classLoader);
+                    if (hookClass != null){
+                        LinkProperties linkProperties = new LinkProperties();
+                        NetworkCapabilities networkCapabilities = new NetworkCapabilities();
+                        try {
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "getDetectionMethod",
+                                        new XC_MethodReplacement(114514) {
+                                            @Override
+                                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                                return DETECTION_METHOD_DNS_EVENTS;
+                                            }
+                                        }
+                                );
+                            }
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "equals",
+                                        Object.class,
+                                        new XC_MethodReplacement(114514) {
+                                            @Override
+                                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                                return false;
+                                            }
+                                        }
+                                );
+                            }
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "hashCode",
+                                        new XC_MethodReplacement(114514) {
+                                            @Override
+                                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                                return Integer.MIN_VALUE;
+                                            }
+                                        }
+                                );
+                            }
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "describeContents",
+                                        new XC_MethodReplacement(114514) {
+                                            @Override
+                                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                                return 0;
+                                            }
+                                        }
+                                );
+                            }
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "getNetwork",
+                                        new XC_MethodReplacement(114514) {
+                                            @Override
+                                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                                return fakeNetwork;
+                                            }
+                                        }
+                                );
+                            }
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "getReportTimestamp",
+                                        new XC_MethodReplacement(114514) {
+                                            @Override
+                                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                                return 1L;
+                                            }
+                                        }
+                                );
+                            }
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "getLinkProperties",
+                                        new XC_MethodReplacement(114514) {
+                                            @Override
+                                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                                return linkProperties;
+                                            }
+                                        }
+                                );
+                            }
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "getNetworkCapabilities",
+                                        new XC_MethodReplacement(114514) {
+                                            @Override
+                                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                                return networkCapabilities;
+                                            }
+                                        }
+                                );
+                            }
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "getStallDetails",
+                                        new XC_MethodReplacement(114514) {
+                                            @Override
+                                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                                return PersistableBundle.EMPTY;
+                                            }
+                                        }
+                                );
+                            }
+                        }catch (Exception e){LoggerLog(e);}
+                        hookClass = XposedHelpers.findClassIfExists(ConnectivityDiagnosticsManager.ConnectivityReport.class.getName(), lpparam.classLoader);
+                        if (hookClass != null){
+                            try {
+                                {
+                                    HookUtils.findAndHookMethodIfExists(hookClass,
+                                            "equals",
+                                            Object.class,
+                                            new XC_MethodReplacement(114514) {
+                                                @Override
+                                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                                    return false;
+                                                }
+                                            }
+                                    );
+                                }
+                                {
+                                    HookUtils.findAndHookMethodIfExists(hookClass,
+                                            "hashCode",
+                                            new XC_MethodReplacement(114514) {
+                                                @Override
+                                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                                    return Integer.MIN_VALUE;
+                                                }
+                                            }
+                                    );
+                                }
+                                {
+                                    HookUtils.findAndHookMethodIfExists(hookClass,
+                                            "describeContents",
+                                            new XC_MethodReplacement(114514) {
+                                                @Override
+                                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                                    return 0;
+                                                }
+                                            }
+                                    );
+                                }
+                                {
+                                    HookUtils.findAndHookMethodIfExists(hookClass,
+                                            "getNetwork",
+                                            new XC_MethodReplacement(114514) {
+                                                @Override
+                                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                                    return fakeNetwork;
+                                                }
+                                            }
+                                    );
+                                }
+                                {
+                                    HookUtils.findAndHookMethodIfExists(hookClass,
+                                            "getReportTimestamp",
+                                            new XC_MethodReplacement(114514) {
+                                                @Override
+                                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                                    return 1L;
+                                                }
+                                            }
+                                    );
+                                }
+                                {
+                                    HookUtils.findAndHookMethodIfExists(hookClass,
+                                            "getLinkProperties",
+                                            new XC_MethodReplacement(114514) {
+                                                @Override
+                                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                                    return linkProperties;
+                                                }
+                                            }
+                                    );
+                                }
+                                {
+                                    HookUtils.findAndHookMethodIfExists(hookClass,
+                                            "getNetworkCapabilities",
+                                            new XC_MethodReplacement(114514) {
+                                                @Override
+                                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                                    return networkCapabilities;
+                                                }
+                                            }
+                                    );
+                                }
+                                {
+                                    HookUtils.findAndHookMethodIfExists(hookClass,
+                                            "getAdditionalInfo",
+                                            new XC_MethodReplacement(114514) {
+                                                @Override
+                                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                                    return PersistableBundle.EMPTY;
+                                                }
+                                            }
+                                    );
+                                }
+                            }catch (Exception e){LoggerLog(e);}
+                        }
+                    }
+                }
+                if (HookConnectivityManager){
+                    hookClass = XposedHelpers.findClassIfExists(ConnectivityManager.class.getName(),lpparam.classLoader);
+                    if (hookClass != null){
+                        try {
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "isNetworkTypeValid",
+                                        int.class,
+                                        new XC_MethodReplacement(114514) {
+                                            @Override
+                                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                                int type = (int) param.args[0];
+                                                switch(type){
+                                                    case ConnectivityManager.TYPE_WIMAX:
+                                                    case ConnectivityManager.TYPE_ETHERNET:
+                                                    case ConnectivityManager.TYPE_BLUETOOTH:
+                                                    case ConnectivityManager.TYPE_DUMMY:
+                                                    case ConnectivityManager.TYPE_VPN:
+                                                        return false;
+                                                    default:return true;
+                                                }
+                                            }
+                                        }
+                                );
+                            }
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "getNetworkPreference", ReturnReplacements.returnIntegerOne
+                                );
+                            }
+        
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+        //                    ProxyInfo proxyInfo = new ProxyInfo(null);
+                                LinkProperties linkProperties = new LinkProperties();
+                                NetworkCapabilities networkCapabilities = new NetworkCapabilities();
+                                NetworkInfo networkInfo =
+                                        new NetworkInfo(
+                                                ConnectivityManager.TYPE_MOBILE,
+                                                TelephonyManager.NETWORK_TYPE_LTE,
+                                                "MOBILE",
+                                                "LTE");
+                                NetworkInfo[] allNetworkInfo = new NetworkInfo[]{networkInfo};
+                                {
+                                    HookUtils.findAndHookMethodIfExists(hookClass,
+                                            "getActiveNetworkInfo",
+                                            new XC_MethodReplacement(114514) {
+                                                @Override
+                                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                                    return networkInfo;
+                                                }
+                                            }
+                                    );
+                                }
+                                {
+                                    XposedBridge.hookAllMethods(
+                                            ConnectivityManager.class,
+                                            "getNetworkInfo",
+                                            new XC_MethodReplacement(114514) {
+                                                @Override
+                                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                                    return networkInfo;
+                                                }
+                                            }
+                                    );
+                                }
+                                {
+                                    HookUtils.findAndHookMethodIfExists(hookClass,
+                                            "getAllNetworkInfo",
+                                            new XC_MethodReplacement(114514) {
+                                                @Override
+                                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                                    return allNetworkInfo;
+                                                }
+                                            }
+                                    );
+                                }
+                                {
+                                    HookUtils.findAndHookMethodIfExists(hookClass,
+                                            "getLinkProperties",
+                                            Network.class,
+                                            new XC_MethodReplacement(114514) {
+                                                @Override
+                                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                                    return linkProperties;
+                                                }
+                                            }
+                                    );
+                                }
+                                {
+                                    HookUtils.findAndHookMethodIfExists(hookClass,
+                                            "getNetworkCapabilities",
+                                            Network.class,
+                                            new XC_MethodReplacement(114514) {
+                                                @Override
+                                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                                    return networkCapabilities;
+                                                }
+                                            }
+                                    );
+                                }
+                                {
+                                    HookUtils.findAndHookMethodIfExists(hookClass,
+                                            "getBackgroundDataSetting", ReturnReplacements.returnTrue
+                                    );
+                                }
+                                {
+                                    HookUtils.findAndHookMethodIfExists(hookClass,
+                                            "addDefaultNetworkActiveListener",
+                                            ConnectivityManager.OnNetworkActiveListener.class, ReturnReplacements.returnNull
+                                    );
+                                }
+                                {
+                                    HookUtils.findAndHookMethodIfExists(hookClass,
+                                            "removeDefaultNetworkActiveListener",
+                                            ConnectivityManager.OnNetworkActiveListener.class, ReturnReplacements.returnNull
+                                    );
+                                }
+                                {
+                                    HookUtils.findAndHookMethodIfExists(hookClass,
+                                            "isDefaultNetworkActive", ReturnReplacements.returnTrue
+                                    );
+                                }
+                                {
+                                    HookUtils.findAndHookMethodIfExists(hookClass,
+                                            "getDefaultProxy", ReturnReplacements.returnNull
+                                    );
                                 }
                             }
-                    );
-
-                } catch (Exception e) {
-                    LoggerLog(e);
-                }
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            VpnManager.class.getName(),
-                            lpparam.classLoader,
-                            "deleteProvisionedVpnProfile",
-                            new XC_MethodReplacement(114514) {
-                                @Override
-                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                    return null;
-                                }
+        //                getActiveNetwork()
+        //                getAllNetworks()//Hook Network
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "getNetworkWatchlistConfigHash", ReturnReplacements.returnNull
+                                );
                             }
-                    );
-
-                } catch (Exception e) {
-                    LoggerLog(e);
-                }
-//                    try {
-//                        XposedHelpers.findAndHookMethod(
-//                                VpnManager.class.getName(),
-//                                lpparam.classLoader,
-//                                "startProvisionedVpnProfileSession",
-//                                new XC_MethodReplacement(114514) {
-//                                    @Override
-//                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-//                                        return getRandomString(20);
-//                                    }
-//                                }
-//                        );
-//
-//                    } catch (Exception e) {
-//                        LoggerLog(e);
-//                    }
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            VpnManager.class.getName(),
-                            lpparam.classLoader,
-                            "startProvisionedVpnProfile",
-                            new XC_MethodReplacement(114514) {
-                                @Override
-                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                    return null;
-                                }
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "getConnectionOwnerUid",
+                                        int.class, InetSocketAddress.class,InetSocketAddress.class, ReturnReplacements.returnIntegerMAX
+                                );
                             }
-                    );
-
-                } catch (Exception e) {
-                    LoggerLog(e);
-                }
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            VpnManager.class.getName(),
-                            lpparam.classLoader,
-                            "stopProvisionedVpnProfile",
-                            new XC_MethodReplacement(114514) {
-                                @Override
-                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                    return null;
-                                }
+                        }catch (Exception e){
+                            LoggerLog(e);
+                        }
+                    }  
+        
+                }//maybe not finished
+                //Credentials
+                //DhcpInfo
+                //DnsResolver
+                //EthernetNetworkSpecifier
+                if (HookIkev2VpnProfile) {
+                    hookClass = XposedHelpers.findClassIfExists(
+                            android.net.Ikev2VpnProfile.class.getName(),
+                            lpparam.classLoader);
+                    if (hookClass != null){
+                        try {
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "getServerAddr",
+                                        new XC_MethodReplacement(114514) {
+                                            @Override
+                                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                                return "1.1.4.5.1.4.19.19.81.0";
+                                            }
+                                        }
+                                );
                             }
-                    );
-
-                } catch (Exception e) {
-                    LoggerLog(e);
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "getUserIdentity",
+                                        new XC_MethodReplacement(114514) {
+                                            @Override
+                                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                                return "1.1.4.5.1.4.19.19.81.0";
+                                            }
+                                        }
+                                );
+                            }
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "getPresharedKey", returnByteArr114514
+                                );
+                            }
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "getServerRootCaCert",
+                                        new XC_MethodReplacement(114514) {
+                                            @Override
+                                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                                return null;
+                                            }
+                                        }
+                                );
+                            }
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "getUsername", ReturnReplacements.returnRandomStr20
+                                );
+                            }
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "getPassword", ReturnReplacements.returnRandomStr20
+                                );
+                            }
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "getRsaPrivateKey",
+                                        new XC_MethodReplacement(114514) {
+                                            @Override
+                                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                                return null;
+                                            }
+                                        }
+                                );
+                            }
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "getUserCert",
+                                        new XC_MethodReplacement(114514) {
+                                            @Override
+                                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                                return null;
+                                            }
+                                        }
+                                );
+                            }
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "getProxyInfo",
+                                        new XC_MethodReplacement(114514) {
+                                            @Override
+                                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                                return null;
+                                            }
+                                        }
+                                );
+                            }
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "getAllowedAlgorithms",
+                                        new XC_MethodReplacement(114514) {
+                                            @Override
+                                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                                return emptyStringList;
+                                            }
+                                        }
+                                );
+                            }
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "isBypassable",
+                                        new XC_MethodReplacement(114514) {
+                                            @Override
+                                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                                return ReturnReplacements.random.nextBoolean();
+                                            }
+                                        }
+                                );
+                            }
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "isMetered",
+                                        new XC_MethodReplacement(114514) {
+                                            @Override
+                                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                                return ReturnReplacements.random.nextBoolean();
+                                            }
+                                        }
+                                );
+                            }
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "getMaxMtu",
+                                        new XC_MethodReplacement(114514) {
+                                            @Override
+                                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                                return 0;
+                                            }
+                                        }
+                                );
+                            }
+        //                     {
+        //                        findAndHookMethodIfExists(
+        //                                android.net.Ikev2VpnProfile.class.getName(),
+        //                                lpparam.classLoader,
+        //                                "getIkeTunnelConnectionParams",
+        //                                new XC_MethodReplacement(114514) {
+        //                                    @Override
+        //                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+        //                                        return null;
+        //                                    }
+        //                                }
+        //                        );
+        //                    } catch (Exception e) {
+        //                        LoggerLog(e);
+        //                    }
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "hashCode",
+                                        new XC_MethodReplacement(114514) {
+                                            @Override
+                                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                                return Integer.MIN_VALUE;
+                                            }
+                                        }
+                                );
+                            }
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "equals",
+                                        Object.class,
+                                        new XC_MethodReplacement(114514) {
+                                            @Override
+                                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                                return false;
+                                            }
+                                        }
+                                );
+                            }
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "certificateFromPemString",
+                                        String.class,
+                                        new XC_MethodReplacement(114514) {
+                                            @Override
+                                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                                return null;
+                                            }
+                                        }
+                                );
+                            }
+                            //Builder
+                        }catch (Exception e){
+                            LoggerLog(e);
+                        }
+                    }
                 }
-//                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-//                        String VpnProfileStateStr = "{State: DISCONNECTED, SessionId: 114514, Always-on: false, Lockdown: false}";
-//                        VpnProfileState fakeVpnProfileState =
-//                                new VpnProfileState(
-//                                        VpnProfileState.STATE_DISCONNECTED,
-//                                        getRandomString(20),
-//                                        false,
-//                                        false);
-//                        try {
-//                            XposedHelpers.findAndHookMethod(
-//                                    VpnManager.class.getName(),
-//                                    lpparam.classLoader,
-//                                    "getProvisionedVpnProfileState",
-//                                    new XC_MethodReplacement(114514) {
-//                                        @Override
-//                                        protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-//                                            return fakeVpnProfileState;
-//                                        }
-//                                    }
-//                            );
-//
-//                        } catch (Exception e) {
-//                            LoggerLog(e);
-//                        }
-//                    }
-
+                //IpConfiguration
+                if (HookIpPrefix){
+                    hookClass = XposedHelpers.findClassIfExists(
+                            IpPrefix.class.getName(),
+                            lpparam.classLoader);
+                    if (hookClass != null){
+                        try {
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "equals",
+                                        Object.class, returnFalse
+                                );
+                            }
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "hashCode", ReturnReplacements.returnIntegerMIN
+                                );
+                            }
+                            {
+                                InetAddress finalEmptyInetAddress = emptyInetAddress;
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "getAddress",
+                                        new XC_MethodReplacement(114514) {
+                                            @Override
+                                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                                return finalEmptyInetAddress;
+                                            }
+                                        }
+                                );
+                            }
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "getRawAddress", returnByteArr114514
+                                );
+                            }
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "getPrefixLength",
+                                        new XC_MethodReplacement(114514) {
+                                            @Override
+                                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                                return 127;
+                                            }
+                                        }
+                                );
+                            }
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "describeContents", ReturnReplacements.returnIntegerZero
+                                );
+                            }
+                        }catch (Exception e){LoggerLog(e);}
+                    }
+                    //toString:requires api33,but my phone is 32 and i dont want to use virtual env.
+                }
+                //IpSecAlgorithm
+                //IpSecManager
+                if (HookIpSecTransform){
+                    hookClass = XposedHelpers.findClassIfExists(
+                            IpSecTransform.class.getName(),
+                            lpparam.classLoader);
+                    if (hookClass != null){
+                         try {
+                             {
+                                 HookUtils.findAndHookMethodIfExists(hookClass,
+                                         "toString", ReturnReplacements.returnRandomStr20
+                                 );
+                             }
+                             {
+                                 HookUtils.findAndHookMethodIfExists(hookClass,
+                                         "equals",
+                                         Object.class,returnFalse
+                                 );
+                             }
+                         }catch (Exception e){LoggerLog(e);}
+                    }
+                }
+                if (HookLinkAddress){
+                    hookClass = XposedHelpers.findClassIfExists(
+                            LinkAddress.class.getName(),
+                            lpparam.classLoader);
+                    if (hookClass != null){
+                        try {
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "toString",
+                                        new XC_MethodReplacement(114514) {
+                                            @Override
+                                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                                return "LinkAddresses: []";
+                                            }
+                                        }
+                                );
+                            }
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "equals",
+                                        Object.class, returnFalse
+                                );
+                            }
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "hashCode", ReturnReplacements.returnIntegerMIN
+                                );
+                            }
+                            //getAddress
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "getFlags", ReturnReplacements.returnIntegerOne
+                                );
+                            }
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "getScope", ReturnReplacements.returnIntegerOne
+                                );
+                            }
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "describeContents", ReturnReplacements.returnIntegerZero
+                                );
+                            }
+                        }catch (Exception e){LoggerLog(e);}
+                    }
+                }
+                if (HookLinkProperties) {
+                    hookClass = XposedHelpers.findClassIfExists(
+                            LinkProperties.class.getName(),
+                            lpparam.classLoader);
+                    if (hookClass != null){
+                        try {
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "getLinkAddresses",
+                                        new XC_MethodReplacement(114514) {
+                                            @Override
+                                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                                return emptyLinkAddressList;
+                                            }
+                                        }
+                                );
+                            }
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "setLinkAddresses",
+                                        Collection.class, ReturnReplacements.returnNull
+                                );
+                            }
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "setDnsServers",
+                                        Collection.class, ReturnReplacements.returnNull
+                                );
+                            }
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "getDnsServers",
+                                        new XC_MethodReplacement(114514) {
+                                            @Override
+                                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                                return emptyInetAddressList;
+                                            }
+                                        }
+                                );
+                            }
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "isPrivateDnsActive", ReturnReplacements.returnTrue
+                                );
+                            }
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "setDhcpServerAddress",
+                                        Inet4Address.class, ReturnReplacements.returnNull
+                                );
+                            }
+                            //getDhcpServerAddress
+                            //getPrivateDnsServerName
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "setDomains",
+                                        String.class, ReturnReplacements.returnNull
+                                );
+                            }
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "getDomains", ReturnReplacements.returnRandomStr20
+                                );
+                            }
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "setMtu",
+                                        int.class, ReturnReplacements.returnNull
+                                );
+                            }
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "getMtu", ReturnReplacements.returnIntegerMIN
+                                );
+                            }
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "getRoutes",
+                                        new XC_MethodReplacement(114514) {
+                                            @Override
+                                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                                return emptyRouteInfoList;
+                                            }
+                                        }
+                                );
+                            }
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "setHttpProxy",
+                                        ProxyInfo.class, ReturnReplacements.returnNull
+                                );
+                            }
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "getHttpProxy",
+                                        new XC_MethodReplacement(114514) {
+                                            @Override
+                                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                                return fakeProxyInfo;
+                                            }
+                                        }
+                                );
+                            }
+                            //getNat64Prefix
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "setNat64Prefix",
+                                        IpPrefix.class, ReturnReplacements.returnNull
+                                );
+                            }
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "clear", ReturnReplacements.returnNull
+                                );
+                            }
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "describeContents", ReturnReplacements.returnIntegerZero
+                                );
+                            }
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "toString",
+                                        new XC_MethodReplacement(114514) {
+                                            @Override
+                                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                                return LinkPropertiesStr;
+                                            }
+                                        }
+                                );
+                            }
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "equals",
+                                        Object.class, returnFalse
+                                );
+                            }
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "isWakeOnLanSupported", returnFalse
+                                );
+                            }
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "hashCode", ReturnReplacements.returnIntegerMIN
+                                );
+                            }
+        
+        
+                        }catch (Exception e){LoggerLog(e);}
+                    }
+                }
+                //LocalServerSocket
+                //LocalSocket
+                if (HookLocalSocketAddress){
+                    hookClass = XposedHelpers.findClassIfExists(
+                            LocalSocketAddress.class.getName(),
+                            lpparam.classLoader);
+                    if (hookClass != null){
+                        try {
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "getName", ReturnReplacements.returnRandomStr20
+                                );
+                            }
+        //                 {
+        //                    findAndHookMethodIfExists(
+        //                            android.net.LocalSocketAddress.class.getName(),
+        //                            lpparam.classLoader,
+        //                            "getNamespace",
+        //                            new XC_MethodReplacement(114514) {
+        //                                @Override
+        //                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+        //                                    return FILESYSTEM;
+        //                                }
+        //                            }
+        //                    );
+        //                } catch (Exception e) {
+        //                    LoggerLog(e);
+        //                }
+                        }catch (Exception e){LoggerLog(e);}
+                    }
+                }
+                if (HookMacAddress) {
+        
+                    hookClass = XposedHelpers.findClassIfExists(
+                            MacAddress.class.getName(),
+                            lpparam.classLoader);
+                         if (hookClass != null){
+                             try {
+                                 {
+                                     HookUtils.findAndHookMethodIfExists(hookClass,
+                                             "getAddressType",
+                                             new XC_MethodReplacement(114514) {
+                                                 @Override
+                                                 protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                                     return TYPE_BROADCAST;
+                                                 }
+                                             }
+                                     );
+                                 }
+                                 {
+                                     HookUtils.findAndHookMethodIfExists(hookClass,
+                                             "isLocallyAssigned", ReturnReplacements.returnTrue
+                                     );
+                                 }
+                                 {
+                                     HookUtils.findAndHookMethodIfExists(hookClass,
+                                             "toByteArray",returnByteArr114514
+                                     );
+                                 }
+                                 {
+                                     HookUtils.findAndHookMethodIfExists(hookClass,
+                                             "toString",
+                                             new XC_MethodReplacement(114514) {
+                                                 @Override
+                                                 protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                                     return macAddr114514;
+                                                 }
+                                             }
+                                     );
+                                 }
+                                 {
+                                     HookUtils.findAndHookMethodIfExists(hookClass,
+                                             "toOuiString",
+                                             new XC_MethodReplacement(114514) {
+                                                 @Override
+                                                 protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                                     return macAddrOui114;
+                                                 }
+                                             }
+                                     );
+                                 }
+                                 {
+                                     HookUtils.findAndHookMethodIfExists(hookClass,
+                                             "hashCode", ReturnReplacements.returnIntegerMIN
+                                     );
+                                 }
+                                 {
+                                     HookUtils.findAndHookMethodIfExists(hookClass,
+                                             "equals",
+                                             Object.class,returnFalse
+                                     );
+                                 }
+                                 {
+                                     HookUtils.findAndHookMethodIfExists(hookClass,
+                                             "describeContents", ReturnReplacements.returnIntegerZero
+                                     );
+                                 }
+                                 {
+                                     HookUtils.findAndHookMethodIfExists(hookClass,
+                                             "matches",
+                                             MacAddress.class,MacAddress.class,returnFalse
+                                     );
+                                 }
+                                 {
+                                     HookUtils.findAndHookMethodIfExists(hookClass,
+                                             "getLinkLocalIpv6FromEui48Mac", ReturnReplacements.returnNull
+                                     );
+                                 }
+                             }catch (Exception e){
+                                 LoggerLog(e);
+                             }
+                         }
+        
+        
+                }
+                //MailTo
+                if (HookNetwork){
+                    hookClass = XposedHelpers.findClassIfExists(
+                            Network.class.getName(),
+                            lpparam.classLoader);
+                    if (hookClass != null) {
+                        try{
+                            InetAddress finalEmptyInetAddress2 = emptyInetAddress;
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "getAllByName",
+                                        String.class,
+                                        new XC_MethodReplacement(114514) {
+                                            @Override
+                                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                                return inetAddresses;
+                                            }
+                                        }
+                                );
+                            }
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "getByName",
+                                        String.class,
+                                        new XC_MethodReplacement(114514) {
+                                            @Override
+                                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                                return finalEmptyInetAddress2;
+                                            }
+                                        }
+                                );
+                            }
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "getSocketFactory",
+                                        new XC_MethodReplacement(114514) {
+                                            @Override
+                                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                                return defaultSocketFactory;
+                                            }
+                                        }
+                                );
+                            }
+                            //openConnection
+                            //bindSocket
+                            //fromNetworkHandle
+                            //getNetworkHandle
+                            //...}}
+                        }catch (Exception e){LoggerLog(e);}
+                    }
+                if (HookNetworkCapabilities){
+                    hookClass = XposedHelpers.findClassIfExists(android.net.NetworkCapabilities.class.getName(),
+                                                        lpparam.classLoader);
+                    if (hookClass != null){
+                        try {
+                            //                 {
+                            //                    findAndHookMethodIfExists(
+                            //                            android.net.NetworkCapabilities.class.getName(),
+                            //                            lpparam.classLoader,
+                            //                            "getEnterpriseIds",
+                            //                            new XC_MethodReplacement(114514) {
+                            //                                @Override
+                            //                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                            //                                    return EnterpriseIds;
+                            //                                }
+                            //                            }
+                            //                    );
+                            //                } catch (Exception e) {
+                            //                    LoggerLog(e);
+                            //                }
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "getCapabilities",
+                                        new XC_MethodReplacement(114514) {
+                                            @Override
+                                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                                return netCapIntArray;
+                                            }
+                                        }
+                                );
+                            }
+                            //                 {
+                            //                    findAndHookMethodIfExists(
+                            //                            android.net.NetworkCapabilities.class.getName(),
+                            //                            lpparam.classLoader,
+                            //                            "hasEnterpriseId",
+                            //                            int.class,
+                            //                            new XC_MethodReplacement(114514) {
+                            //                                @Override
+                            //                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                            //                                    return true;
+                            //                                }
+                            //                            }
+                            //                    );
+                            //                } catch (Exception e) {
+                            //                    LoggerLog(e);
+                            //                }
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "hasCapability",
+                                        int.class, ReturnReplacements.returnTrue
+                                );
+                            }
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "hasTransport",
+                                        int.class,
+                                        new XC_MethodReplacement(114514) {
+                                            @Override
+                                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                                switch ((int) param.args[0]) {
+                                                    case TRANSPORT_ETHERNET:
+                                                    case TRANSPORT_WIFI_AWARE:
+                                                    case TRANSPORT_WIFI:
+                                                    case TRANSPORT_USB:
+                                                    case TRANSPORT_VPN:
+                                                    case TRANSPORT_BLUETOOTH:
+                                                        return false;
+                                                    default: {
+                                                        return true;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                );
+                            }
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "getOwnerUid",
+                                        new XC_MethodReplacement(114514) {
+                                            @Override
+                                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                                return Integer.MAX_VALUE;
+                                            }
+                                        }
+                                );
+                            }
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "getLinkUpstreamBandwidthKbps",
+                                        new XC_MethodReplacement(114514) {
+                                            @Override
+                                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                                return Integer.MAX_VALUE;
+                                            }
+                                        }
+                                );
+                            }
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "getLinkDownstreamBandwidthKbps",
+                                        new XC_MethodReplacement(114514) {
+                                            @Override
+                                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                                return Integer.MAX_VALUE;
+                                            }
+                                        }
+                                );
+                            }
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "getSignalStrength",
+                                        new XC_MethodReplacement(114514) {
+                                            @Override
+                                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                                return Integer.MAX_VALUE;
+                                            }
+                                        }
+                                );
+                            }
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "equals",
+                                        Object.class, returnFalse
+                                );
+                            }
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "hashCode",
+                                        new XC_MethodReplacement(114514) {
+                                            @Override
+                                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                                return Integer.MAX_VALUE;
+                                            }
+                                        }
+                                );
+                            }
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "describeContents",
+                                        new XC_MethodReplacement(114514) {
+                                            @Override
+                                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                                return Integer.MAX_VALUE;
+                                            }
+                                        }
+                                );
+                            }
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "toString",
+                                        new XC_MethodReplacement(114514) {
+                                            @Override
+                                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                                return NetworkCap2Str;
+                                            }
+                                        }
+                                );
+                            }
+                        }catch (Exception e){
+                            LoggerLog(e);
+                        }
+                    }
             }
-//            if (HookVpnProfileState){
-//                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-//                    String VpnProfileStateStr = "{State: DISCONNECTED, SessionId: 114514, Always-on: false, Lockdown: false}";
-//                    VpnProfileState fakeVpnProfileState =
-//                            new VpnProfileState(
-//                                    VpnProfileState.STATE_DISCONNECTED,
-//                                    getRandomString(20),
-//                                    false,
-//                                    false);
-//                    try {
-//                        XposedHelpers.findAndHookMethod(
-//                                VpnProfileState.class.getName(),
-//                                lpparam.classLoader,
-//                                "getState",
-//                                new XC_MethodReplacement(114514) {
-//                                    @Override
-//                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-//                                        return VpnProfileState.STATE_DISCONNECTED;
-//                                    }
-//                                }
-//                        );
-//                    } catch (Exception e) {
-//                        LoggerLog(e);
-//                    }
-//                    try {
-//                        XposedHelpers.findAndHookMethod(
-//                                VpnProfileState.class.getName(),
-//                                lpparam.classLoader,
-//                                "getSessionId",
-//                                new XC_MethodReplacement(114514) {
-//                                    @Override
-//                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-//                                        return getRandomString(20);
-//                                    }
-//                                }
-//                        );
-//                    } catch (Exception e) {
-//                        LoggerLog(e);
-//                    }
-//                    try {
-//                        XposedHelpers.findAndHookMethod(
-//                                VpnProfileState.class.getName(),
-//                                lpparam.classLoader,
-//                                "isAlwaysOn",
-//                                new XC_MethodReplacement(114514) {
-//                                    @Override
-//                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-//                                        return false;
-//                                    }
-//                                }
-//                        );
-//                    } catch (Exception e) {
-//                        LoggerLog(e);
-//                    }
-//                    try {
-//                        XposedHelpers.findAndHookMethod(
-//                                VpnProfileState.class.getName(),
-//                                lpparam.classLoader,
-//                                "isLockdownEnabled",
-//                                new XC_MethodReplacement(114514) {
-//                                    @Override
-//                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-//                                        return false;
-//                                    }
-//                                }
-//                        );
-//                    } catch (Exception e) {
-//                        LoggerLog(e);
-//                    }
-//                    try {
-//                        XposedHelpers.findAndHookMethod(
-//                                VpnProfileState.class.getName(),
-//                                lpparam.classLoader,
-//                                "toString",
-//                                new XC_MethodReplacement(114514) {
-//                                    @Override
-//                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-//                                        return VpnProfileStateStr;
-//                                    }
-//                                }
-//                        );
-//                    } catch (Exception e) {
-//                        LoggerLog(e);
-//                    }
-//                    try {
-//                        XposedHelpers.findAndHookMethod(
-//                                VpnProfileState.class.getName(),
-//                                lpparam.classLoader,
-//                                "equals",
-//                                Object.class,
-//                                new XC_MethodReplacement(114514) {
-//                                    @Override
-//                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-//                                        return false;
-//                                    }
-//                                }
-//                        );
-//                    } catch (Exception e) {
-//                        LoggerLog(e);
-//                    }
-//                    try {
-//                        XposedHelpers.findAndHookMethod(
-//                                VpnProfileState.class.getName(),
-//                                lpparam.classLoader,
-//                                "hashCode",
-//                                new XC_MethodReplacement(114514) {
-//                                    @Override
-//                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-//                                        return Integer.MAX_VALUE;
-//                                    }
-//                                }
-//                        );
-//                    } catch (Exception e) {
-//                        LoggerLog(e);
-//                    }
-//                    try {
-//                        XposedHelpers.setStaticObjectField(
-//                                VpnProfileState.class,
-//                                "CREATOR",
-//                                new Parcelable.Creator<VpnProfileState>() {
-//                                    public VpnProfileState createFromParcel(Parcel in) {
-//                                        return fakeVpnProfileState;
-//                                    }
-//                                    public VpnProfileState[] newArray(int size) {
-//                                        return new VpnProfileState[]{fakeVpnProfileState};
-//                                    }
-//                                }
-//                        );
-//                    } catch (Exception e) {
-//                        LoggerLog(e);
-//                    }
-//                }
-//            }
-            if (HookVpnService){
-//                try {
-//                    XposedHelpers.findAndHookMethod(
-//                            VpnService.class.getName(),
-//                            lpparam.classLoader,
-//                            "prepare",
-//                            new XC_MethodReplacement(114514) {
-//                                @Override
-//                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-//                                    return VPNEstablishIntent;
-//                                }
-//                            }
-//                    );
-//                } catch (Exception e) {
-//                    LoggerLog(e);
-//                }
-                try {
-                    XposedBridge.hookAllMethods(
-                            VpnService.class,
-                            "protect",
-                            new XC_MethodReplacement(114514) {
-                                @Override
-                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                    return true;
-                                }
+                if (HookNetworkInfo){
+                    hookClass = XposedHelpers.findClassIfExists(
+                            NetworkInfo.class.getName(),
+                            lpparam.classLoader);
+                    if (hookClass != null){
+                        try{
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "getType", ReturnReplacements.returnIntegerZero
+                                );
                             }
-                    );
-                }catch (Exception e) {
-                    LoggerLog(e);
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "getSubtype",
+                                        new XC_MethodReplacement(114514) {
+                                            @Override
+                                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                                return TelephonyManager.NETWORK_TYPE_LTE;
+                                            }
+                                        }
+                                );
+                            }
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "getTypeName",
+                                        new XC_MethodReplacement(114514) {
+                                            @Override
+                                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                                return "MOBILE";
+                                            }
+                                        }
+                                );
+                            }
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "getSubtypeName",
+                                        new XC_MethodReplacement(114514) {
+                                            @Override
+                                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                                return "LTE";
+                                            }
+                                        }
+                                );
+                            }
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "isConnectedOrConnecting", ReturnReplacements.returnTrue
+                                );
+                            }
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "isConnected", ReturnReplacements.returnTrue
+                                );
+                            }
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "isAvailable", ReturnReplacements.returnTrue
+                                );
+                            }
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "isFailover", returnFalse
+                                );
+                            }
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "isRoaming", returnFalse
+                                );
+                            }
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "getState",
+                                        new XC_MethodReplacement(114514) {
+                                            @Override
+                                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                                return NetworkInfo.State.CONNECTED;
+                                            }
+                                        }
+                                );
+                            }
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "getDetailedState",
+                                        new XC_MethodReplacement(114514) {
+                                            @Override
+                                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                                return NetworkInfo.DetailedState.CONNECTED;
+                                            }
+                                        }
+                                );
+                            }
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "getReason", ReturnReplacements.returnNull
+                                );
+                            }
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "getExtraInfo", ReturnReplacements.returnNull
+                                );
+                            }
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "toString",
+                                        new XC_MethodReplacement(114514) {
+                                            @Override
+                                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                                return NetworkInfo2Str;
+                                            }
+                                        }
+                                );
+                            }
+                        }catch (Exception e){LoggerLog(e);}
+                    }
+                }  
+                if (HookNetworkRequest){
+                    hookClass = XposedHelpers.findClassIfExists(
+                            NetworkRequest.class.getName(),
+                            lpparam.classLoader);
+                    if (hookClass != null){
+                        try {
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "describeContents", ReturnReplacements.returnIntegerZero
+                                );
+
+                            }
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "hasCapability",
+                                        int.class, ReturnReplacements.returnTrue
+                                );
+
+                            }
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "canBeSatisfiedBy",
+                                        NetworkCapabilities.class, ReturnReplacements.returnTrue
+                                );
+
+                            }
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "hasTransport",
+                                        int.class,
+                                        new XC_MethodReplacement(114514) {
+                                            @Override
+                                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                                switch ((int) param.args[0]) {
+                                                    case TRANSPORT_ETHERNET:
+                                                    case TRANSPORT_WIFI_AWARE:
+                                                    case TRANSPORT_WIFI:
+                                                    case TRANSPORT_USB:
+                                                    case TRANSPORT_VPN:
+                                                    case TRANSPORT_BLUETOOTH:
+                                                        return false;
+                                                    default: {
+                                                        return true;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                );
+
+                            }
+                            //getNetworkSpecifier
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "toString",
+                                        new XC_MethodReplacement(114514) {
+                                            @Override
+                                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                                return NetworkReq2Str;
+                                            }
+                                        }
+                                );
+
+                            }
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "equals",
+                                        Object.class, returnFalse
+                                );
+
+                            }
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "hashCode", ReturnReplacements.returnIntegerMIN
+                                );
+
+                            }
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "getCapabilities",
+                                        new XC_MethodReplacement(114514) {
+                                            @Override
+                                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                                return netCapIntArray;
+                                            }
+                                        }
+                                );
+                            }
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "getTransportTypes",
+                                        new XC_MethodReplacement(114514) {
+                                            @Override
+                                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                                return transportTypes;
+                                            }
+                                        }
+                                );
+                            }
+                        }catch (Exception e){LoggerLog(e);}
+                    }
                 }
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            VpnService.class.getName(),
-                            lpparam.classLoader,
-                            "addAddress",
-                            InetAddress.class,int.class,
-                            new XC_MethodReplacement(114514) {
-                                @Override
-                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                    return true;
-                                }
+                //NetworkSpecifier(abstract and no callable method)
+                //ParseException
+                if (HookPlatformVpnProfile){
+                    hookClass = XposedHelpers.findClassIfExists(
+                            PlatformVpnProfile.class.getName(),
+                            lpparam.classLoader);
+                    if (hookClass != null) {
+                        try {
+
+
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "getTypeString",
+                                        new XC_MethodReplacement(114514) {
+                                            @Override
+                                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                                return "Unknown VPN profile type";
+                                            }
+                                        }
+                                );
                             }
-                    );
-                } catch (Exception e) {
-                    LoggerLog(e);
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "getType",
+                                        new XC_MethodReplacement(114514) {
+                                            @Override
+                                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                                return Integer.MAX_VALUE;
+                                            }
+                                        }
+                                );
+                            }
+                            //                     {
+                            //                        findAndHookMethodIfExists(
+                            //                                PlatformVpnProfile.class.getName(),
+                            //                                lpparam.classLoader,
+                            //                                "areLocalRoutesExcluded",
+                            //                                new XC_MethodReplacement(114514) {
+                            //                                    @Override
+                            //                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                            //                                        return true;
+                            //                                    }
+                            //                                }
+                            //                        );
+                            //                    } catch (Exception e) {
+                            //                        LoggerLog(e);
+                            //                    }
+                            //                     {
+                            //                        findAndHookMethodIfExists(
+                            //                                PlatformVpnProfile.class.getName(),
+                            //                                lpparam.classLoader,
+                            //                                "isInternetValidationRequired",
+                            //                                new XC_MethodReplacement(114514) {
+                            //                                    @Override
+                            //                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                            //                                        return false;
+                            //                                    }
+                            //                                }
+                            //                        );
+                            //                    } catch (Exception e) {
+                            //                        LoggerLog(e);
+                            //                    }}
+                        }catch (Exception e){LoggerLog(e);}
+                    }
                 }
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            VpnService.class.getName(),
-                            lpparam.classLoader,
-                            "removeAddress",
-                            InetAddress.class,int.class,
-                            new XC_MethodReplacement(114514) {
-                                @Override
-                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                    return true;
-                                }
+                if (HookProxy){
+                    hookClass = XposedHelpers.findClassIfExists(
+                            Proxy.class.getName(),
+                            lpparam.classLoader);
+                    if (hookClass != null) {
+                        {
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "getDefaultPort", ReturnReplacements.returnIntegerMIN
+                                );
+
                             }
-                    );
-                } catch (Exception e) {
-                    LoggerLog(e);
+                            //                 {
+                            //                    findAndHookMethodIfExists(
+                            //                            android.net.Proxy.class.getName(),
+                            //                            lpparam.classLoader,
+                            //                            "getDefaultHost",
+                            //                            new XC_MethodReplacement(114514) {
+                            //                                @Override
+                            //                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                            //                                    return null;
+                            //                                }
+                            //                            }
+                            //                    );
+                            //
+                            //                } catch (Exception e) {
+                            //                    LoggerLog(e);
+                            //                }
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "getHost",
+                                        Context.class,
+                                        new XC_MethodHook(114514) {
+                                            @Override
+                                            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                                                super.beforeHookedMethod(param);
+                                                Context context = (Context) param.args[0];
+                                                if (!Objects.equals(context.getPackageName(), lpparam.packageName)) {
+                                                    param.setResult(null);
+                                                }
+                                            }
+                                        }
+                                );
+
+                            }
+                            //getPort}}
+                        }
+                    }
                 }
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            VpnService.class.getName(),
-                            lpparam.classLoader,
-                            "setUnderlyingNetworks",
-                            Network[].class,
-                            new XC_MethodReplacement(114514) {
-                                @Override
-                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                    return true;
-                                }
+                if (HookProxyInfo){
+                    hookClass = XposedHelpers.findClassIfExists(
+                            ProxyInfo.class.getName(),
+                            lpparam.classLoader);
+                    if (hookClass != null){
+                        try{
+                            {
+                                XposedBridge.hookAllMethods(
+                                        hookClass,
+                                        "buildDirectProxy", ReturnReplacements.returnNull
+                                );
+
                             }
-                    );
-                } catch (Exception e) {
-                    LoggerLog(e);
+                            {
+                                XposedBridge.hookAllMethods(
+                                        hookClass,
+                                        "buildPacProxy", ReturnReplacements.returnNull
+                                );
+
+                            }
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "equals",
+                                        Object.class, returnFalse
+                                );
+                            }
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "describeContents", ReturnReplacements.returnIntegerZero
+                                );
+                            }
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "hashCode", ReturnReplacements.returnIntegerMIN
+                                );
+                            }
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "getHost", ReturnReplacements.returnRandomStr20
+                                );
+                            }
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "getPort", ReturnReplacements.returnIntegerMIN
+                                );
+                            }
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "getExclusionList",
+                                        new XC_MethodReplacement(114514) {
+                                            @Override
+                                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                                return emptyStringArray;
+                                            }
+                                        }
+                                );
+                            }
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "isValid", ReturnReplacements.returnTrue
+                                );
+                            }
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "getPacFileUrl",
+                                        new XC_MethodReplacement(114514) {
+                                            @Override
+                                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                                return Uri.EMPTY;
+                                            }
+                                        }
+                                );
+                            }
+                        }catch (Exception e){LoggerLog(e);}
+                    }
                 }
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            VpnService.class.getName(),
-                            lpparam.classLoader,
-                            "isAlwaysOn",
-                            new XC_MethodReplacement(114514) {
-                                @Override
-                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                    return false;
-                                }
+                if (HookRouteInfo){
+                    hookClass = XposedHelpers.findClassIfExists(
+                            RouteInfo.class.getName(),
+                            lpparam.classLoader);
+                    if (hookClass != null) {
+                        try{
+                            InetAddress finalEmptyInetAddress1 = emptyInetAddress;
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "getDestination",
+                                        new XC_MethodReplacement(114514) {
+                                            @Override
+                                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                                return ipPrefix;
+                                            }
+                                        }
+                                );
+
                             }
-                    );
-                } catch (Exception e) {
-                    LoggerLog(e);
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "getGateway",
+                                        new XC_MethodReplacement(114514) {
+                                            @Override
+                                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                                return finalEmptyInetAddress1;
+                                            }
+                                        }
+                                );
+
+                            }
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "getInterface", ReturnReplacements.returnNull
+                                );
+
+                            }
+                            //                 {
+                            //                    findAndHookMethodIfExists(
+                            //                            RouteInfo.class.getName(),
+                            //                            lpparam.classLoader,
+                            //                            "getType",
+                            //                            new XC_MethodReplacement(114514) {
+                            //                                @Override
+                            //                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                            //                                    return RouteInfo.RTN_UNICAST;
+                            //                                }
+                            //                            }
+                            //                    );
+                            //
+                            //                } catch (Exception e) {
+                            //                    LoggerLog(e);
+                            //                }
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "isDefaultRoute",
+                                        new XC_MethodReplacement(114514) {
+                                            @Override
+                                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                                return ReturnReplacements.random.nextBoolean();
+                                            }
+                                        }
+                                );
+
+                            }
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "hasGateway",
+                                        new XC_MethodReplacement(114514) {
+                                            @Override
+                                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                                return ReturnReplacements.random.nextBoolean();
+                                            }
+                                        }
+                                );
+
+                            }
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "matches",
+                                        InetAddress.class, returnFalse
+                                );
+
+                            }
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "toString",
+                                        new XC_MethodReplacement(114514) {
+                                            @Override
+                                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                                return "::/0 -> null 114514 mtu 0";
+                                            }
+                                        }
+                                );
+
+                            }
+                        }catch (Exception e){LoggerLog(e);}
+                    }
                 }
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            VpnService.class.getName(),
-                            lpparam.classLoader,
-                            "isLockdownEnabled",
-                            new XC_MethodReplacement(114514) {
-                                @Override
-                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                    return false;
-                                }
+                //SocketKeepalive
+                //SSLCertificateSocketFactory
+                //SSLSessionCache
+                //StaticIpConfiguration,do we really need this?
+                if (HookTelephonyNetworkSpecifier){
+                    hookClass = XposedHelpers.findClassIfExists(
+                            TelephonyNetworkSpecifier.class.getName(),
+                            lpparam.classLoader);
+                    if (hookClass != null) {
+                        try{
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "getSubscriptionId",
+                                        new XC_MethodReplacement(114514) {
+                                            @Override
+                                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                                return -Integer.MAX_VALUE;
+                                            }
+                                        }
+                                );
+
                             }
-                    );
-                } catch (Exception e) {
-                    LoggerLog(e);
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "hashCode",
+                                        new XC_MethodReplacement(114514) {
+                                            @Override
+                                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                                return Integer.MIN_VALUE;
+                                            }
+                                        }
+                                );
+
+                            }
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "equals",
+                                        Object.class,
+                                        new XC_MethodReplacement(114514) {
+                                            @Override
+                                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                                return false;
+                                            }
+                                        }
+                                );
+
+                            }
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "toString",
+                                        new XC_MethodReplacement(114514) {
+                                            @Override
+                                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                                return "TelephonyNetworkSpecifier [mSubId = 0x80000000]";
+                                            }
+                                        }
+                                );
+
+                            }
+                        }catch (Exception e){LoggerLog(e);}
+                    }
                 }
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            VpnService.class.getName(),
-                            lpparam.classLoader,
-                            "onBind",
-                            Intent.class,
-                            new XC_MethodReplacement(114514) {
-                                @Override
-                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                    return null;
-                                }
+                //trafficStats,maybe u want to listen to this (with a listener).
+                if (HookUri){
+                    hookClass = XposedHelpers.findClassIfExists(
+                            android.net.Uri.class.getName(),
+                            lpparam.classLoader);
+                    if (hookClass != null){
+                        try{
+                            HookUtils.findAndHookMethodIfExists(hookClass,
+                                    "fromFile",
+                                    File.class,
+                                    new XC_MethodHook(114514) {
+                                        @Override
+                                        protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                                            super.beforeHookedMethod(param);
+                                            if (param.args[0] == null) {
+                                                return;
+                                            }
+                                            File file = (File) param.args[0];
+                                            String path = file.getAbsolutePath();
+                                            path = checkReplaceFile(path, lpparam);
+                                            if (!checkBannedInFile(path, lpparam)) {
+                                                param.args[0] = new File("/");
+                                                return;
+                                            }
+                                            param.args[0] = new File(path);
+                                        }
+                                    }
+                            );
+
+                        }catch (Exception e){LoggerLog(e);}
+                    }
+                }//not finished
+                if (HookVpnManager){
+                    hookClass = XposedHelpers.findClassIfExists(
+                            VpnManager.class.getName(),
+                            lpparam.classLoader);
+                    if (hookClass != null) {
+                        try{
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "getIntentForConfirmation",
+                                        new XC_MethodReplacement(114514) {
+                                            @Override
+                                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                                return VPNEstablishIntent;
+                                            }
+                                        }
+                                );
+
                             }
-                    );
-                } catch (Exception e) {
-                    LoggerLog(e);
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "provisionVpnProfile",
+                                        PlatformVpnProfile.class,
+                                        new XC_MethodReplacement(114514) {
+                                            @Override
+                                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                                return VPNEstablishIntent;
+                                            }
+                                        }
+                                );
+
+                            }
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "deleteProvisionedVpnProfile", ReturnReplacements.returnNull
+                                );
+
+                            }
+                            //                     {
+                            //                        findAndHookMethodIfExists(
+                            //                                VpnManager.class.getName(),
+                            //                                lpparam.classLoader,
+                            //                                "startProvisionedVpnProfileSession",
+                            //                                new XC_MethodReplacement(114514) {
+                            //                                    @Override
+                            //                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                            //                                        return getRandomString(20);
+                            //                                    }
+                            //                                }
+                            //                        );
+                            //
+                            //                    } catch (Exception e) {
+                            //                        LoggerLog(e);
+                            //                    }
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "startProvisionedVpnProfile", ReturnReplacements.returnNull
+                                );
+
+                            }
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "stopProvisionedVpnProfile", ReturnReplacements.returnNull
+                                );
+
+                            }
+                            //                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                            //                        String VpnProfileStateStr = "{State: DISCONNECTED, SessionId: 114514, Always-on: false, Lockdown: false}";
+                            //                        VpnProfileState fakeVpnProfileState =
+                            //                                new VpnProfileState(
+                            //                                        VpnProfileState.STATE_DISCONNECTED,
+                            //                                        getRandomString(20),
+                            //                                        false,
+                            //                                        false);
+                            //                         {
+                            //                            findAndHookMethodIfExists(
+                            //                                    VpnManager.class.getName(),
+                            //                                    lpparam.classLoader,
+                            //                                    "getProvisionedVpnProfileState",
+                            //                                    new XC_MethodReplacement(114514) {
+                            //                                        @Override
+                            //                                        protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                            //                                            return fakeVpnProfileState;
+                            //                                        }
+                            //                                    }
+                            //                            );
+                            //
+                            //                        } catch (Exception e) {
+                            //                            LoggerLog(e);
+                            //                        }
+                            //                    }
+                        }catch (Exception e){LoggerLog(e);}
+                    }
+                }
+        //            if (HookVpnProfileState){
+        //                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        //                    String VpnProfileStateStr = "{State: DISCONNECTED, SessionId: 114514, Always-on: false, Lockdown: false}";
+        //                    VpnProfileState fakeVpnProfileState =
+        //                            new VpnProfileState(
+        //                                    VpnProfileState.STATE_DISCONNECTED,
+        //                                    getRandomString(20),
+        //                                    false,
+        //                                    false);
+        //                     {
+        //                        findAndHookMethodIfExists(
+        //                                VpnProfileState.class.getName(),
+        //                                lpparam.classLoader,
+        //                                "getState",
+        //                                new XC_MethodReplacement(114514) {
+        //                                    @Override
+        //                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+        //                                        return VpnProfileState.STATE_DISCONNECTED;
+        //                                    }
+        //                                }
+        //                        );
+        //                    } catch (Exception e) {
+        //                        LoggerLog(e);
+        //                    }
+        //                     {
+        //                        findAndHookMethodIfExists(
+        //                                VpnProfileState.class.getName(),
+        //                                lpparam.classLoader,
+        //                                "getSessionId",
+        //                                new XC_MethodReplacement(114514) {
+        //                                    @Override
+        //                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+        //                                        return getRandomString(20);
+        //                                    }
+        //                                }
+        //                        );
+        //                    } catch (Exception e) {
+        //                        LoggerLog(e);
+        //                    }
+        //                     {
+        //                        findAndHookMethodIfExists(
+        //                                VpnProfileState.class.getName(),
+        //                                lpparam.classLoader,
+        //                                "isAlwaysOn",
+        //                                new XC_MethodReplacement(114514) {
+        //                                    @Override
+        //                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+        //                                        return false;
+        //                                    }
+        //                                }
+        //                        );
+        //                    } catch (Exception e) {
+        //                        LoggerLog(e);
+        //                    }
+        //                     {
+        //                        findAndHookMethodIfExists(
+        //                                VpnProfileState.class.getName(),
+        //                                lpparam.classLoader,
+        //                                "isLockdownEnabled",
+        //                                new XC_MethodReplacement(114514) {
+        //                                    @Override
+        //                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+        //                                        return false;
+        //                                    }
+        //                                }
+        //                        );
+        //                    } catch (Exception e) {
+        //                        LoggerLog(e);
+        //                    }
+        //                     {
+        //                        findAndHookMethodIfExists(
+        //                                VpnProfileState.class.getName(),
+        //                                lpparam.classLoader,
+        //                                "toString",
+        //                                new XC_MethodReplacement(114514) {
+        //                                    @Override
+        //                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+        //                                        return VpnProfileStateStr;
+        //                                    }
+        //                                }
+        //                        );
+        //                    } catch (Exception e) {
+        //                        LoggerLog(e);
+        //                    }
+        //                     {
+        //                        findAndHookMethodIfExists(
+        //                                VpnProfileState.class.getName(),
+        //                                lpparam.classLoader,
+        //                                "equals",
+        //                                Object.class,
+        //                                new XC_MethodReplacement(114514) {
+        //                                    @Override
+        //                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+        //                                        return false;
+        //                                    }
+        //                                }
+        //                        );
+        //                    } catch (Exception e) {
+        //                        LoggerLog(e);
+        //                    }
+        //                     {
+        //                        findAndHookMethodIfExists(
+        //                                VpnProfileState.class.getName(),
+        //                                lpparam.classLoader,
+        //                                "hashCode",
+        //                                new XC_MethodReplacement(114514) {
+        //                                    @Override
+        //                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+        //                                        return Integer.MAX_VALUE;
+        //                                    }
+        //                                }
+        //                        );
+        //                    } catch (Exception e) {
+        //                        LoggerLog(e);
+        //                    }
+        //                     {
+        //                        XposedHelpers.setStaticObjectField(
+        //                                VpnProfileState.class,
+        //                                "CREATOR",
+        //                                new Parcelable.Creator<VpnProfileState>() {
+        //                                    public VpnProfileState createFromParcel(Parcel in) {
+        //                                        return fakeVpnProfileState;
+        //                                    }
+        //                                    public VpnProfileState[] newArray(int size) {
+        //                                        return new VpnProfileState[]{fakeVpnProfileState};
+        //                                    }
+        //                                }
+        //                        );
+        //                    } catch (Exception e) {
+        //                        LoggerLog(e);
+        //                    }
+        //                }
+        //            }
+                if (HookVpnService){
+                    hookClass = XposedHelpers.findClassIfExists(VpnService.class.getName(),lpparam.classLoader);
+                    if (hookClass != null){
+                        try{
+                            //                 {
+                            //                    findAndHookMethodIfExists(
+                            //                            VpnService.class.getName(),
+                            //                            lpparam.classLoader,
+                            //                            "prepare",
+                            //                            new XC_MethodReplacement(114514) {
+                            //                                @Override
+                            //                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                            //                                    return VPNEstablishIntent;
+                            //                                }
+                            //                            }
+                            //                    );
+                            //                } catch (Exception e) {
+                            //                    LoggerLog(e);
+                            //                }
+                            {
+                                XposedBridge.hookAllMethods(
+                                        hookClass,
+                                        "protect", ReturnReplacements.returnTrue
+                                );
+                            }
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "addAddress",
+                                        InetAddress.class, int.class, ReturnReplacements.returnTrue
+                                );
+                            }
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "removeAddress",
+                                        InetAddress.class, int.class, ReturnReplacements.returnTrue
+                                );
+                            }
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "setUnderlyingNetworks",
+                                        Network[].class, ReturnReplacements.returnTrue
+                                );
+                            }
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "isAlwaysOn", returnFalse
+                                );
+                            }
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "isLockdownEnabled", returnFalse
+                                );
+                            }
+                            {
+                                HookUtils.findAndHookMethodIfExists(hookClass,
+                                        "onBind",
+                                        Intent.class, ReturnReplacements.returnNull
+                                );
+                            }
+                        }catch (Exception e){LoggerLog(e);}
+                    }
                 }
             }
         }
-    }
+        }
 }

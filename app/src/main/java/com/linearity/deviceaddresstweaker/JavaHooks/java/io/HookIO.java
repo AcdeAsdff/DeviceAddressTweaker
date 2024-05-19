@@ -11,8 +11,10 @@ import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
-import static com.linearity.deviceaddresstweaker.LoggerUtils.LoggerLog;
-import static com.linearity.deviceaddresstweaker.DeviceAddressTweaker.random;
+
+import static com.linearity.utils.HookUtils.findAndHookMethodIfExists;
+import static com.linearity.utils.LoggerUtils.LoggerLog;
+import static com.linearity.utils.ReturnReplacements.random;
 import android.content.SharedPreferences;
 
 import android.annotation.SuppressLint;
@@ -28,311 +30,299 @@ public class HookIO {
         HookFile = sharedPreferences.getBoolean("HookIO_HookFile", true);
         HookInputStream = sharedPreferences.getBoolean("HookIO_HookInputStream", true);
         HookOutputStream = sharedPreferences.getBoolean("HookIO_HookOutputStream", true);
+        Class<?> hookClass;
         if (HookIO){
             if (HookFile){
-                try {
-                    Class<?> javaFileClass = XposedHelpers.findClass(java.io.File.class.getName(),lpparam.classLoader);
-                    XposedBridge.hookAllConstructors(javaFileClass,
-                            new XC_MethodHook() {
-                                @Override
-                                protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                                    super.beforeHookedMethod(param);
-
-                                    if (checkBannedFile(param, lpparam)){
-//                                        boolean pass = false;
-//                                        StringBuilder sb = new StringBuilder();
-//                                        for (Object i:param.args){
-//                                            sb.append("|");
-//                                            if (i != null){
-//                                                sb.append(i.toString());
-//                                            }
+                hookClass = XposedHelpers.findClassIfExists(java.io.File.class.getName(),lpparam.classLoader);
+                if (hookClass != null){
+//                    try {
+//                        XposedBridge.hookAllConstructors(hookClass,
+//                                new XC_MethodHook() {
+//                                    @Override
+//                                    protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+//                                        super.beforeHookedMethod(param);
+//
+//                                        if (checkBannedFile(param, lpparam)) {
+////                                        boolean pass = false;
+////                                        StringBuilder sb = new StringBuilder();
+////                                        for (Object i:param.args){
+////                                            sb.append("|");
+////                                            if (i != null){
+////                                                sb.append(i.toString());
+////                                            }
+////                                        }
+////                                        String check = sb.toString();
+////                                        if (check.contains(procHead)
+////                                                ||check.contains(lpparam.packageName)
+////                                                ||check.endsWith("/lib64")
+////                                                ||check.contains("/lib64|")
+////                                        ){
+////                                            pass = true;
+////                                        }
+////                                        if (!pass){
+////                                            LoggerLog("[file]"+sb);
+////                                        }
+////                                        return;
 //                                        }
-//                                        String check = sb.toString();
-//                                        if (check.contains(procHead)
-//                                                ||check.contains(lpparam.packageName)
-//                                                ||check.endsWith("/lib64")
-//                                                ||check.contains("/lib64|")
-//                                        ){
-//                                            pass = true;
-//                                        }
-//                                        if (!pass){
-//                                            LoggerLog("[file]"+sb);
-//                                        }
-//                                        return;
-                                    }
-                                }
-                            });
-                } catch (Exception e) {
-                    LoggerLog(e);
-                }
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            java.io.File.class.getName(),
-                            lpparam.classLoader,
-                            "readObject",
-                            java.io.ObjectInputStream.class,
-                            new XC_MethodHook() {
-                                @Override
-                                protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                                    super.beforeHookedMethod(param);
-                                    File file = (File) param.thisObject;
-                                    if (file == null
-                                            || file.toString() == null //there's nothing wrong
-                                            || file.toString().equals("null")){return;}
-                                    if (!file.getAbsolutePath().contains(lpparam.packageName)
-                                            && !file.getAbsolutePath().contains(procHead)
-                                    && (
-                                            !file.getAbsolutePath().contains("tencent")
-                                            && !procHead.contains("tencent")
-                                            )){
-                                        param.thisObject = new File("/");
-                                    }
-                                }
-                            }
-                    );
-                } catch (Exception e) {
-                    LoggerLog(e);
-                }
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            java.io.File.class.getName(),
-                            lpparam.classLoader,
-                            "writeObject",
-                            java.io.ObjectOutputStream.class,
-                            new XC_MethodHook() {
-                                @Override
-                                protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                                    super.beforeHookedMethod(param);
-                                    File file = (File) param.thisObject;
-                                    if (!file.getAbsolutePath().contains(lpparam.packageName)
-                                            && !file.getAbsolutePath().contains(procHead)
-                                            && (
-                                            !file.getAbsolutePath().contains("tencent")
-                                                    && !procHead.contains("tencent")
-                                    )){
-                                        param.thisObject = new File("/");
-                                    }
-                                }
-                            }
-                    );
-                } catch (Exception e) {
-                    LoggerLog(e);
-                }
-                //        java.io.File.class list
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            java.io.File.class.getName(),
-                            lpparam.classLoader,
-                            "list",
-                            new XC_MethodHook(114514) {
-                                @Override
-                                protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                                    File thisFile = (File) param.thisObject;
-                                    String[] result = (String[]) param.getResult();
-                                    ArrayList<String> setReslut = new ArrayList<>();
-                                    if (result != null) {
-                                        for (String filePath : result) {
-                                            String AbsoluteFilePath = thisFile.getAbsolutePath() + filePath;
-                                            if (AbsoluteFilePath.contains(lpparam.packageName)
-                                                    || (lpparam.packageName.equals("com.android.webview")
-                                                    && !filePath.contains("linearity")
-                                                    && !filePath.contains("lineage")
-                                                    && !filePath.contains("magisk")
-                                                    && !filePath.contains("android")
-                                                    && !filePath.contains("system")
-                                                    && !filePath.contains("devices")
-                                                    && !filePath.contains("/sys")
-                                                    && !filePath.contains("/etc"))) {
-                                                setReslut.add(filePath);
-                                            } else {
-                                                //LoggerLog(lpparam.packageName + "调用java.io.File.class list()" + AbsoluteFilePath);
+//                                    }
+//                                });
+//                    } catch (Exception e) {
+//                        LoggerLog(e);
+//                    }
+                    try {
+                        {
+                            findAndHookMethodIfExists(hookClass,
+                                    "readObject",
+                                    java.io.ObjectInputStream.class,
+                                    new XC_MethodHook() {
+                                        @Override
+                                        protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                                            super.beforeHookedMethod(param);
+                                            File file = (File) param.thisObject;
+                                            if (file == null
+                                                    || file.toString() == null //there's nothing wrong
+                                                    || file.toString().equals("null")) {
+                                                return;
+                                            }
+                                            if (!file.getAbsolutePath().contains(lpparam.packageName)
+                                                    && !file.getAbsolutePath().contains(procHead)
+                                                    && (
+                                                    !file.getAbsolutePath().contains("tencent")
+                                                            && !procHead.contains("tencent")
+                                            )) {
+                                                param.thisObject = new File("/");
                                             }
                                         }
                                     }
-                                    param.setResult(setReslut.toArray(new String[0]));
+                            );
+                        }
+                        {
+                            findAndHookMethodIfExists(hookClass,
+                                    "writeObject",
+                                    java.io.ObjectOutputStream.class,
+                                    new XC_MethodHook() {
+                                        @Override
+                                        protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                                            super.beforeHookedMethod(param);
+                                            File file = (File) param.thisObject;
+                                            if (!file.getAbsolutePath().contains(lpparam.packageName)
+                                                    && !file.getAbsolutePath().contains(procHead)
+                                                    && (
+                                                    !file.getAbsolutePath().contains("tencent")
+                                                            && !procHead.contains("tencent")
+                                            )) {
+                                                param.thisObject = new File("/");
+                                            }
+                                        }
+                                    }
+                            );
+                        }
+                        //        java.io.File.class list
+                        {
+                            findAndHookMethodIfExists(hookClass,
+                                    "list",
+                                    new XC_MethodHook(114514) {
+                                        @Override
+                                        protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                                            File thisFile = (File) param.thisObject;
+                                            String[] result = (String[]) param.getResult();
+                                            ArrayList<String> setReslut = new ArrayList<>();
+                                            if (result != null) {
+                                                for (String filePath : result) {
+                                                    String AbsoluteFilePath = thisFile.getAbsolutePath() + filePath;
+                                                    if (AbsoluteFilePath.contains(lpparam.packageName)
+                                                            || (lpparam.packageName.equals("com.android.webview")
+                                                            && !filePath.contains("linearity")
+                                                            && !filePath.contains("lineage")
+                                                            && !filePath.contains("magisk")
+                                                            && !filePath.contains("android")
+                                                            && !filePath.contains("system")
+                                                            && !filePath.contains("devices")
+                                                            && !filePath.contains("/sys")
+                                                            && !filePath.contains("/etc"))) {
+                                                        setReslut.add(filePath);
+                                                    } else {
+                                                        //LoggerLog(lpparam.packageName + "调用java.io.File.class list()" + AbsoluteFilePath);
+                                                    }
+                                                }
+                                            }
+                                            param.setResult(setReslut.toArray(new String[0]));
 //                            param.setResult(-1);
-                                }
-                            }
-                    );
-                } catch (Exception e) {
-                    LoggerLog(e);
-                }
+                                        }
+                                    }
+                            );
+                        }
 //        java.io.File.class list(FilenameFilter)
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            java.io.File.class.getName(),
-                            lpparam.classLoader,
-                            "list",
-                            FilenameFilter.class,
-                            new XC_MethodHook(114514) {
-                                @Override
-                                protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                                    File thisFile = (File) param.thisObject;
-                                    String[] result = (String[]) param.getResult();
-                                    ArrayList<String> setReslut = new ArrayList<>();
-                                    if (result != null) {
-                                        for (String filePath : result) {
-                                            String AbsoluteFilePath = thisFile.getAbsolutePath() + filePath;
-                                            if (AbsoluteFilePath.contains(lpparam.packageName)
-                                                    || (lpparam.packageName.equals("com.android.webview")
-                                                    && !filePath.contains("linearity")
-                                                    && !filePath.contains("lineage")
-                                                    && !filePath.contains("magisk")
-                                                    && !filePath.contains("android")
-                                                    && !filePath.contains("system")
-                                                    && !filePath.contains("devices")
-                                                    && !filePath.contains("/sys")
-                                                    && !filePath.contains("/etc"))) {
-                                                setReslut.add(filePath);
-                                            } else {
-                                                //LoggerLog(lpparam.packageName + "调用java.io.File.class list(FilenameFilter)" + AbsoluteFilePath);
+                        {
+                            findAndHookMethodIfExists(hookClass,
+                                    "list",
+                                    FilenameFilter.class,
+                                    new XC_MethodHook(114514) {
+                                        @Override
+                                        protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                                            File thisFile = (File) param.thisObject;
+                                            String[] result = (String[]) param.getResult();
+                                            ArrayList<String> setReslut = new ArrayList<>();
+                                            if (result != null) {
+                                                for (String filePath : result) {
+                                                    String AbsoluteFilePath = thisFile.getAbsolutePath() + filePath;
+                                                    if (AbsoluteFilePath.contains(lpparam.packageName)
+                                                            || (lpparam.packageName.equals("com.android.webview")
+                                                            && !filePath.contains("linearity")
+                                                            && !filePath.contains("lineage")
+                                                            && !filePath.contains("magisk")
+                                                            && !filePath.contains("android")
+                                                            && !filePath.contains("system")
+                                                            && !filePath.contains("devices")
+                                                            && !filePath.contains("/sys")
+                                                            && !filePath.contains("/etc"))) {
+                                                        setReslut.add(filePath);
+                                                    } else {
+                                                        //LoggerLog(lpparam.packageName + "调用java.io.File.class list(FilenameFilter)" + AbsoluteFilePath);
+                                                    }
+                                                }
                                             }
+                                            param.setResult(setReslut.toArray(new String[0]));
+//                            param.setResult(-1);
                                         }
                                     }
-                                    param.setResult(setReslut.toArray(new String[0]));
-//                            param.setResult(-1);
-                                }
-                            }
-                    );
-                } catch (Exception e) {
-                    LoggerLog(e);
-                }
+                            );
+                        }
 //        java.io.File.class listFiles
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            java.io.File.class.getName(),
-                            lpparam.classLoader,
-                            "listFiles",
-                            new XC_MethodHook(114514) {
-                                @Override
-                                protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                                    File[] result = (File[]) param.getResult();
-                                    ArrayList<File> setReslut = new ArrayList<>();
-                                    if (result != null) {
-                                        for (File file : result) {
+                        {
+                            findAndHookMethodIfExists(hookClass,
+                                    "listFiles",
+                                    new XC_MethodHook(114514) {
+                                        @Override
+                                        protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                                            File[] result = (File[]) param.getResult();
+                                            ArrayList<File> setReslut = new ArrayList<>();
+                                            if (result != null) {
+                                                for (File file : result) {
 //                                resultStr.append(file.getAbsolutePath());
-                                            String filePath = file.getAbsolutePath();
-                                            if (filePath.contains(lpparam.packageName)
-                                                    || (lpparam.packageName.equals("com.android.webview")
-                                                    && !filePath.contains("linearity")
-                                                    && !filePath.contains("lineage")
-                                                    && !filePath.contains("magisk")
-                                                    && !filePath.contains("android")
-                                                    && !filePath.contains("system")
-                                                    && !filePath.contains("devices")
-                                                    && !filePath.contains("/sys")
-                                                    && !filePath.contains("/etc"))) {
-                                                setReslut.add(file);
-                                            } else {
-                                                //LoggerLog(lpparam.packageName + "调用java.io.File.class listFiles()" + filePath);
+                                                    String filePath = file.getAbsolutePath();
+                                                    if (filePath.contains(lpparam.packageName)
+                                                            || (lpparam.packageName.equals("com.android.webview")
+                                                            && !filePath.contains("linearity")
+                                                            && !filePath.contains("lineage")
+                                                            && !filePath.contains("magisk")
+                                                            && !filePath.contains("android")
+                                                            && !filePath.contains("system")
+                                                            && !filePath.contains("devices")
+                                                            && !filePath.contains("/sys")
+                                                            && !filePath.contains("/etc"))) {
+                                                        setReslut.add(file);
+                                                    } else {
+                                                        //LoggerLog(lpparam.packageName + "调用java.io.File.class listFiles()" + filePath);
+                                                    }
+                                                }
                                             }
+                                            param.setResult(setReslut.toArray(new File[0]));
+//                            param.setResult(-1);
                                         }
                                     }
-                                    param.setResult(setReslut.toArray(new File[0]));
-//                            param.setResult(-1);
-                                }
-                            }
-                    );
-                } catch (Exception e) {
-                    LoggerLog(e);
-                }
+                            );
+                        }
 //        java.io.File.class listFiles(FilenameFilter)
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            java.io.File.class.getName(),
-                            lpparam.classLoader,
-                            "listFiles",
-                            FilenameFilter.class,
-                            new XC_MethodHook(114514) {
-                                @Override
-                                protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                                    File[] result = (File[]) param.getResult();
-                                    ArrayList<File> setReslut = new ArrayList<>();
-                                    if (result != null) {
-                                        for (File file : result) {
+                        {
+                            findAndHookMethodIfExists(hookClass,
+                                    "listFiles",
+                                    FilenameFilter.class,
+                                    new XC_MethodHook(114514) {
+                                        @Override
+                                        protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                                            File[] result = (File[]) param.getResult();
+                                            ArrayList<File> setReslut = new ArrayList<>();
+                                            if (result != null) {
+                                                for (File file : result) {
 //                                resultStr.append(file.getAbsolutePath());
-                                            String filePath = file.getAbsolutePath();
-                                            if (filePath.contains(lpparam.packageName)
-                                                    || (lpparam.packageName.equals("com.android.webview")
-                                                    && !filePath.contains("linearity")
-                                                    && !filePath.contains("lineage")
-                                                    && !filePath.contains("magisk")
-                                                    && !filePath.contains("android")
-                                                    && !filePath.contains("system")
-                                                    && !filePath.contains("/devices")
-                                                    && !filePath.contains("/sys")
-                                                    && !filePath.contains("/etc"))) {
-                                                setReslut.add(file);
-                                            } else {
-                                                //LoggerLog(lpparam.packageName + "调用java.io.File.class listFiles(FilenameFilter)" + filePath);
+                                                    String filePath = file.getAbsolutePath();
+                                                    if (filePath.contains(lpparam.packageName)
+                                                            || (lpparam.packageName.equals("com.android.webview")
+                                                            && !filePath.contains("linearity")
+                                                            && !filePath.contains("lineage")
+                                                            && !filePath.contains("magisk")
+                                                            && !filePath.contains("android")
+                                                            && !filePath.contains("system")
+                                                            && !filePath.contains("/devices")
+                                                            && !filePath.contains("/sys")
+                                                            && !filePath.contains("/etc"))) {
+                                                        setReslut.add(file);
+                                                    } else {
+                                                        //LoggerLog(lpparam.packageName + "调用java.io.File.class listFiles(FilenameFilter)" + filePath);
+                                                    }
+                                                }
                                             }
+                                            param.setResult(setReslut.toArray(new File[0]));
+//                            param.setResult(-1);
                                         }
                                     }
-                                    param.setResult(setReslut.toArray(new File[0]));
-//                            param.setResult(-1);
-                                }
-                            }
-                    );
-                } catch (Exception e) {
-                    LoggerLog(e);
+                            );
+                        }
+                    } catch (Exception e) {
+                        LoggerLog(e);
+                    }
                 }
             }//not finished
             if (HookOutputStream){
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            java.io.OutputStream.class.getName(),
-                            lpparam.classLoader,
-                            "flush",
-                            new XC_MethodHook() {
-                                @Override
-                                protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                                    super.beforeHookedMethod(param);
-                                    if (param.thisObject instanceof FileOutputStream){
-                                        String path = (String) XposedHelpers.getObjectField(param.thisObject, "path");
-                                        path = checkReplaceFile(path, lpparam);
-                                        if (!checkBannedOutFile(path, lpparam)) {
-                                            param.thisObject = new FileOutputStream("/storage/emulated/0/AAAAAA.foolish");
+                hookClass = XposedHelpers.findClassIfExists(java.io.OutputStream.class.getName(), lpparam.classLoader);
+                if (hookClass != null){
+                    try {
+                        findAndHookMethodIfExists(hookClass,
+                                "flush",
+                                new XC_MethodHook() {
+                                    @Override
+                                    protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                                        super.beforeHookedMethod(param);
+                                        if (param.thisObject instanceof FileOutputStream){
+                                            String path = (String) XposedHelpers.getObjectField(param.thisObject, "path");
+                                            path = checkReplaceFile(path, lpparam);
+                                            if (!checkBannedOutFile(path, lpparam)) {
+                                                param.thisObject = new FileOutputStream("/storage/emulated/0/AAAAAA.foolish");
+                                            }
                                         }
                                     }
                                 }
-                            }
-                    );
-                } catch (Exception e) {
-                    LoggerLog(e);
+                        );
+                    } catch (Exception e) {
+                        LoggerLog(e);
+                    }
                 }
             }//not finished
             if (HookInputStream){
-                try {
-                    Class<?> fileInputStream = XposedHelpers.findClass(java.io.FileInputStream.class.getName(),lpparam.classLoader);
-                    XposedBridge.hookAllConstructors(
-                            fileInputStream,
-                            new XC_MethodHook() {
-                                @Override
-                                protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                                    super.beforeHookedMethod(param);
-                                    String path = "";
-                                    Object name = param.args[0];
-                                    if (param.args[0] instanceof String){
-                                        if (Objects.equals((String) name, "/storage/emulated/0/AAAAAA.foolish")){return;}
-                                        if (Objects.equals((String) name, "/")){return;}
-                                        path = name != null ? (String) name : "";
-                                        path = checkReplaceFile(path, lpparam);
-                                        if (!checkBannedInFile(path, lpparam)) {
-                                            param.args[0] = path;
+                hookClass = XposedHelpers.findClassIfExists(java.io.FileInputStream.class.getName(),lpparam.classLoader);
+                if (hookClass != null){
+                    try {
+                        XposedBridge.hookAllConstructors(
+                                hookClass,
+                                new XC_MethodHook() {
+                                    @Override
+                                    protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                                        super.beforeHookedMethod(param);
+                                        String path = "";
+                                        Object name = param.args[0];
+                                        if (param.args[0] instanceof String){
+                                            if (Objects.equals((String) name, "/storage/emulated/0/AAAAAA.foolish")){return;}
+                                            if (Objects.equals((String) name, "/")){return;}
+                                            path = name != null ? (String) name : "";
+                                            path = checkReplaceFile(path, lpparam);
+                                            if (!checkBannedInFile(path, lpparam)) {
+                                                param.args[0] = path;
+                                            }
                                         }
-                                    }
-                                    if (param.args[0] instanceof File){
-                                        path = name != null ? ((File) name).getAbsolutePath() : "";
-                                        path = checkReplaceFile(path, lpparam);
-                                        if (!checkBannedInFile(path, lpparam)) {
-                                            param.args[0] = new File(path);
+                                        if (param.args[0] instanceof File){
+                                            path = name != null ? ((File) name).getAbsolutePath() : "";
+                                            path = checkReplaceFile(path, lpparam);
+                                            if (!checkBannedInFile(path, lpparam)) {
+                                                param.args[0] = new File(path);
+                                            }
                                         }
                                     }
                                 }
-                            }
-                    );
-                } catch (Exception e) {
-                    LoggerLog(e);
+                        );
+                    } catch (Exception e) {
+                        LoggerLog(e);
+                    }
                 }
             }
         }
@@ -593,7 +583,9 @@ public class HookIO {
         }
         if (path.contains(lpparam.packageName)
                 || path.contains(procHead)
-        ){return path;}
+        ){
+            return path;
+        }
         if (!path.startsWith("/")){
             path = "/" + path;
         }

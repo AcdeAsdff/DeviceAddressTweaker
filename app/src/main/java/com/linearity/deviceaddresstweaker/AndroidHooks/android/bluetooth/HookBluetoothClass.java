@@ -1,11 +1,11 @@
 package com.linearity.deviceaddresstweaker.AndroidHooks.android.bluetooth;
 
-import static com.linearity.deviceaddresstweaker.DeviceAddressTweaker.getRandomString;
-import static com.linearity.deviceaddresstweaker.LoggerUtils.LoggerLog;
+import static com.linearity.utils.HookUtils.findAndHookMethodIfExists;
+import static com.linearity.utils.ReturnReplacements.returnRandomStr20;
+import static com.linearity.utils.LoggerUtils.LoggerLog;
 
 import android.bluetooth.BluetoothAdapter;
 
-import de.robv.android.xposed.XC_MethodHook;
 import android.content.SharedPreferences;
 
 import de.robv.android.xposed.XposedHelpers;
@@ -15,57 +15,29 @@ public class HookBluetoothClass {
     public static boolean HookBluetooth = true;
     public static boolean HookBluetoothAdapter = true;
     public static void DoHook(XC_LoadPackage.LoadPackageParam lpparam, String procHead, SharedPreferences sharedPreferences){
+        Class<?> hookClass;
         HookBluetooth = sharedPreferences.getBoolean("HookBluetoothClass_HookBluetooth", true);
         HookBluetoothAdapter = sharedPreferences.getBoolean("HookBluetoothClass_HookBluetoothAdapter", true);
         if (HookBluetooth){
             if (HookBluetoothAdapter) {
-                //      BluetoothAdapter.class getAddress()
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            android.bluetooth.BluetoothAdapter.class.getName(),
-                            lpparam.classLoader,
-                            "getAddress",
-                            new XC_MethodHook(114514) {
-                                @Override
-                                protected void afterHookedMethod(MethodHookParam param) {
-                                    //LoggerLog(lpparam.packageName + "调用getAddress()" + param.getResult());
-                                    param.setResult(getRandomString(20));
-                                }
+                hookClass = XposedHelpers.findClassIfExists(BluetoothAdapter.class.getName(),lpparam.classLoader);
+                if (hookClass != null){
+                    try {
+                        //      BluetoothAdapter.class getAddress()
+                        {
+                            findAndHookMethodIfExists(hookClass, "getAddress", returnRandomStr20);
 
-//                        @Override
-//                        protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-//                            //LoggerLog(getMethodStack());
-//                            super.afterHookedMethod(param);
-//                        }
-                            }
-                    );
-
-                } catch (Exception e) {
-                    LoggerLog(e);
-                }
+                        }
 //      BluetoothAdapter.class getName()
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            BluetoothAdapter.class.getName(),
-                            lpparam.classLoader,
-                            "getName",
-                            new XC_MethodHook(114514) {
-                                @Override
-                                protected void afterHookedMethod(MethodHookParam param) {
-                                    //LoggerLog(lpparam.packageName + "调用getName()" + param.getResult());
-                                    param.setResult(getRandomString(20));
-                                }
+                        {
+                            findAndHookMethodIfExists(hookClass,
+                                    "getName", returnRandomStr20
+                            );
 
-//                        @Override
-//                        protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-//                            //LoggerLog(getMethodStack());
-//                            super.afterHookedMethod(param);
-//                        }
-                            }
-                    );
-
-                } catch (Exception e) {
-                    LoggerLog(e);
+                        }
+                    } catch (Exception e) {
+                        LoggerLog(e);
+                    }
                 }
             }
         }

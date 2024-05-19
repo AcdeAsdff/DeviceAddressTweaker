@@ -1,7 +1,5 @@
 package com.linearity.deviceaddresstweaker;
 
-import static com.linearity.deviceaddresstweaker.LoggerUtils.LoggerLog;
-
 import android.app.Activity;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -30,21 +28,18 @@ public class SettingsGUI extends Activity {
         RecyclerView recyclerView = findViewById(R.id.options);
         EditText inputPackageName = findViewById(R.id.input_packagename);
         TextView refreshButton = findViewById(R.id.refresh_button);
-        refreshButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                try {
-                    String packageName = String.valueOf(inputPackageName.getText()).replace(" ","").replace("\n", "");
-                    PackageManager pm = getPackageManager();
-                    pm.getPackageInfo(packageName, 0);
-                    SettingAdapter settingAdapter = new SettingAdapter(spListDefault, packageName);
-                    recyclerView.setLayoutManager(new LinearLayoutManager(recyclerView.getContext()));
-                    recyclerView.setAdapter(settingAdapter);
-                }catch (Exception e){
-                    Toast.makeText(refreshButton.getContext(), "NO PACKAGE!", Toast.LENGTH_LONG).show();
+        refreshButton.setOnClickListener(v -> {
+            try {
+                String packageName = String.valueOf(inputPackageName.getText()).replace(" ","").replace("\n", "");
+                PackageManager pm = getPackageManager();
+                pm.getPackageInfo(packageName, 0);
+                SettingAdapter settingAdapter = new SettingAdapter(spListDefault, packageName);
+                recyclerView.setLayoutManager(new LinearLayoutManager(recyclerView.getContext()));
+                recyclerView.setAdapter(settingAdapter);
+            }catch (Exception e){
+                Toast.makeText(refreshButton.getContext(), "NO PACKAGE!", Toast.LENGTH_LONG).show();
 //                    LoggerLog(e);
-                    Log.e("[linearity]", "onClick: ", e);
-                }
+                Log.e("[linearity]", "onClick: ", e);
             }
         });
     }
@@ -85,6 +80,7 @@ public class SettingsGUI extends Activity {
         DefaultResult.add(new Pair<>("HookBluetoothClass_HookBluetoothAdapter", true));
         DefaultResult.add(new Pair<>("HookContentClass_HookContent", true));
         DefaultResult.add(new Pair<>("HookContentClass_HookContext", true));
+        DefaultResult.add(new Pair<>("HookContentClass_HookClipboardManager", true));
         DefaultResult.add(new Pair<>("HookContentClass_HookSharedPreferences", true));
         DefaultResult.add(new Pair<>("HookHardwareClass_HookHardware", true));
         DefaultResult.add(new Pair<>("HookHardwareClass_HookSensor", true));

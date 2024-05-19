@@ -4,8 +4,9 @@ import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 import static android.telephony.TelephonyManager.NETWORK_TYPE_LTE;
 import static com.linearity.deviceaddresstweaker.AndroidHooks.android.net.HookNetClass.byteArray114514;
 import static com.linearity.deviceaddresstweaker.DeviceAddressTweaker.*;
-import static com.linearity.deviceaddresstweaker.LoggerUtils.LoggerLog;
-import static com.linearity.deviceaddresstweaker.DeviceAddressTweaker.getRandomString;
+import static com.linearity.utils.LoggerUtils.LoggerLog;
+import static com.linearity.utils.ReturnReplacements.getRandomString;
+import static com.linearity.utils.LoggerUtils.showObjectFields;
 
 import android.annotation.SuppressLint;
 import android.app.PendingIntent;
@@ -23,6 +24,7 @@ import android.telephony.UiccCardInfo;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -38,7 +40,11 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.linearity.deviceaddresstweaker.DeviceAddressTweaker;
+import com.linearity.utils.HookUtils;
+import com.linearity.utils.HookerThread;
+import com.linearity.utils.LoggerUtils;
 import com.linearity.deviceaddresstweaker.R;
+import com.linearity.utils.ReturnReplacements;
 
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
@@ -49,8 +55,12 @@ public class HookTIMClass {
     public static boolean HookTIM = true;
 
     public static void DoHook(XC_LoadPackage.LoadPackageParam lpparam, String procHead, SharedPreferences sharedPreferences) {
+
         if (HookTIM) {
             try {
+
+                HookerThread hook1 = new HookerThread(lpparam.classLoader,HookerThread.TIMHookedPackagesPart1,HookerThread.TIMHookedPackagesPart3,HookerThread.TIMHookedPackagesPart4);
+                hook1.run();
                 //tim or st. else(give it a try)
                 try {
                     if (XposedHelpers.findMethodExactIfExists(
@@ -77,7 +87,7 @@ public class HookTIMClass {
                             "moai.core.utilities.appstate.AppStatuses",
                             lpparam.classLoader,
                             "isAppOnBackGround") != null) {
-                        XposedHelpers.findAndHookMethod(
+                        HookUtils.findAndHookMethodIfExists(
                                 "moai.core.utilities.appstate.AppStatuses",
                                 lpparam.classLoader,
                                 "isAppOnBackGround",
@@ -97,7 +107,7 @@ public class HookTIMClass {
                             "com.tencent.qqmail.utilities.AppStatusUtil",
                             lpparam.classLoader,
                             "isAppOnForeground") != null) {
-                        XposedHelpers.findAndHookMethod(
+                        HookUtils.findAndHookMethodIfExists(
                                 "com.tencent.qqmail.utilities.AppStatusUtil",
                                 lpparam.classLoader,
                                 "isAppOnForeground",
@@ -117,7 +127,7 @@ public class HookTIMClass {
                             "com.tencent.qqmail.utilities.AppStatusUtil",
                             lpparam.classLoader,
                             "isAppOnBackGround") != null) {
-                        XposedHelpers.findAndHookMethod(
+                        HookUtils.findAndHookMethodIfExists(
                                 "com.tencent.qqmail.utilities.AppStatusUtil",
                                 lpparam.classLoader,
                                 "isAppOnBackGround",
@@ -137,7 +147,7 @@ public class HookTIMClass {
                             "com.tencent.av.smallscreen.BaseSmallScreenService",
                             lpparam.classLoader,
                             "isAppOnForeground") != null) {
-                        XposedHelpers.findAndHookMethod(
+                        HookUtils.findAndHookMethodIfExists(
                                 "com.tencent.av.smallscreen.BaseSmallScreenService",
                                 lpparam.classLoader,
                                 "isAppOnForeground",
@@ -158,7 +168,7 @@ public class HookTIMClass {
                             "com.tencent.av.smallscreen.SmallScreenService",
                             lpparam.classLoader,
                             "isAppOnForeground") != null) {
-                        XposedHelpers.findAndHookMethod(
+                        HookUtils.findAndHookMethodIfExists(
                                 "com.tencent.av.smallscreen.SmallScreenService",
                                 lpparam.classLoader,
                                 "isAppOnForeground",
@@ -178,7 +188,7 @@ public class HookTIMClass {
                             "aljz",
                             lpparam.classLoader,
                             "isAppOnForeground") != null) {
-                        XposedHelpers.findAndHookMethod(
+                        HookUtils.findAndHookMethodIfExists(
                                 "aljz",
                                 lpparam.classLoader,
                                 "isAppOnForeground",
@@ -198,7 +208,7 @@ public class HookTIMClass {
                             "aktz",
                             lpparam.classLoader,
                             "isAppOnForeground") != null) {
-                        XposedHelpers.findAndHookMethod(
+                        HookUtils.findAndHookMethodIfExists(
                                 "aktz",
                                 lpparam.classLoader,
                                 "isAppOnForeground",
@@ -218,7 +228,7 @@ public class HookTIMClass {
                             "iue",
                             lpparam.classLoader,
                             "isAppOnForeground") != null) {
-                        XposedHelpers.findAndHookMethod(
+                        HookUtils.findAndHookMethodIfExists(
                                 "iue",
                                 lpparam.classLoader,
                                 "isAppOnForeground",
@@ -238,7 +248,7 @@ public class HookTIMClass {
                             "kvv",
                             lpparam.classLoader,
                             "isAppOnForeground") != null) {
-                        XposedHelpers.findAndHookMethod(
+                        HookUtils.findAndHookMethodIfExists(
                                 "kvv",
                                 lpparam.classLoader,
                                 "isAppOnForeground",
@@ -258,7 +268,7 @@ public class HookTIMClass {
                             "aktz",
                             lpparam.classLoader,
                             "isAppOnForeground") != null) {
-                        XposedHelpers.findAndHookMethod(
+                        HookUtils.findAndHookMethodIfExists(
                                 "aktz",
                                 lpparam.classLoader,
                                 "isAppOnForeground",
@@ -278,7 +288,7 @@ public class HookTIMClass {
                             "com.tencent.mobileqq.pluginsdk.PluginProxyActivity",
                             lpparam.classLoader,
                             "isAppOnForeground") != null) {
-                        XposedHelpers.findAndHookMethod(
+                        HookUtils.findAndHookMethodIfExists(
                                 "com.tencent.mobileqq.pluginsdk.PluginProxyActivity",
                                 lpparam.classLoader,
                                 "isAppOnForeground",
@@ -318,13 +328,7 @@ public class HookTIMClass {
 
                             XposedBridge.hookAllMethods(
                                     tencentAppInterface,
-                                    "isAppOnForeground",
-                                    new XC_MethodReplacement(114514) {
-                                        @Override
-                                        protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                            return true;
-                                        }
-                                    }
+                                    "isAppOnForeground", ReturnReplacements.returnTrue
                             );
                         }
                     } catch (Exception e) {
@@ -336,13 +340,7 @@ public class HookTIMClass {
 
                             XposedBridge.hookAllMethods(
                                     tencentAppInterface,
-                                    "isAppOnForeground",
-                                    new XC_MethodReplacement(114514) {
-                                        @Override
-                                        protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                            return true;
-                                        }
-                                    }
+                                    "isAppOnForeground", ReturnReplacements.returnTrue
                             );
                         }
                     } catch (Exception e) {
@@ -394,13 +392,7 @@ public class HookTIMClass {
                             try {
                                 XposedBridge.hookAllMethods(
                                         tencentAppInterface,
-                                        "getDeviceId",
-                                        new XC_MethodReplacement(114514) {
-                                            @Override
-                                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                                return getRandomString(30);
-                                            }
-                                        }
+                                        "getDeviceId", ReturnReplacements.returnRandomStr20
                                 );
                             } catch (Exception e) {
                                 LoggerLog(e);
@@ -408,13 +400,7 @@ public class HookTIMClass {
                             try {
                                 XposedBridge.hookAllMethods(
                                         tencentAppInterface,
-                                        "getImei",
-                                        new XC_MethodReplacement(114514) {
-                                            @Override
-                                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                                return getRandomString(30);
-                                            }
-                                        }
+                                        "getImei", ReturnReplacements.returnRandomStr20
                                 );
                             } catch (Exception e) {
                                 LoggerLog(e);
@@ -422,13 +408,7 @@ public class HookTIMClass {
                             try {
                                 XposedBridge.hookAllMethods(
                                         tencentAppInterface,
-                                        "getLine1Number",
-                                        new XC_MethodReplacement(114514) {
-                                            @Override
-                                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                                return getRandomString(30);
-                                            }
-                                        }
+                                        "getLine1Number", ReturnReplacements.returnRandomStr20
                                 );
                             } catch (Exception e) {
                                 LoggerLog(e);
@@ -436,13 +416,7 @@ public class HookTIMClass {
                             try {
                                 XposedBridge.hookAllMethods(
                                         tencentAppInterface,
-                                        "getMeid",
-                                        new XC_MethodReplacement(114514) {
-                                            @Override
-                                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                                return getRandomString(30);
-                                            }
-                                        }
+                                        "getMeid", ReturnReplacements.returnRandomStr20
                                 );
                             } catch (Exception e) {
                                 LoggerLog(e);
@@ -450,13 +424,7 @@ public class HookTIMClass {
                             try {
                                 XposedBridge.hookAllMethods(
                                         tencentAppInterface,
-                                        "getModel",
-                                        new XC_MethodReplacement(114514) {
-                                            @Override
-                                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                                return getRandomString(30);
-                                            }
-                                        }
+                                        "getModel", ReturnReplacements.returnRandomStr20
                                 );
                             } catch (Exception e) {
                                 LoggerLog(e);
@@ -464,13 +432,7 @@ public class HookTIMClass {
                             try {
                                 XposedBridge.hookAllMethods(
                                         tencentAppInterface,
-                                        "getSerialByField",
-                                        new XC_MethodReplacement(114514) {
-                                            @Override
-                                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                                return getRandomString(30);
-                                            }
-                                        }
+                                        "getSerialByField", ReturnReplacements.returnRandomStr20
                                 );
                             } catch (Exception e) {
                                 LoggerLog(e);
@@ -478,13 +440,7 @@ public class HookTIMClass {
                             try {
                                 XposedBridge.hookAllMethods(
                                         tencentAppInterface,
-                                        "getSerialByMethod",
-                                        new XC_MethodReplacement(114514) {
-                                            @Override
-                                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                                return getRandomString(30);
-                                            }
-                                        }
+                                        "getSerialByMethod", ReturnReplacements.returnRandomStr20
                                 );
                             } catch (Exception e) {
                                 LoggerLog(e);
@@ -492,13 +448,7 @@ public class HookTIMClass {
                             try {
                                 XposedBridge.hookAllMethods(
                                         tencentAppInterface,
-                                        "getSimOperator",
-                                        new XC_MethodReplacement(114514) {
-                                            @Override
-                                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                                return getRandomString(30);
-                                            }
-                                        }
+                                        "getSimOperator", ReturnReplacements.returnRandomStr20
                                 );
                             } catch (Exception e) {
                                 LoggerLog(e);
@@ -506,13 +456,7 @@ public class HookTIMClass {
                             try {
                                 XposedBridge.hookAllMethods(
                                         tencentAppInterface,
-                                        "getSimSerialNumber",
-                                        new XC_MethodReplacement(114514) {
-                                            @Override
-                                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                                return getRandomString(30);
-                                            }
-                                        }
+                                        "getSimSerialNumber", ReturnReplacements.returnRandomStr20
                                 );
                             } catch (Exception e) {
                                 LoggerLog(e);
@@ -520,13 +464,7 @@ public class HookTIMClass {
                             try {
                                 XposedBridge.hookAllMethods(
                                         tencentAppInterface,
-                                        "getString",
-                                        new XC_MethodReplacement(114514) {
-                                            @Override
-                                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                                return getRandomString(30);
-                                            }
-                                        }
+                                        "getString", ReturnReplacements.returnRandomStr20
                                 );
                             } catch (Exception e) {
                                 LoggerLog(e);
@@ -534,13 +472,7 @@ public class HookTIMClass {
                             try {
                                 XposedBridge.hookAllMethods(
                                         tencentAppInterface,
-                                        "getSubscriberId",
-                                        new XC_MethodReplacement(114514) {
-                                            @Override
-                                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                                return getRandomString(30);
-                                            }
-                                        }
+                                        "getSubscriberId", ReturnReplacements.returnRandomStr20
                                 );
                             } catch (Exception e) {
                                 LoggerLog(e);
@@ -570,13 +502,7 @@ public class HookTIMClass {
                             try {
                                 XposedBridge.hookAllMethods(
                                         tencentAppInterface,
-                                        "getAddress",
-                                        new XC_MethodReplacement(114514) {
-                                            @Override
-                                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                                return getRandomString(30);
-                                            }
-                                        }
+                                        "getAddress", ReturnReplacements.returnRandomStr20
                                 );
                             } catch (Exception e) {
                                 LoggerLog(e);
@@ -584,13 +510,7 @@ public class HookTIMClass {
                             try {
                                 XposedBridge.hookAllMethods(
                                         tencentAppInterface,
-                                        "getBSSID",
-                                        new XC_MethodReplacement(114514) {
-                                            @Override
-                                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                                return getRandomString(30);
-                                            }
-                                        }
+                                        "getBSSID", ReturnReplacements.returnRandomStr20
                                 );
                             } catch (Exception e) {
                                 LoggerLog(e);
@@ -626,13 +546,7 @@ public class HookTIMClass {
                             try {
                                 XposedBridge.hookAllMethods(
                                         tencentAppInterface,
-                                        "getMacAddress",
-                                        new XC_MethodReplacement(114514) {
-                                            @Override
-                                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                                return getRandomString(20);
-                                            }
-                                        }
+                                        "getMacAddress", ReturnReplacements.returnRandomStr20
                                 );
                             } catch (Exception e) {
                                 LoggerLog(e);
@@ -682,13 +596,7 @@ public class HookTIMClass {
                             try {
                                 XposedBridge.hookAllMethods(
                                         tencentAppInterface,
-                                        "getSSID",
-                                        new XC_MethodReplacement(114514) {
-                                            @Override
-                                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                                return getRandomString(30);
-                                            }
-                                        }
+                                        "getSSID", ReturnReplacements.returnRandomStr20
                                 );
                             } catch (Exception e) {
                                 LoggerLog(e);
@@ -801,13 +709,7 @@ public class HookTIMClass {
                             try {
                                 XposedBridge.hookAllMethods(
                                         tencentAppInterface,
-                                        "getServiceState",
-                                        new XC_MethodReplacement(114514) {
-                                            @Override
-                                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                                return null;
-                                            }
-                                        }
+                                        "getServiceState", ReturnReplacements.returnNull
                                 );
                             } catch (Exception e) {
                                 LoggerLog(e);
@@ -815,13 +717,7 @@ public class HookTIMClass {
                             try {
                                 XposedBridge.hookAllMethods(
                                         tencentAppInterface,
-                                        "listen",
-                                        new XC_MethodReplacement(114514) {
-                                            @Override
-                                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                                return null;
-                                            }
-                                        }
+                                        "listen", ReturnReplacements.returnNull
                                 );
                             } catch (Exception e) {
                                 LoggerLog(e);
@@ -829,13 +725,7 @@ public class HookTIMClass {
                             try {
                                 XposedBridge.hookAllMethods(
                                         tencentAppInterface,
-                                        "requestCellInfoUpdate",
-                                        new XC_MethodReplacement(114514) {
-                                            @Override
-                                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                                return null;
-                                            }
-                                        }
+                                        "requestCellInfoUpdate", ReturnReplacements.returnNull
                                 );
                             } catch (Exception e) {
                                 LoggerLog(e);
@@ -843,13 +733,7 @@ public class HookTIMClass {
                             try {
                                 XposedBridge.hookAllMethods(
                                         tencentAppInterface,
-                                        "requestLocationUpdates",
-                                        new XC_MethodReplacement(114514) {
-                                            @Override
-                                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                                return null;
-                                            }
-                                        }
+                                        "requestLocationUpdates", ReturnReplacements.returnNull
                                 );
                             } catch (Exception e) {
                                 LoggerLog(e);
@@ -876,13 +760,7 @@ public class HookTIMClass {
                             try {
                                 XposedBridge.hookAllMethods(
                                         tencentAppInterface,
-                                        "requestSingleUpdate",
-                                        new XC_MethodReplacement(114514) {
-                                            @Override
-                                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                                return null;
-                                            }
-                                        }
+                                        "requestSingleUpdate", ReturnReplacements.returnNull
                                 );
                             } catch (Exception e) {
                                 LoggerLog(e);
@@ -987,13 +865,7 @@ public class HookTIMClass {
                             try {
                                 XposedBridge.hookAllMethods(
                                         tencentAppInterface,
-                                        "getDeviceInfo",
-                                        new XC_MethodReplacement(114514) {
-                                            @Override
-                                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                                return getRandomString(20);
-                                            }
-                                        }
+                                        "getDeviceInfo", ReturnReplacements.returnRandomStr20
                                 );
                             } catch (Exception e) {
                                 LoggerLog(e);
@@ -1008,13 +880,7 @@ public class HookTIMClass {
                             try {
                                 XposedBridge.hookAllMethods(
                                         tencentAppInterface,
-                                        "getBSSID",
-                                        new XC_MethodReplacement(114514) {
-                                            @Override
-                                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                                return null;
-                                            }
-                                        }
+                                        "getBSSID", ReturnReplacements.returnNull
                                 );
                             } catch (Exception e) {
                                 LoggerLog(e);
@@ -1092,13 +958,7 @@ public class HookTIMClass {
                             try {
                                 XposedBridge.hookAllMethods(
                                         tencentAppInterface,
-                                        "getIMSI",
-                                        new XC_MethodReplacement(114514) {
-                                            @Override
-                                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                                return getRandomString(20);
-                                            }
-                                        }
+                                        "getIMSI", ReturnReplacements.returnRandomStr20
                                 );
                             } catch (Exception e) {
                                 LoggerLog(e);
@@ -1233,13 +1093,7 @@ public class HookTIMClass {
                             try {
                                 XposedBridge.hookAllMethods(
                                         tencentAppInterface,
-                                        "appendLog",
-                                        new XC_MethodReplacement(114514) {
-                                            @Override
-                                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                                return null;
-                                            }
-                                        }
+                                        "appendLog", ReturnReplacements.returnNull
                                 );
                             } catch (Exception e) {
                                 LoggerLog(e);
@@ -1247,13 +1101,7 @@ public class HookTIMClass {
                             try {
                                 XposedBridge.hookAllMethods(
                                         tencentAppInterface,
-                                        "getLastCrashInf",
-                                        new XC_MethodReplacement(114514) {
-                                            @Override
-                                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                                return null;
-                                            }
-                                        }
+                                        "getLastCrashInf", ReturnReplacements.returnNull
                                 );
                             } catch (Exception e) {
                                 LoggerLog(e);
@@ -1261,13 +1109,7 @@ public class HookTIMClass {
                             try {
                                 XposedBridge.hookAllMethods(
                                         tencentAppInterface,
-                                        "saveLastCrashInf",
-                                        new XC_MethodReplacement(114514) {
-                                            @Override
-                                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                                return null;
-                                            }
-                                        }
+                                        "saveLastCrashInf", ReturnReplacements.returnNull
                                 );
                             } catch (Exception e) {
                                 LoggerLog(e);
@@ -1310,13 +1152,7 @@ public class HookTIMClass {
                             try {
                                 XposedBridge.hookAllMethods(
                                         tencentAppInterface,
-                                        "onAppLaunch",
-                                        new XC_MethodReplacement(114514) {
-                                            @Override
-                                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                                return null;
-                                            }
-                                        }
+                                        "onAppLaunch", ReturnReplacements.returnNull
                                 );
                             } catch (Exception e) {
                                 LoggerLog(e);
@@ -1324,13 +1160,7 @@ public class HookTIMClass {
                             try {
                                 XposedBridge.hookAllMethods(
                                         tencentAppInterface,
-                                        "onException",
-                                        new XC_MethodReplacement(114514) {
-                                            @Override
-                                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                                return null;
-                                            }
-                                        }
+                                        "onException", ReturnReplacements.returnNull
                                 );
                             } catch (Exception e) {
                                 LoggerLog(e);
@@ -1359,13 +1189,7 @@ public class HookTIMClass {
                             try {
                                 XposedBridge.hookAllMethods(
                                         tencentAppInterface,
-                                        "accept",
-                                        new XC_MethodReplacement(114514) {
-                                            @Override
-                                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                                return null;
-                                            }
-                                        }
+                                        "accept", ReturnReplacements.returnNull
                                 );
                             } catch (Exception e) {
                                 LoggerLog(e);
@@ -1394,13 +1218,7 @@ public class HookTIMClass {
                             try {
                                 XposedBridge.hookAllMethods(
                                         tencentAppInterface,
-                                        "c",
-                                        new XC_MethodReplacement(114514) {
-                                            @Override
-                                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                                return null;
-                                            }
-                                        }
+                                        "c", ReturnReplacements.returnNull
                                 );
                             } catch (Exception e) {
                                 LoggerLog(e);
@@ -1408,13 +1226,7 @@ public class HookTIMClass {
                             try {
                                 XposedBridge.hookAllMethods(
                                         tencentAppInterface,
-                                        "d",
-                                        new XC_MethodReplacement(114514) {
-                                            @Override
-                                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                                return null;
-                                            }
-                                        }
+                                        "d", ReturnReplacements.returnNull
                                 );
                             } catch (Exception e) {
                                 LoggerLog(e);
@@ -1422,13 +1234,7 @@ public class HookTIMClass {
                             try {
                                 XposedBridge.hookAllMethods(
                                         tencentAppInterface,
-                                        "getCrashExtraMessage",
-                                        new XC_MethodReplacement(114514) {
-                                            @Override
-                                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                                return getRandomString(20);
-                                            }
-                                        }
+                                        "getCrashExtraMessage", ReturnReplacements.returnRandomStr20
                                 );
                             } catch (Exception e) {
                                 LoggerLog(e);
@@ -1436,13 +1242,7 @@ public class HookTIMClass {
                             try {
                                 XposedBridge.hookAllMethods(
                                         tencentAppInterface,
-                                        "getCrashExtraMessage",
-                                        new XC_MethodReplacement(114514) {
-                                            @Override
-                                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                                return null;
-                                            }
-                                        }
+                                        "getCrashExtraMessage", ReturnReplacements.returnNull
                                 );
                             } catch (Exception e) {
                                 LoggerLog(e);
@@ -1483,97 +1283,6 @@ public class HookTIMClass {
                                             @Override
                                             protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
                                                 return "0";
-                                            }
-                                        }
-                                );
-                            } catch (Exception e) {
-                                LoggerLog(e);
-                            }
-                        }
-                    } catch (Exception e) {
-                        LoggerLog(e);
-                    }
-                    try {
-                        Class<?> tencentAppInterface = XposedHelpers.findClassIfExists("com.tencent.bugly.crashreport.crash.b", lpparam.classLoader);
-                        if (tencentAppInterface != null) {
-                            try {
-                                XposedBridge.hookAllMethods(
-                                        tencentAppInterface,
-                                        "a",
-                                        new XC_MethodReplacement(114514) {
-                                            @Override
-                                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                                return null;
-                                            }
-                                        }
-                                );
-                            } catch (Exception e) {
-                                LoggerLog(e);
-                            }
-                            try {
-                                XposedBridge.hookAllMethods(
-                                        tencentAppInterface,
-                                        "b",
-                                        new XC_MethodReplacement(114514) {
-                                            @Override
-                                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                                return null;
-                                            }
-                                        }
-                                );
-                            } catch (Exception e) {
-                                LoggerLog(e);
-                            }
-                            try {
-                                XposedBridge.hookAllMethods(
-                                        tencentAppInterface,
-                                        "c",
-                                        new XC_MethodReplacement(114514) {
-                                            @Override
-                                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                                return null;
-                                            }
-                                        }
-                                );
-                            } catch (Exception e) {
-                                LoggerLog(e);
-                            }
-                            try {
-                                XposedBridge.hookAllMethods(
-                                        tencentAppInterface,
-                                        "g",
-                                        new XC_MethodReplacement(114514) {
-                                            @Override
-                                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                                return null;
-                                            }
-                                        }
-                                );
-                            } catch (Exception e) {
-                                LoggerLog(e);
-                            }
-                            try {
-                                XposedBridge.hookAllMethods(
-                                        tencentAppInterface,
-                                        "e",
-                                        new XC_MethodReplacement(114514) {
-                                            @Override
-                                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                                return null;
-                                            }
-                                        }
-                                );
-                            } catch (Exception e) {
-                                LoggerLog(e);
-                            }
-                            try {
-                                XposedBridge.hookAllMethods(
-                                        tencentAppInterface,
-                                        "d",
-                                        new XC_MethodReplacement(114514) {
-                                            @Override
-                                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                                return null;
                                             }
                                         }
                                 );
@@ -1689,7 +1398,7 @@ public class HookTIMClass {
                 try {
                     Class<?> hookClass = XposedHelpers.findClassIfExists("com.tencent.ark.open.ArkAppMgr",lpparam.classLoader);
                     if (hookClass != null){
-                        XposedHelpers.findAndHookMethod(hookClass,
+                        HookUtils.findAndHookMethodIfExists(hookClass,
                                 "compareVersionString",
                                 String.class,
                                 String.class,
@@ -1760,19 +1469,31 @@ public class HookTIMClass {
                         for (Method m:hookClass.getDeclaredMethods()){
                             Class<?> returnType = m.getReturnType();
                             if (returnType.equals(Void.TYPE)){
-                                XposedBridge.hookMethod(m, new XC_MethodReplacement() {
-                                    @Override
-                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                        return null;
-                                    }
-                                });
+                                XposedBridge.hookMethod(m, ReturnReplacements.returnNull);
                             }else if (returnType.equals(Boolean.TYPE)){
-                                XposedBridge.hookMethod(m, new XC_MethodReplacement() {
-                                    @Override
-                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                        return false;
-                                    }
-                                });
+                                XposedBridge.hookMethod(m, ReturnReplacements.returnFalse);
+                            }
+                        }
+                    }
+                    hookClass = XposedHelpers.findClassIfExists("com.tencent.mobileqq.msf.sdk.y",lpparam.classLoader);
+                    if (hookClass != null){
+                        for (Method m:hookClass.getDeclaredMethods()){
+                            Class<?> returnType = m.getReturnType();
+                            if (returnType.equals(Void.TYPE)){
+                                XposedBridge.hookMethod(m, ReturnReplacements.returnNull);
+                            }else if (returnType.equals(Boolean.TYPE)){
+                                XposedBridge.hookMethod(m, ReturnReplacements.returnFalse);
+                            }
+                        }
+                    }
+                    hookClass = XposedHelpers.findClassIfExists("com.tencent.smtt.sdk.TbsLogReport",lpparam.classLoader);
+                    if (hookClass != null){
+                        for (Method m:hookClass.getDeclaredMethods()){
+                            Class<?> returnType = m.getReturnType();
+                            if (returnType.equals(Void.TYPE)){
+                                XposedBridge.hookMethod(m, ReturnReplacements.returnNull);
+                            }else if (returnType.equals(Boolean.TYPE)){
+                                XposedBridge.hookMethod(m, ReturnReplacements.returnFalse);
                             }
                         }
                     }
@@ -1818,7 +1539,7 @@ public class HookTIMClass {
                                         return null;
                                     }
                                 });
-                        XposedHelpers.findAndHookMethod(hookClass,
+                        HookUtils.findAndHookMethodIfExists(hookClass,
                                 "isColorLevel",
                                 new XC_MethodReplacement() {
                                     @Override
@@ -1957,6 +1678,238 @@ public class HookTIMClass {
 //                } catch (Exception e) {
 //                    LoggerLog(e);
 //                }
+                Class<?> hookClass;
+
+                {
+                    hookClass = XposedHelpers.findClassIfExists("com.tencent.component.media.image.ImageManager",lpparam.classLoader);
+                    if (hookClass != null){
+                        XposedBridge.hookAllMethods(hookClass, "getImage", new XC_MethodHook() {
+                            @Override
+                            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                                super.beforeHookedMethod(param);
+                                String str = param.args[0].toString();
+                                if (str.startsWith("https://pgdt.gtimg.cn/gdt/0/")){
+                                    param.setResult(null);
+                                    return;
+                                }
+                                if (str.equals("https://qzonestyle.gtimg.cn/qzone/space_item/cover/org/11/118859/1080x1080.jpg#kp=1")){
+                                    param.args[0] = "https://r.photo.store.qq.com/psc?/V11QrRTi19Bsp" +
+                                            "T/bqQfVz5yrrGYSXMvKr.cqazr0dVG.NUQG05R0G8XaZmIArsYlJygK" +
+                                            "A80d9y0g7PBYcpKDKz1W*q7QHIVvjXu.YW5YutefCvEwh.yCo1FS5k!/o";//got it!
+                                    return;
+                                }
+//                                Field f = XposedHelpers.findFieldIfExists(param.args[0].getClass(),"url");
+//                                if (f != null){
+//                                    str = (String) f.get(param.args[0]);
+//                                }
+//                                LoggerLog(new Exception(str));
+////                                showObjectFields(param.args[0],"    ");
+                            }
+                        });
+                    }
+                }
+                {
+                    hookClass = XposedHelpers.findClassIfExists("agqm",lpparam.classLoader);
+                    if (hookClass != null){
+                        for (Method m:hookClass.getDeclaredMethods()){
+                            if (m.getName().equals("a") && m.getReturnType().equals(boolean.class)){
+                                XposedBridge.hookMethod(m, ReturnReplacements.returnTrue);
+                            }
+                        }
+                    }
+                    hookClass = XposedHelpers.findClassIfExists("awgy",lpparam.classLoader);
+                    if (hookClass != null){
+                        for (Method m:hookClass.getDeclaredMethods()){
+                            if (m.getReturnType().equals(boolean.class)){
+                                XposedBridge.hookMethod(m, ReturnReplacements.returnFalse);
+                            }
+                        }
+                    }
+                    hookClass = XposedHelpers.findClassIfExists("acxv",lpparam.classLoader);
+                    if (hookClass != null){
+                        XposedHelpers.setStaticObjectField(hookClass,"jr",new FilterHashmap(
+                                "qzone_weather","official_location","readinjoy_anti_cheating",
+                                "qzone_weather","readinjoy_feed_ad_distance","nearby_readinjoy",
+                                "qq_story_water_mark","qq_weather","vfuchong_bus_card",
+                                "readinjoy_position","extend_friend"));
+                    }
+
+                    hookClass = XposedHelpers.findClassIfExists("anea",lpparam.classLoader);
+                    if (hookClass != null){
+                        XposedBridge.hookAllMethods(hookClass, "onReceive", new XC_MethodHook() {
+                            @Override
+                            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                                super.beforeHookedMethod(param);
+                                if (param.args != null && param.args[0] == null){
+                                    param.setResult(null);
+                                }
+                            }
+                        });
+                    }
+                }
+                {
+                    hookClass = XposedHelpers.findClassIfExists("com.tencent.ditto.shell.DittoUIEngine",lpparam.classLoader);
+                    if (hookClass != null){
+                        XposedBridge.hookAllMethods(hookClass,"updateLayoutFile", ReturnReplacements.returnNull);
+//                        XposedBridge.hookAllMethods(hookClass, "loadJsonObject", new XC_MethodHook() {
+//                            @Override
+//                            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+//                                super.afterHookedMethod(param);
+//                                JSONObject jsonObject = ((JSONObject)param.getResult());
+//                                for (Iterator<String> it = jsonObject.keys(); it.hasNext(); ) {
+//                                    String s = it.next();
+//                                    Object o = jsonObject.get(s);
+//                                    if (o instanceof JSONArray) {
+//                                        for (int i = 0; i < ((JSONArray) o).length(); i++) {
+//                                            LoggerLog("ArrayItem:" + ((JSONArray) o).get(i));
+//                                        }
+//                                    }
+//                                    else{
+//                                        LoggerLog(s + ":" + o);
+//                                    }
+//                                }
+//                                LoggerLog(new Exception(param.args[0].toString() + " | " + param.args[1].toString()));
+//                            }
+//                        });
+                    }
+                }
+                {
+                    hookClass = XposedHelpers.findClassIfExists("com.tencent.qmethod.pandoraex.core.Utils",lpparam.classLoader);
+                    if (hookClass != null){
+                        XposedBridge.hookAllMethods(hookClass,"isAppOnForeground", ReturnReplacements.returnTrue);
+                        XposedBridge.hookAllMethods(hookClass,"isMainProcAndForeground", ReturnReplacements.returnTrue);
+                        XposedBridge.hookAllMethods(hookClass, "convertAndUpdateConfig", ReturnReplacements.returnTrue);
+                        XposedBridge.hookAllMethods(hookClass,"isNeedReport", ReturnReplacements.returnFalse);
+                    }
+                    hookClass = XposedHelpers.findClassIfExists("com.tencent.qmethod.pandoraex.api.PandoraEx",lpparam.classLoader);
+                    if (hookClass != null){
+                        XposedBridge.hookAllMethods(hookClass, "updateConfig", ReturnReplacements.returnTrue);
+                    }
+                    hookClass = XposedHelpers.findClassIfExists("com.tencent.qmethod.pandoraex.core.ActivityDetector",lpparam.classLoader);
+                    if (hookClass != null){
+                        XposedBridge.hookAllMethods(hookClass, "init", ReturnReplacements.returnNull);
+                        XposedBridge.hookAllMethods(hookClass, "onStarted", ReturnReplacements.returnNull);
+                        XposedBridge.hookAllMethods(hookClass, "onResumed", ReturnReplacements.returnNull);
+                        XposedBridge.hookAllMethods(hookClass, "updateActivityRecord", ReturnReplacements.returnNull);
+                        XposedBridge.hookAllMethods(hookClass, "getTopActivityName", ReturnReplacements.returnNull);
+                        XposedBridge.hookAllMethods(hookClass, "getRecentSceneArray", ReturnReplacements.returnNull);
+                    }
+//                    hookClass = XposedHelpers.findClassIfExists("android.app.SharedPreferencesImpl",lpparam.classLoader);
+//                    if (hookClass != null){
+//                        XposedBridge.hookAllMethods(hookClass, "getLong", new XC_MethodHook() {
+//                                    @Override
+//                                    protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+//                                        super.afterHookedMethod(param);
+//                                        Throwable th = param.getThrowable();
+//                                        SharedPreferences sp = (SharedPreferences)param.thisObject;
+//                                        if (th != null){
+//                                            LoggerLog((String) param.args[0]+" "+Integer.parseInt(param.args[1].toString()));
+//                                            LoggerLog(th);
+//                                            long result = sp.getInt((String) param.args[0],Integer.parseInt(param.args[1].toString()));
+//                                            param.setResult(result);
+//                                            sp.edit().putLong((String) param.args[0],result).apply();
+//                                        }
+//                                    }
+//                                }
+//                        );
+//                    }
+                }
+                {
+
+                    String[] toClear = new String[]{
+                            "com.tencent.template.public","620","游戏分享",
+                            "com.tencent.new_element.invite","32","新奇物种邀请",
+                            "com.tencent.bot.groupbot","113","私人管家",
+                            "com.tencent.gxhServiceIntelligentTip","57","服务号机制化消息",
+                            "com.tencent.wezone.share","140","小世界沉浸式feed分享",
+                            "com.tencent.gamecenter.gameshare","820","游戏中心-游戏分享",
+                            "com.tencent.qianbao","166","QQ支付-钱包Ark消息",
+//                            "com.tencent.group.poster","71","群频道-群帖子",
+//                            "com.tencent.template.qqfavorite.share","46","QQ 收藏",
+                            "com.tencent.troopsharecard","23","推荐群聊",
+                            "com.tencent.imagetextbot","205","机器人大图文链接",
+//                            "com.tencent.qzone.albumInvite","134","QQ空间",
+//                                        "com.tencent.creategroupmsg","29","创建群成功",
+//                                        "com.tencent.structmsg","151","结构化消息",
+//                                        "com.tencent.groupphoto","40","群相册",
+//                                        "com.tencent.qzone.video","31","QQ空间视频分享",
+
+                    };
+                    hookClass = XposedHelpers.findClassIfExists("com.tencent.ark.ArkEnvironmentManager",lpparam.classLoader);
+                    if (hookClass != null) {
+                        XposedHelpers.findAndHookMethod(hookClass, "getAppConfigSharedPreferences", new XC_MethodHook() {
+                            @Override
+                            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                                super.afterHookedMethod(param);
+                                SharedPreferences.Editor spEdit = ((SharedPreferences) param.getResult()).edit();
+                                for (int i=0;i< toClear.length;i+=3){
+                                    spEdit.putString(toClear[i],"{\"ver\":" + toClear[i+1] + ",\"name\":\"" + toClear[i+2] + "\",\"icon\":\"\",\"entry\":0,\"flag\":0,\"type\":0,\"urlWhitelist\":{\"res\":[],\"nav\":[]},\"fwdViews\":[\"*\"]}");
+                                }
+                                spEdit.apply();
+                            }
+                        });
+                    }
+
+
+//                    hookClass = XposedHelpers.finm
+                }
+                {
+
+                    for (String s:new String[]{
+                            "KanDianVideoUploadBrocast","KandianVideoUploadService",
+                            "ReadInJoyDeliverUGCActivity","ReadInJoyDeliverVideoActivity",
+                            "ReadInJoyDraftboxFragment","ReadInJoyPrivacyListFragment",
+                            "ReadInJoyPrivacyListView","ReadInJoyTopicSelectionFragment",
+                            "ReadInJoyUgcSearchTopicFragment","ReadInJoyVideoSearchTagFragment",
+                            "ReadInJoyVideoTagSelectionFragment",
+                    }){
+                        hookClass = XposedHelpers.findClassIfExists("com.tencent.biz.pubaccount.readinjoy.ugc." + s, lpparam.classLoader);
+                        if (hookClass != null && !Modifier.isAbstract(hookClass.getModifiers())){
+                            for (Method m : hookClass.getDeclaredMethods()) {
+                                LoggerUtils.disableMethod(m,hookClass);
+                            }
+                        }
+                    }
+                    for (String s:new String[]{
+                            "AvatarItemView","AvatarPendantManager","FriendCloneSettingFragment",
+                            "LzmaUtils","PendantInfo","PobingDecoder","QuickUpdateIPCModule",
+                            "ThemeChangeBroadcastReceiver","VasKeyValue","VasQuickUpdateEngine",
+                            "VasQuickUpdateManager","ZanBannerView"
+                    }){
+                        hookClass = XposedHelpers.findClassIfExists("com.tencent.mobileqq.vas." + s, lpparam.classLoader);
+                        if (hookClass != null && !Modifier.isAbstract(hookClass.getModifiers())){
+                            for (Method m : hookClass.getDeclaredMethods()) {
+                                LoggerUtils.disableMethod(m,hookClass);
+                            }
+                        }
+                    }
+//                    hookClass = XposedHelpers.findClassIfExists("com.tencent.mobileqq.mini.apkg.BaseLibManager",lpparam.classLoader);
+//                    if (hookClass != null){
+//                        for (Method m:hookClass.getDeclaredMethods()){
+//                            disableMethod(m);
+//                        }
+//                    }
+                }
+                {
+                    hookClass = XposedHelpers.findClassIfExists("aqmv",lpparam.classLoader);
+                    if (hookClass != null){
+                        XposedBridge.hookAllConstructors(hookClass, new XC_MethodHook() {
+                            @Override
+                            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                                super.beforeHookedMethod(param);
+                                if (param.args[0] == null){param.args[0] = "http://127.39.0.1";}
+                            }
+                        });
+                        XposedBridge.hookAllMethods(hookClass,"setUrl",new XC_MethodHook() {
+                            @Override
+                            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                                super.beforeHookedMethod(param);
+                                if (param.args[0] == null){param.args[0] = "http://127.39.0.1";}
+                            }
+                        });
+                    }
+                }
+
             } catch (Exception e) {
                 LoggerLog(e);
             }

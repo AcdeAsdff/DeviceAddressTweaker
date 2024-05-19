@@ -1,22 +1,19 @@
 package com.linearity.deviceaddresstweaker;
 
 import static com.linearity.deviceaddresstweaker.AndroidHooks.android.net.HookNetClass.byteArray114514;
+import static com.linearity.utils.LoggerUtils.LoggerLog;
 
 import android.accounts.Account;
 import android.accounts.AccountAuthenticatorResponse;
 import android.accounts.AccountManagerFuture;
 import android.accounts.AuthenticatorDescription;
-import android.accounts.AuthenticatorException;
-import android.accounts.OperationCanceledException;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.location.Location;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiInfo;
-import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -35,21 +32,17 @@ import com.linearity.deviceaddresstweaker.JavaHooks.java.lang.HookLang;
 import com.linearity.deviceaddresstweaker.JavaHooks.java.net.HookJavaNetClass;
 import com.linearity.deviceaddresstweaker.TIM.HookTIMClass;
 import com.linearity.deviceaddresstweaker.Wechat.HookWechatClass;
-import com.linearity.deviceaddresstweaker.bilibili.HookBilibiliClass;
-import com.linearity.deviceaddresstweaker.chaoxing.HookChaoxingClass;
+import com.linearity.utils.ReturnReplacements;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import de.robv.android.xposed.IXposedHookInitPackageResources;
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.IXposedHookZygoteInit;
-
 import de.robv.android.xposed.XSharedPreferences;
 import de.robv.android.xposed.callbacks.XC_InitPackageResources;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
@@ -57,13 +50,12 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
 public class DeviceAddressTweaker implements IXposedHookLoadPackage, IXposedHookInitPackageResources, IXposedHookZygoteInit {
     public Map<String, Context> ProcHead2Context = new HashMap<>();
-    public Map<String, SharedPreferences> ProcHead2SP = new HashMap<>();
-    public Context appContext = null;
+//    public Map<String, SharedPreferences> ProcHead2SP = new HashMap<>();
+//    public Context appContext = null;
     public String processHead;
     public String modulePath;
 
-    public static Bundle EmptyBundle = new Bundle();
-    public static Parcelable.Creator<AccountAuthenticatorResponse> CREATOR_AccountAuthenticatorResponse =  new Parcelable.Creator<AccountAuthenticatorResponse>() {
+    public static Parcelable.Creator<AccountAuthenticatorResponse> CREATOR_AccountAuthenticatorResponse = new Parcelable.Creator<>() {
         public AccountAuthenticatorResponse createFromParcel(Parcel source) {
             return new AccountAuthenticatorResponse(source);
         }
@@ -74,17 +66,14 @@ public class DeviceAddressTweaker implements IXposedHookLoadPackage, IXposedHook
     };
     public static WifiInfo fakeWifiInfo =
             new WifiInfo.Builder()
-                    .setBssid(getRandomString(20))
+                    .setBssid(ReturnReplacements.getRandomString(20))
                     .setSsid(byteArray114514)
                     .setCurrentSecurityType(WifiConfiguration.SECURITY_TYPE_OPEN)
                     .build();
     public static Location fakeLocation = new Location("jerk");
     public static AccountAuthenticatorResponse[] EmptyAccountAuthenticatorResponse = new AccountAuthenticatorResponse[0];
     public static Intent EmptyIntent = new Intent();
-    public static Map<String, Integer> EmptyMap_String_Integer = new HashMap<>();
-    public static Map<String, Object> EmptyMap_String_Object = new HashMap<>();
-    public static Map<Account, Integer> EmptyMap_Account_Integer = new HashMap<>();
-    public static Future2Task<Account[]> EmptyFuture2TaskOfAccountArray = new Future2Task<Account[]>() {
+    public static Future2Task<Account[]> EmptyFuture2TaskOfAccountArray = new Future2Task<>() {
         @Override
         public boolean cancel(boolean mayInterruptIfRunning) {
             return true;
@@ -101,16 +90,16 @@ public class DeviceAddressTweaker implements IXposedHookLoadPackage, IXposedHook
         }
 
         @Override
-        public Account[] getResult() throws AuthenticatorException, IOException, OperationCanceledException {
-            return EmptyAccountArray;
+        public Account[] getResult() {
+            return HookAccountClass.EmptyAccountArray;
         }
 
         @Override
-        public Account[] getResult(long timeout, TimeUnit unit) throws AuthenticatorException, IOException, OperationCanceledException {
-            return EmptyAccountArray;
+        public Account[] getResult(long timeout, TimeUnit unit) {
+            return HookAccountClass.EmptyAccountArray;
         }
     };
-    public static Future2Task<Boolean> EmptyFuture2TaskOBoolean = new Future2Task<Boolean>() {
+    public static Future2Task<Boolean> EmptyFuture2TaskOBoolean = new Future2Task<>() {
         @Override
         public boolean cancel(boolean mayInterruptIfRunning) {
             return true;
@@ -127,49 +116,20 @@ public class DeviceAddressTweaker implements IXposedHookLoadPackage, IXposedHook
         }
 
         @Override
-        public Boolean getResult() throws AuthenticatorException, IOException, OperationCanceledException {
+        public Boolean getResult() {
             return true;
         }
 
         @Override
-        public Boolean getResult(long timeout, TimeUnit unit) throws AuthenticatorException, IOException, OperationCanceledException {
+        public Boolean getResult(long timeout, TimeUnit unit) {
             return true;
         }
     };
-    public static Future2Task<Bundle> EmptyFuture2TaskOfBundle = new Future2Task<Bundle>() {
-        @Override
-        public boolean cancel(boolean mayInterruptIfRunning) {
-            return true;
-        }
-
-        @Override
-        public boolean isCancelled() {
-            return true;
-        }
-
-        @Override
-        public boolean isDone() {
-            return true;
-        }
-
-        @Override
-        public Bundle getResult() throws AuthenticatorException, IOException, OperationCanceledException {
-            return EmptyBundle;
-        }
-
-        @Override
-        public Bundle getResult(long timeout, TimeUnit unit) throws AuthenticatorException, IOException, OperationCanceledException {
-            return EmptyBundle;
-        }
-    };
-    public static AuthenticatorDescription[] EmptyAuthenticatorDescriptionArray = new AuthenticatorDescription[0];
-    public static Account[] EmptyAccountArray = new Account[0];
     public static UUID uuid = UUID.randomUUID();
-    public static Random random = new Random();
     SharedPreferences sharedPreferences;
 
 
-    public static final  Parcelable.Creator<Account> CREATOR = new Parcelable.Creator<Account>() {
+    public static final  Parcelable.Creator<Account> CREATOR = new Parcelable.Creator<>() {
         public Account createFromParcel(Parcel source) {
 //            return new Account(source);
             return null;
@@ -195,51 +155,28 @@ public class DeviceAddressTweaker implements IXposedHookLoadPackage, IXposedHook
 
     //a looooooooooong way 2 go
     @SuppressLint({"SetWorldWritable", "SetWorldReadable"})
-    public void handleLoadPackage(XC_LoadPackage.LoadPackageParam lpparam) throws IOException, PackageManager.NameNotFoundException {
+    public void handleLoadPackage(XC_LoadPackage.LoadPackageParam lpparam){
         if (lpparam == null) {
             return;
         }
 
-        LoggerUtils.LoggerLog("[linearity]Load app packageName:" + lpparam.packageName);
+        LoggerLog("Load app packageName:" + lpparam.packageName);
         processHead = lpparam.processName.split(":")[0];
         ProcHead2Context.put(processHead, null);
-//        sharedPreferences = new XSharedPreferences("com.linearity.deviceaddresstweaker",processHead + "_linearity_dat_settings");
         File spFile = new File("/data/local/tmp/linearity_dat/shared_prefs/" + processHead + "_linearity_dat_settings.xml");
-
-        //        Runtime.getRuntime().exec("chmod +r shared_prefs " + spFile.getAbsolutePath());
-//        Context context = AndroidAppHelper.currentApplication().createPackageContext("com.linearity.deviceaddresstweaker",Context.CONTEXT_IGNORE_SECURITY);
-
-
         sharedPreferences = new XSharedPreferences(spFile);
-//        sharedPreferences = context.getSharedPreferences(processHead + "_linearity_dat_settings",Context.MODE_PRIVATE);
-//        LoggerLog(spFile.exists());
-//        LoggerLog(spFile.getAbsolutePath());
         startHookMethods(lpparam, processHead, sharedPreferences);
     }
 
 
-    public static String getRandomString(int length){
-        random = new Random();
-        int minLength = length/2;
-        int exactLength = random.nextInt(length - minLength) + minLength + 1;
-        String str="abpqmnoEFGHIJrstRSTUVWujkl56YKLX234ZvwxyzABCDcdefghi01MNOPQ789";
-        Random random=new Random();
-        StringBuffer sb=new StringBuffer();
-        for(int i=0;i<length;i++){
-            int number=random.nextInt(62);
-            sb.append(str.charAt(number));
-        }
-        return sb.toString();
-    }
-
     @Override
-    public void handleInitPackageResources(XC_InitPackageResources.InitPackageResourcesParam resparam) throws Throwable {
+    public void handleInitPackageResources(XC_InitPackageResources.InitPackageResourcesParam resparam) {
         this.resparam = resparam;
         HookTIMClass.DoColor(this);
     }
 
     @Override
-    public void initZygote(StartupParam startupParam) throws Throwable {
+    public void initZygote(StartupParam startupParam) {
         this.modulePath = startupParam.modulePath;
     }
 
@@ -255,48 +192,14 @@ public class DeviceAddressTweaker implements IXposedHookLoadPackage, IXposedHook
         }
     }
 
-    
-//    public static void getAppContextInit(XC_LoadPackage.LoadPackageParam lpparam, DeviceAddressTweaker instance, String processHead){
-//        Class<?> loadedApkClass = XposedHelpers.findClass(
-//                "android.app.LoadedApk",
-//                lpparam.classLoader
-//        );
-//        Class<?> contextImplClass = XposedHelpers.findClass(
-//                "android.app.ContextImpl",
-//                lpparam.classLoader
-//        );
-//        Class<?> activityThreadClass = XposedHelpers.findClass(
-//                "android.app.ActivityThread",
-//                lpparam.classLoader
-//        );
-//        XposedHelpers.findAndHookMethod(
-//                contextImplClass,
-//                "createAppContext",
-//                activityThreadClass, loadedApkClass, String.class,
-//                new XC_MethodHook(1919810) {
-//                    @Override
-//                    protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-//                        super.afterHookedMethod(param);
-//                        Context result = (Context) param.getResult();
-//                        instance.ProcHead2Context.put(processHead, (Context) param.getResult());
-//
-//                        if (result != null){
-//                            instance.ProcHead2SP.put(processHead, result.getSharedPreferences(processHead + "_dat_settings", Context.MODE_PRIVATE));
-//                        }else {
-//                            instance.ProcHead2SP.put(processHead, new XSharedPreferences(processHead));
-//                        }
-//                        startHookMethods(lpparam, processHead, instance.ProcHead2SP.get(processHead));
-//                    }
-//                }
-//        );
-//    }
+
 
     public static void startHookMethods(XC_LoadPackage.LoadPackageParam lpparam, String processHead, SharedPreferences sharedPreferences){
 //        LoggerLog(sharedPreferences.getAll());
         //        StrangeHookClass.DoHook(lpparam,processHead,sharedPreferences);
 //        if (!lpparam.processName.split(":")[0].contains("com.jingcai.apps")){return;}
 //java
-        HookJavaNetClass.DoHook(lpparam,processHead,sharedPreferences);//Working......
+        HookJavaNetClass.DoHook(lpparam, sharedPreferences);//Working......
         HookLang.DoHook(lpparam,processHead,sharedPreferences);//not finished
         HookIO.DoHook(lpparam,processHead,sharedPreferences);//not finished
 //android
@@ -349,10 +252,9 @@ public class DeviceAddressTweaker implements IXposedHookLoadPackage, IXposedHook
 
         HookTIMClass.DoHook(lpparam,processHead,sharedPreferences);
 
-        HookChaoxingClass.DoHook(lpparam,processHead,sharedPreferences);
-
-        HookBilibiliClass.DoHook(lpparam,processHead,sharedPreferences);
+//        HookBilibiliClass.DoHook(lpparam,processHead,sharedPreferences);
 
     }
+
 }
 

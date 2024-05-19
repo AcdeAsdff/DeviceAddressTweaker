@@ -1,6 +1,6 @@
 package com.linearity.deviceaddresstweaker.JavaHooks.java.net;
 
-import static com.linearity.deviceaddresstweaker.DeviceAddressTweaker.getRandomString;
+import static com.linearity.utils.HookUtils.findAndHookMethodIfExists;
 
 import java.net.HttpURLConnection;
 import java.net.NetworkInterface;
@@ -17,7 +17,12 @@ import android.content.SharedPreferences;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
-import static com.linearity.deviceaddresstweaker.LoggerUtils.LoggerLog;
+
+import static com.linearity.utils.ReturnReplacements.returnByteArr114514;
+import static com.linearity.utils.ReturnReplacements.returnFalse;
+import static com.linearity.utils.ReturnReplacements.returnNull;
+import static com.linearity.utils.ReturnReplacements.returnRandomStr20;
+import static com.linearity.utils.LoggerUtils.LoggerLog;
 import static com.linearity.deviceaddresstweaker.JavaHooks.java.io.HookIO.checkBannedInFile;
 import static com.linearity.deviceaddresstweaker.JavaHooks.java.io.HookIO.checkReplaceFile;
 
@@ -28,241 +33,173 @@ public class HookJavaNetClass {
     public static boolean HookHttpUrlConnection;
     public static boolean HookUrl;
 
-    public static void DoHook(XC_LoadPackage.LoadPackageParam lpparam, String procHead, SharedPreferences sharedPreferences){
+    public static void DoHook(XC_LoadPackage.LoadPackageParam lpparam, SharedPreferences sharedPreferences){
         HookNet = sharedPreferences.getBoolean("HookJavaNetClass_HookNet",true);
         HookNetworkInterface = sharedPreferences.getBoolean("HookJavaNetClass_HookNetworkInterface", true);
         HookHttpUrlConnection = sharedPreferences.getBoolean("HookJavaNetClass_HookHttpUrlConnection", true);
         HookUrl = sharedPreferences.getBoolean("HookJavaNetClass_HookUrl", true);
+        Class<?> hookClass;
         if (HookNet){
             if (HookNetworkInterface) {
-//      java.net.NetworkInterface.class getHardwareAddress()
                 try {
-                    XposedHelpers.findAndHookMethod(
+                    hookClass = XposedHelpers.findClassIfExists(
                             java.net.NetworkInterface.class.getName(),
-                            lpparam.classLoader,
-                            "getHardwareAddress",
-                            new XC_MethodHook(114514) {
-                                @Override
-                                protected void afterHookedMethod(MethodHookParam param) {
-                                    //LoggerLog(lpparam.packageName + "调用getHardwareAddress()" + param.getResult());
-                                    param.setResult(new byte[]{1, 1, 4, 5, 1, 4});
-                                }
+                            lpparam.classLoader);
+                    if (hookClass != null){//      java.net.NetworkInterface.class getHardwareAddress()
+                        {
+                            findAndHookMethodIfExists(
+                                    hookClass,
+                                    "getHardwareAddress",returnByteArr114514
+                            );
 
-//                        @Override
-//                        protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-//                            //LoggerLog(getMethodStack());
-//                            super.afterHookedMethod(param);
-//                        }
-                            }
-                    );
-
-                } catch (Exception e) {
-                    LoggerLog(e);
-                }
+                        }
 //      java.net.NetworkInterface.class getNetworkInterfaces()
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            java.net.NetworkInterface.class.getName(),
-                            lpparam.classLoader,
-                            "getNetworkInterfaces",
-                            new XC_MethodHook(114514) {
-                                @Override
-                                protected void afterHookedMethod(MethodHookParam param) {
-                                    //LoggerLog(lpparam.packageName + "调用getNetworkInterfaces()" + param.getResult());
-                                    param.setResult(Collections.enumeration(List.of()));
-                                }
+                        {
+                            findAndHookMethodIfExists(
+                                    hookClass,
+                                    "getNetworkInterfaces",
+                                    new XC_MethodHook(114514) {
+                                        @Override
+                                        protected void afterHookedMethod(MethodHookParam param) {
+                                            //LoggerLog(lpparam.packageName + "调用getNetworkInterfaces()" + param.getResult());
+                                            param.setResult(Collections.enumeration(List.of()));
+                                        }
 
 //                        @Override
 //                        protected void afterHookedMethod(MethodHookParam param) throws Throwable {
 //                            //LoggerLog(getMethodStack());
 //                            super.afterHookedMethod(param);
 //                        }
-                            }
-                    );
+                                    }
+                            );
 
-                } catch (Exception e) {
-                    LoggerLog(e);
-                }
+                        }
 //      java.net.NetworkInterface.class getAll()
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            java.net.NetworkInterface.class.getName(),
-                            lpparam.classLoader,
-                            "getAll",
-                            new XC_MethodHook(114514) {
-                                @Override
-                                protected void afterHookedMethod(MethodHookParam param) {
-                                    //LoggerLog(lpparam.packageName + "调用getAll()" + param.getResult());
-                                    param.setResult(new NetworkInterface[0]);
-                                }
+                        {
+                            findAndHookMethodIfExists(
+                                    hookClass,
+                                    "getAll",
+                                    new XC_MethodHook(114514) {
+                                        @Override
+                                        protected void afterHookedMethod(MethodHookParam param) {
+                                            //LoggerLog(lpparam.packageName + "调用getAll()" + param.getResult());
+                                            param.setResult(new NetworkInterface[0]);
+                                        }
 
 //                        @Override
 //                        protected void afterHookedMethod(MethodHookParam param) throws Throwable {
 //                            //LoggerLog(getMethodStack());
 //                            super.afterHookedMethod(param);
 //                        }
-                            }
-                    );
+                                    }
+                            );
 
-                } catch (Exception e) {
-                    LoggerLog(e);
-                }
+                        }
 //      java.net.NetworkInterface.class getSubInterfaces()
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            java.net.NetworkInterface.class.getName(),
-                            lpparam.classLoader,
-                            "getSubInterfaces",
-                            new XC_MethodHook(114514) {
-                                @Override
-                                protected void afterHookedMethod(MethodHookParam param) {
-                                    //LoggerLog(lpparam.packageName + "调用getSubInterfaces()" + param.getResult());
-                                    param.setResult(null);
-                                }
+                        {
+                            findAndHookMethodIfExists(
+                                    hookClass,
+                                    "getSubInterfaces",returnNull
 
-//                        @Override
-//                        protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-//                            //LoggerLog(getMethodStack());
-//                            super.afterHookedMethod(param);
-//                        }
-                            }
-                    );
+                            );
 
-                } catch (Exception e) {
-                    LoggerLog(e);
-                }
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            java.net.NetworkInterface.class.getName(),
-                            lpparam.classLoader,
-                            "toString",
-                            new XC_MethodReplacement(114514) {
-                                @Override
-                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                    return "name:null";
-                                }
-                            }
-                    );
-                } catch (Exception e) {
-                    LoggerLog(e);
-                }
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            java.net.NetworkInterface.class.getName(),
-                            lpparam.classLoader,
-                            "getName",
-                            new XC_MethodReplacement(114514) {
-                                @Override
-                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                    return getRandomString(20);
-                                }
-                            }
-                    );
-                } catch (Exception e) {
-                    LoggerLog(e);
-                }
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            java.net.NetworkInterface.class.getName(),
-                            lpparam.classLoader,
-                            "getDisplayName",
-                            new XC_MethodReplacement(114514) {
-                                @Override
-                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                    return null;
-                                }
-                            }
-                    );
-                } catch (Exception e) {
-                    LoggerLog(e);
-                }
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            java.net.NetworkInterface.class.getName(),
-                            lpparam.classLoader,
-                            "isVirtual",
-                            new XC_MethodReplacement(114514) {
-                                @Override
-                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                    return false;
-                                }
-                            }
-                    );
-                } catch (Exception e) {
-                    LoggerLog(e);
-                }
-                try {
-                    XposedHelpers.findAndHookMethod(
-                            java.net.NetworkInterface.class.getName(),
-                            lpparam.classLoader,
-                            "hashCode",
-                            new XC_MethodReplacement(114514) {
-                                @Override
-                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                    return Integer.MAX_VALUE;
-                                }
-                            }
-                    );
-                } catch (Exception e) {
-                    LoggerLog(e);
-                }
+                        }
+                        {
+                            findAndHookMethodIfExists(
+                                    hookClass,
+                                    "toString",
+                                    new XC_MethodReplacement(114514) {
+                                        @Override
+                                        protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                            return "name:null";
+                                        }
+                                    }
+                            );
+                        }
+                        {
+                            findAndHookMethodIfExists(
+                                    hookClass,
+                                    "getName",returnRandomStr20
+                            );
+                        }
+                        {
+                            findAndHookMethodIfExists(
+                                    hookClass,
+                                    "getDisplayName",returnNull
+                            );
+                        }
+                        {
+                            findAndHookMethodIfExists(
+                                    hookClass,
+                                    "isVirtual", returnFalse
+                            );
+                        }
+                        {
+                            findAndHookMethodIfExists(
+                                    hookClass,
+                                    "hashCode",
+                                    new XC_MethodReplacement(114514) {
+                                        @Override
+                                        protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                            return Integer.MAX_VALUE;
+                                        }
+                                    }
+                            );
+                        }
+                    }
+                }catch (Exception e){LoggerLog(e);}
             }
             if (HookHttpUrlConnection) {
                 try {
-                    Class<?> urlClass = XposedHelpers.findClass(java.net.HttpURLConnection.class.getName(), lpparam.classLoader);
-                    XposedBridge.hookAllConstructors(
-                            urlClass,
-                            new XC_MethodHook() {
-                                @Override
-                                protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                                    super.beforeHookedMethod(param);
-                                    if (!checkUrl(param, procHead)){return;}
+                    hookClass = XposedHelpers.findClassIfExists(java.net.HttpURLConnection.class.getName(), lpparam.classLoader);
+                    if (hookClass != null){
+                        XposedBridge.hookAllConstructors(
+                                hookClass,
+                                new XC_MethodHook() {
+                                    @Override
+                                    protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                                        super.beforeHookedMethod(param);
+                                        if (checkUrl(param)){return;}
+                                    }
                                 }
-                            }
-                    );
+                        );
+                        findAndHookMethodIfExists(hookClass,
+                                "getResponseMessage",
+                                new XC_MethodHook() {
+                                    @Override
+                                    protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                                        super.beforeHookedMethod(param);
+                                        setUrlResponseMsg(param);
+                                    }
+                                }
+                        );
+                    }
 
 
-                } catch (Exception e) {
+                }catch (Exception e){
                     LoggerLog(e);
                 }
-                try {
-
-                    XposedHelpers.findAndHookMethod(
-                            java.net.HttpURLConnection.class.getName(),
-                            lpparam.classLoader,
-                            "getResponseMessage",
-                            new XC_MethodHook() {
-                                @Override
-                                protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                                    super.beforeHookedMethod(param);
-                                    setUrlResponseMsg(param);
-                                }
-                            }
-                    );
-
-
-                } catch (Exception e) {
-                    LoggerLog(e);
-                }
-
             }//not finished
             if (HookUrl){
-                try {
-                    Class<?> urlClass = XposedHelpers.findClass(java.net.URL.class.getName(), lpparam.classLoader);
-                    XposedBridge.hookAllConstructors(
+                 {
+                    Class<?> urlClass = XposedHelpers.findClassIfExists(java.net.URL.class.getName(), lpparam.classLoader);
+                    if (urlClass != null){XposedBridge.hookAllConstructors(
                             urlClass,
                             new XC_MethodHook() {
                                 @Override
                                 protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                                     super.beforeHookedMethod(param);
+                                    if (param.args.length == 1 && param.args[0] == null){
+                                        param.args[0] = "http://127.39.0.1";return;
+                                    }
                                     if (
                                             param.args[0] instanceof URL
                                                     && param.args[2] instanceof URLStreamHandler){
                                         if (param.args[1] == null){
-                                            param.args[1] = "0";
+                                            param.args[1] = "http://127.39.0.1";
                                         }
                                     }
-                                    if (!checkUrl(param, procHead)){return;}
+                                    if (checkUrl(param)){return;}
                                     if (param.args.length < 3){return;}
                                     if (param.args[0] == null){return;}
                                     if (((String)param.args[0]).equals("file")){
@@ -287,67 +224,62 @@ public class HookJavaNetClass {
                                 }
                             }
                     );
-
-                } catch (Exception e) {
-                    LoggerLog(e);
-                }
-                try {
-                    Class<?> urIClass = XposedHelpers.findClass(java.net.URI.class.getName(), lpparam.classLoader);
-                    XposedBridge.hookAllConstructors(
-                            urIClass,
-                            new XC_MethodHook() {
-                                @Override
-                                protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                                    super.beforeHookedMethod(param);
-                                    if (!checkUrl(param, procHead)){return;}
-                                    if (param.args[0] == null){return;}
-                                    if (((String)param.args[0]).equals("file")){
-                                        if (param.args[2] == null){return;}
-                                        String path = (String) param.args[2];
-                                        path = checkReplaceFile(path,lpparam);
-                                        if (!checkBannedInFile(path,lpparam)){
-                                            path = "0";
-                                        }
-                                        param.args[2] = path;
-                                    }
-                                }
-                            }
-                    );
-
-                } catch (Exception e) {
-                    LoggerLog(e);
-                }
-                try {
-                    Class<?> urIClass = XposedHelpers.findClass(java.net.URL.class.getName(), lpparam.classLoader);
-                    XposedHelpers.findAndHookMethod(
-                            urIClass,
-                            "isValidProtocol",
-                            String.class,
-                            new XC_MethodReplacement() {
-                                @Override
-                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                    String protocol = (String) param.args[0];
-                                    if (protocol == null || Objects.equals(protocol, "")){return false;}
-                                    int len = protocol.length();
-                                    if (len < 1)
-                                        return false;
-                                    char c = protocol.charAt(0);
-                                    if (!Character.isLetter(c))
-                                        return false;
-                                    for (int i = 1; i < len; i++) {
-                                        c = protocol.charAt(i);
-                                        if (!Character.isLetterOrDigit(c) && c != '.' && c != '+' &&
-                                                c != '-') {
-                                            return false;
+                        {
+                            findAndHookMethodIfExists(
+                                    urlClass,
+                                    "isValidProtocol",
+                                    String.class,
+                                    new XC_MethodReplacement() {
+                                        @Override
+                                        protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                            String protocol = (String) param.args[0];
+                                            if (protocol == null || Objects.equals(protocol, "")){return false;}
+                                            int len = protocol.length();
+                                            if (len < 1)
+                                                return false;
+                                            char c = protocol.charAt(0);
+                                            if (!Character.isLetter(c))
+                                                return false;
+                                            for (int i = 1; i < len; i++) {
+                                                c = protocol.charAt(i);
+                                                if (!Character.isLetterOrDigit(c) && c != '.' && c != '+' &&
+                                                        c != '-') {
+                                                    return false;
+                                                }
+                                            }
+                                            return true;
                                         }
                                     }
-                                    return true;
-                                }
-                            }
-                    );
+                            );
+                        }
+                    }
 
-                } catch (Exception e) {
-                    LoggerLog(e);
+                }
+                 {
+                    Class<?> urIClass = XposedHelpers.findClassIfExists(java.net.URI.class.getName(), lpparam.classLoader);
+                    if (urIClass != null){
+                        XposedBridge.hookAllConstructors(
+                                urIClass,
+                                new XC_MethodHook() {
+                                    @Override
+                                    protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                                        super.beforeHookedMethod(param);
+                                        if (checkUrl(param)){return;}
+                                        if (param.args[0] == null){return;}
+                                        if (((String)param.args[0]).equals("file")){
+                                            if (param.args[2] == null){return;}
+                                            String path = (String) param.args[2];
+                                            path = checkReplaceFile(path,lpparam);
+                                            if (!checkBannedInFile(path,lpparam)){
+                                                path = "0";
+                                            }
+                                            param.args[2] = path;
+                                        }
+                                    }
+                                }
+                        );
+                    }
+
                 }
             }//not finished
         }
@@ -355,22 +287,11 @@ public class HookJavaNetClass {
 
 
 
-//    public static ArrayList<String> noLogUrlList_startWith = new ArrayList<>();
-//    public static ArrayList<String> replaceUrlList_startWith = new ArrayList<>();
-//    public static ArrayList<String> replaceUrlList_equals = new ArrayList<>();
-    //maybe i have to improve String#contains() here
-    public static boolean checkUrl(XC_MethodHook.MethodHookParam param, String procHead){
-        ArrayList<String> replaceUrlList_equals = new ArrayList<>();
-        ArrayList<String> replaceUrlList_startWith = new ArrayList<>();
-        ArrayList<String> noLogUrlList_startWith = new ArrayList<>();
-        if (param.args[0] == null){return false;}
-        String tempUrl = param.args[0].toString();
-        if (tempUrl.startsWith("https://")){
-            tempUrl = tempUrl.substring(8);
-        }
-        else if (tempUrl.startsWith("http://")){
-            tempUrl = tempUrl.substring(7);
-        }
+    public static ArrayList<String> noLogUrlList_startWith = new ArrayList<>();
+    public static ArrayList<String> replaceUrlList_startWith = new ArrayList<>();
+    public static ArrayList<String> replaceUrlList_equals = new ArrayList<>();
+    static{
+
         replaceUrlList_startWith.add("dl.url.cn");
         replaceUrlList_startWith.add("/sngapp/app/update/");
         replaceUrlList_startWith.add("/cgi-bin/mapp/");
@@ -381,47 +302,30 @@ public class HookJavaNetClass {
         replaceUrlList_startWith.add("220.181.106.150:80");
         replaceUrlList_startWith.add("111.13.142.153:5222");
         replaceUrlList_startWith.add("157.148.33.71:443");
-        if (procHead.contains("tencent")){
-            if (!procHead.contains("tencent.mm")){
-                replaceUrlList_startWith.add("d3g.qq.com");
-                replaceUrlList_startWith.add("sngmta.qq.com");
-                replaceUrlList_startWith.add("cmshow.gtimg.cn");
-                replaceUrlList_startWith.add("imgcache.qq.com/club/webview/preload.html");
-                replaceUrlList_startWith.add("appservice.qq.com");
-                replaceUrlList_startWith.add("wspeed.qq.com");
-                replaceUrlList_startWith.add("android.bugly.qq.com");
-                replaceUrlList_startWith.add("/qzone/");
-                replaceUrlList_startWith.add("i.gtimg.cn");
-                replaceUrlList_startWith.add("wa.qq.com/hot-res/");
-            }
-            replaceUrlList_startWith.add("android.rqd.qq.com/analytics/");
-            replaceUrlList_startWith.add("log.tbs.qq.com");
-            replaceUrlList_startWith.add("qappcenterv6.3g.qq.com");
-            replaceUrlList_startWith.add("3gimg.qq.com");
-            replaceUrlList_startWith.add("hao.gamecenter.qq.com");
-            replaceUrlList_startWith.add("h5.qzone.qq.com/report/");
-            replaceUrlList_startWith.add("masdkv6.3g.qq.com");
-            replaceUrlList_startWith.add("miniapp.gtimg.cn");
-        }else if(procHead.contains("bili")){
-            replaceUrlList_startWith.add("line1-log.biligame.net");
-        }
-        for (String checkHead : replaceUrlList_startWith) {
-            if (tempUrl.startsWith(checkHead)) {
-                param.args[0] = "https://127.39.0.1/" + tempUrl;
-                return false;
-            }
-        }
-        if (procHead.contains("tencent")){
-            replaceUrlList_equals.add("miniapp.gtimg.cn");
-            replaceUrlList_equals.add("miniapp.gtimg.cn/");
-        }
-        for (String checkHead:replaceUrlList_equals){
-            if (tempUrl.equals(checkHead)){
-                param.args[0] = "https://127.39.0.1/" + tempUrl;
-                return false;
-            }
-        }
-        
+
+        replaceUrlList_startWith.add("android.rqd.qq.com/analytics/");
+        replaceUrlList_startWith.add("log.tbs.qq.com");
+        replaceUrlList_startWith.add("qappcenterv6.3g.qq.com");
+        replaceUrlList_startWith.add("3gimg.qq.com");
+        replaceUrlList_startWith.add("hao.gamecenter.qq.com");
+        replaceUrlList_startWith.add("h5.qzone.qq.com/report/");
+        replaceUrlList_startWith.add("masdkv6.3g.qq.com");
+        replaceUrlList_startWith.add("miniapp.gtimg.cn");
+
+
+        replaceUrlList_startWith.add("d3g.qq.com");
+        replaceUrlList_startWith.add("sngmta.qq.com");
+        replaceUrlList_startWith.add("cmshow.gtimg.cn");
+        replaceUrlList_startWith.add("imgcache.qq.com/club/webview/preload.html");
+        replaceUrlList_startWith.add("appservice.qq.com");
+        replaceUrlList_startWith.add("wspeed.qq.com");
+        replaceUrlList_startWith.add("android.bugly.qq.com");
+        replaceUrlList_startWith.add("/qzone/");
+        replaceUrlList_startWith.add("i.gtimg.cn");
+        replaceUrlList_startWith.add("wa.qq.com/hot-res/");
+
+
+
         noLogUrlList_startWith.add("127.39.0.1");
         noLogUrlList_startWith.add("about:blank");
         noLogUrlList_startWith.add("file");
@@ -429,34 +333,63 @@ public class HookJavaNetClass {
         noLogUrlList_startWith.add("/public/appicon/");
         noLogUrlList_startWith.add("/psc?/");
         noLogUrlList_startWith.add("dns.google");
-        if (procHead.contains("tencent")){
-            noLogUrlList_startWith.add("pgdt.gtimg.cn");
-            noLogUrlList_startWith.add("qzonestyle.gtimg.cn");
-            noLogUrlList_startWith.add("qqsys_emoji");
-            noLogUrlList_startWith.add("profile_img_big_fhd");
-            noLogUrlList_startWith.add("q.qlogo.cn");
-            noLogUrlList_startWith.add("miniapp.gtimg.cn/public/appicon/");
-            noLogUrlList_startWith.add("pic.ugcimg.cn");
-            noLogUrlList_startWith.add("sec.video.qq.com");
-            noLogUrlList_startWith.add("m.qpic.cn");
-            noLogUrlList_startWith.add("h5.qzone.qq.com");
-            noLogUrlList_startWith.add("hot_pic");
-            noLogUrlList_startWith.add("apollo_image");
-            noLogUrlList_startWith.add("emotion_pic");
-            noLogUrlList_startWith.add("chatthumb");
-            noLogUrlList_startWith.add("chatimg");
-            noLogUrlList_startWith.add("chatraw");
-            noLogUrlList_startWith.add("125.88.187.141");
-            noLogUrlList_startWith.add("125.88.187.159");
-            noLogUrlList_startWith.add("BOT");
-            noLogUrlList_startWith.add("directaddress");
-            noLogUrlList_startWith.add("protocol_vas_extension_image");
-            noLogUrlList_startWith.add("/club/item/parcel/");
+
+
+        noLogUrlList_startWith.add("pgdt.gtimg.cn");
+        noLogUrlList_startWith.add("qzonestyle.gtimg.cn");
+        noLogUrlList_startWith.add("qqsys_emoji");
+        noLogUrlList_startWith.add("profile_img_big_fhd");
+        noLogUrlList_startWith.add("q.qlogo.cn");
+        noLogUrlList_startWith.add("miniapp.gtimg.cn/public/appicon/");
+        noLogUrlList_startWith.add("pic.ugcimg.cn");
+        noLogUrlList_startWith.add("sec.video.qq.com");
+        noLogUrlList_startWith.add("m.qpic.cn");
+        noLogUrlList_startWith.add("h5.qzone.qq.com");
+        noLogUrlList_startWith.add("hot_pic");
+        noLogUrlList_startWith.add("apollo_image");
+        noLogUrlList_startWith.add("emotion_pic");
+        noLogUrlList_startWith.add("chatthumb");
+        noLogUrlList_startWith.add("chatimg");
+        noLogUrlList_startWith.add("chatraw");
+        noLogUrlList_startWith.add("125.88.187.141");
+        noLogUrlList_startWith.add("125.88.187.159");
+        noLogUrlList_startWith.add("BOT");
+        noLogUrlList_startWith.add("directaddress");
+        noLogUrlList_startWith.add("protocol_vas_extension_image");
+        noLogUrlList_startWith.add("/club/item/parcel/");
+
+
+        noLogUrlList_startWith.add("api.bilibili.com/open/monitor/apm/report");
+        noLogUrlList_startWith.add("125.88.187.141");
+        noLogUrlList_startWith.add("125.88.187.159");
+        replaceUrlList_equals.add("miniapp.gtimg.cn");
+        replaceUrlList_equals.add("miniapp.gtimg.cn/");
+        replaceUrlList_startWith.add("line1-log.biligame.net");
+    }
+    //maybe i have to improve String#contains() here
+    public static boolean checkUrl(XC_MethodHook.MethodHookParam param){
+//        ArrayList<String> replaceUrlList_equals = new ArrayList<>();
+//        ArrayList<String> replaceUrlList_startWith = new ArrayList<>();
+//        ArrayList<String> noLogUrlList_startWith = new ArrayList<>();
+        if (param.args[0] == null){return true;}
+        String tempUrl = param.args[0].toString();
+        if (tempUrl.startsWith("https://")){
+            tempUrl = tempUrl.substring(8);
         }
-        if (procHead.contains("bili")){
-            noLogUrlList_startWith.add("api.bilibili.com/open/monitor/apm/report");
-            noLogUrlList_startWith.add("125.88.187.141");
-            noLogUrlList_startWith.add("125.88.187.159");
+        else if (tempUrl.startsWith("http://")){
+            tempUrl = tempUrl.substring(7);
+        }
+        for (String checkHead : replaceUrlList_startWith) {
+            if (tempUrl.startsWith(checkHead)) {
+                param.args[0] = "https://127.39.0.1/" + tempUrl;
+                return true;
+            }
+        }
+        for (String checkHead:replaceUrlList_equals){
+            if (tempUrl.equals(checkHead)){
+                param.args[0] = "https://127.39.0.1/" + tempUrl;
+                return true;
+            }
         }
         boolean getCheckHead = false;
         if (trackUrlLogger){
@@ -477,7 +410,7 @@ public class HookJavaNetClass {
             }
         }
         
-        return true;
+        return false;
     }
 
     public static void setUrlResponseMsg(XC_MethodHook.MethodHookParam param){

@@ -5,7 +5,7 @@ import android.content.pm.PackageManager;
 
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
-import static com.linearity.deviceaddresstweaker.LoggerUtils.LoggerLog;
+import static com.linearity.utils.LoggerUtils.LoggerLog;
 
 public class HookPmClass {
     public static boolean HookPm = true;

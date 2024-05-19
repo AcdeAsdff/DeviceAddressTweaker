@@ -1,26 +1,33 @@
 package com.linearity.deviceaddresstweaker.AndroidHooks.android.content;
 
-import android.content.pm.PackageManager;
+import static com.linearity.utils.LoggerUtils.disableMethod;
+
+import android.content.ClipboardManager;
 
 import com.linearity.deviceaddresstweaker.AndroidHooks.android.content.res.HookResClass;
 
-import de.robv.android.xposed.XC_MethodReplacement;
 import android.content.SharedPreferences;
-import de.robv.android.xposed.XposedBridge;
+
+import java.lang.reflect.Method;
+
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
 public class HookContentClass {
     public static boolean HookContent = true;
     public static boolean HookContext = true;
+    public static boolean HookClipboardManager = true;
     public static void DoHook(XC_LoadPackage.LoadPackageParam lpparam, String procHead, SharedPreferences sharedPreferences){
         HookContent = sharedPreferences.getBoolean("HookContentClass_HookContent", true);
         HookContext = sharedPreferences.getBoolean("HookContentClass_HookContext", true);
+        HookClipboardManager = sharedPreferences.getBoolean("HookContentClass_HookClipboardManager", true);
+
+        Class<?> hookClass;
         if (HookContent){
             HookResClass.DoHook(lpparam,procHead,sharedPreferences);
             if (HookContext){
 //                try {
-//                    XposedHelpers.findAndHookMethod(
+//                    findAndHookMethodIfExists(
 //                            android.content.Context.class.getName(),
 //                            lpparam.classLoader,
 //                            "checkSelfPermission",
@@ -35,6 +42,14 @@ public class HookContentClass {
 //                }catch (Exception e){
 //                    LoggerLog(e);
 //                }
+            }
+            if (HookClipboardManager){
+                hookClass = XposedHelpers.findClassIfExists(ClipboardManager.class.getName(),lpparam.classLoader);
+                if (hookClass != null){
+                    for (Method m:hookClass.getDeclaredMethods()){
+                        disableMethod(m, hookClass);//now all of U cannot steal my clipboard
+                    }
+                }
             }
         }
     }
