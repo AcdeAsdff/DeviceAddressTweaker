@@ -87,7 +87,12 @@ public class SettingsGUI extends Activity {
         DefaultResult.add(new Pair<>("HookHardwareClass_HookSensorManager", true));
         DefaultResult.add(new Pair<>("HookHardwareClass_HookSensorEvent", true));
         DefaultResult.add(new Pair<>("HookHardwareClass_HookGeomagneticField", true));
+        DefaultResult.add(new Pair<>("HookHardwareClass_input", true));
+        DefaultResult.add(new Pair<>("HookHardwareClass_input_HookInputDeviceBatteryState", true));
+        DefaultResult.add(new Pair<>("HookHardwareClass_usb", true));
+        DefaultResult.add(new Pair<>("HookHardwareClass_usb_HookUSBClass", true));
         DefaultResult.add(new Pair<>("HookLocationClass_HookLocation", true));
+        DefaultResult.add(new Pair<>("HookMTPClass", true));
         DefaultResult.add(new Pair<>("HookNetClass_HookNet", true));
         DefaultResult.add(new Pair<>("HookNetClass_HookNetworkCapabilities", true));
         DefaultResult.add(new Pair<>("HookNetClass_HookNetworkInfo", true));

@@ -23,6 +23,7 @@ import com.linearity.deviceaddresstweaker.AndroidHooks.android.bluetooth.HookBlu
 import com.linearity.deviceaddresstweaker.AndroidHooks.android.content.HookContentClass;
 import com.linearity.deviceaddresstweaker.AndroidHooks.android.hardware.HookHardwareClass;
 import com.linearity.deviceaddresstweaker.AndroidHooks.android.location.HookLocationClass;
+import com.linearity.deviceaddresstweaker.AndroidHooks.android.mtp.HookMTPClass;
 import com.linearity.deviceaddresstweaker.AndroidHooks.android.net.HookNetClass;
 import com.linearity.deviceaddresstweaker.AndroidHooks.android.os.HookOsClass;
 import com.linearity.deviceaddresstweaker.AndroidHooks.android.provider.HookProviderClass;
@@ -154,13 +155,12 @@ public class DeviceAddressTweaker implements IXposedHookLoadPackage, IXposedHook
     public XC_InitPackageResources.InitPackageResourcesParam resparam;
 
     //a looooooooooong way 2 go
-    @SuppressLint({"SetWorldWritable", "SetWorldReadable"})
     public void handleLoadPackage(XC_LoadPackage.LoadPackageParam lpparam){
         if (lpparam == null) {
             return;
         }
 
-        LoggerLog("Load app packageName:" + lpparam.packageName);
+        LoggerLog("Load app processName:" + lpparam.processName);
         processHead = lpparam.processName.split(":")[0];
         ProcHead2Context.put(processHead, null);
         File spFile = new File("/data/local/tmp/linearity_dat/shared_prefs/" + processHead + "_linearity_dat_settings.xml");
@@ -222,7 +222,7 @@ public class DeviceAddressTweaker implements IXposedHookLoadPackage, IXposedHook
         //inputmethodservice
         HookLocationClass.DoHook(lpparam,processHead,sharedPreferences);//not finished
         //media
-        //mtp
+        HookMTPClass.DoHook(lpparam,processHead,sharedPreferences);
         HookNetClass.DoHook(lpparam,processHead,sharedPreferences);//not finished
         //nfc
         //opengl

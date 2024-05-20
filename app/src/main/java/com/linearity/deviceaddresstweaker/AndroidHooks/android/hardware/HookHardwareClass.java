@@ -18,6 +18,9 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.hardware.TriggerEventListener;
 
+import com.linearity.deviceaddresstweaker.AndroidHooks.android.hardware.input.HookInputDeviceBatteryStateClass;
+import com.linearity.deviceaddresstweaker.AndroidHooks.android.hardware.usb.HookUSBClass;
+
 import java.util.ArrayList;
 
 import de.robv.android.xposed.XC_MethodHook;
@@ -33,6 +36,9 @@ public class HookHardwareClass {
     public static boolean HookSensorManager = true;
     public static boolean HookSensorEvent = true;
     public static boolean HookGeomagneticField = true;
+    public static boolean HookInput = true;
+    public static boolean HookUSBPackage = true;
+
     
     public static XC_MethodReplacement returnFloatZero = new XC_MethodReplacement() {
         @Override
@@ -54,6 +60,8 @@ public class HookHardwareClass {
         HookSensorManager = sharedPreferences.getBoolean("HookHardwareClass_HookSensorManager", true);
         HookSensorEvent = sharedPreferences.getBoolean("HookHardwareClass_HookSensorEvent", true);
         HookGeomagneticField = sharedPreferences.getBoolean("HookHardwareClass_HookGeomagneticField", true);
+        HookInput = sharedPreferences.getBoolean("HookHardwareClass_input", true);
+        HookUSBPackage = sharedPreferences.getBoolean("HookHardwareClass_usb",true);
         if (HookHardware){
             if (HookGeomagneticField) {
                 hookClass = XposedHelpers.findClassIfExists(GeomagneticField.class.getName(),lpparam.classLoader);
@@ -588,6 +596,12 @@ public class HookHardwareClass {
                         }
                     }catch (Exception e){LoggerLog(e);}
                 }
+            }
+            if (HookInput){
+                HookInputDeviceBatteryStateClass.DoHook(lpparam,procHead,sharedPreferences);
+            }
+            if (HookUSBPackage){
+                HookUSBClass.DoHook(lpparam,procHead,sharedPreferences);
             }
         }
     }

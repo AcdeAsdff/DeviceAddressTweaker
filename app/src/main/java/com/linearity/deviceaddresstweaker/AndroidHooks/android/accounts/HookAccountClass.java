@@ -265,12 +265,12 @@ public class HookAccountClass {
                         {
                             HookUtils.findAndHookMethodIfExists(hookClass,
                                     "getPackagesAndVisibilityForAccount",
-                                    Account.class, ReturnReplacements.returnEmptyMap_String_Integer);
+                                    Account.class, ReturnReplacements.returnCantUseHashMap);
                         }
                         {
                             HookUtils.findAndHookMethodIfExists(hookClass,
                                     "getAccountsAndVisibilityForPackage",
-                                    String.class, String.class, ReturnReplacements.returnEmptyMap_Account_Integer
+                                    String.class, String.class, ReturnReplacements.returnCantUseHashMap
                             );
                         }
                         {

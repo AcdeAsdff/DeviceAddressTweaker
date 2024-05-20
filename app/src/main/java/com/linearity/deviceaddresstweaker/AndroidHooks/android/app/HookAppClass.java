@@ -5,7 +5,7 @@ import static android.content.res.Configuration.KEYBOARDHIDDEN_YES;
 import static android.content.res.Configuration.KEYBOARD_NOKEYS;
 import static com.linearity.deviceaddresstweaker.DeviceAddressTweaker.EmptyIntent;
 import static com.linearity.utils.HookUtils.findAndHookMethodIfExists;
-import static com.linearity.utils.ReturnReplacements.returnEmptyMap_String_Object;
+import static com.linearity.utils.ReturnReplacements.returnCantUseHashMap;
 import static com.linearity.utils.ReturnReplacements.returnFalse;
 import static com.linearity.utils.ReturnReplacements.returnIntegerMAX;
 import static com.linearity.utils.ReturnReplacements.returnIntegerOne;
@@ -16,20 +16,32 @@ import static com.linearity.utils.ReturnReplacements.returnTrue;
 import static com.linearity.utils.LoggerUtils.LoggerLog;
 import static com.linearity.utils.ReturnReplacements.random;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.Application;
+import android.app.FragmentController;
 import android.app.KeyguardManager;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.ConfigurationInfo;
 import android.content.res.Configuration;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.os.UserHandle;
+import android.text.Selection;
+import android.text.SpannableStringBuilder;
+import android.text.method.TextKeyListener;
+import android.view.KeyEvent;
 import android.view.Menu;
 
 import java.io.FileDescriptor;
+import java.lang.ref.WeakReference;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,6 +50,8 @@ import java.util.Locale;
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XC_MethodReplacement;
 import android.content.SharedPreferences;
+import android.view.Window;
+import android.view.autofill.AutofillManager;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -77,12 +91,16 @@ public class HookAppClass {
 
         Class<?> hookClass;
         if (HookApp){
-            //remember to pay attention to Activity.onKeyDown
             if (HookActivity){
                 hookClass = XposedHelpers.findClassIfExists(android.app.Activity.class.getName(), lpparam.classLoader);
                 if (hookClass != null){
                     try {
                         {
+                            Class<?> ActivityClientClass = XposedHelpers.findClass("android.app.ActivityClient",lpparam.classLoader);
+                            Class<?> RequestFinishCallbackClass = XposedHelpers.findClass("android.app.Activity$RequestFinishCallback",lpparam.classLoader);
+                            Constructor<?> RequestFinishCallbackConstructor = XposedHelpers.findConstructorExact(RequestFinishCallbackClass, WeakReference.class);
+                            Class<?> androidxFragmentControllerClass = XposedHelpers.findClassIfExists(androidx.fragment.app.FragmentController.class.getName(),lpparam.classLoader);
+                            Class<?> FragmentControllerClass = XposedHelpers.findClassIfExists("android.support.v4.app.FragmentController",lpparam.classLoader);
                             {
                                 findAndHookMethodIfExists(hookClass,
                                         "setIntent",
@@ -232,12 +250,12 @@ public class HookAppClass {
                             }
                             {
                                 findAndHookMethodIfExists(hookClass,
-                                        "getLastNonConfigurationChildInstances",returnEmptyMap_String_Object
+                                        "getLastNonConfigurationChildInstances",returnCantUseHashMap
                                 );
                             }
                             {
                                 findAndHookMethodIfExists(hookClass,
-                                        "onRetainNonConfigurationChildInstances",returnEmptyMap_String_Object
+                                        "onRetainNonConfigurationChildInstances",returnCantUseHashMap
                                 );
                             }
                             {
@@ -544,10 +562,113 @@ public class HookAppClass {
                                             @Override
                                             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                                                 super.beforeHookedMethod(param);
-                                                LoggerLog(param.thisObject.getClass().getName() + " | onPause");
+                                                LoggerLog("[linearity-activityLifeListener]",param.thisObject.getClass().getName() + " | onPause");
                                             }
                                         }
                                 );
+                            }
+                            //👇protecting method
+                            {
+                                XposedBridge.hookAllMethods(hookClass, "onKeyDown", new XC_MethodReplacement() {
+                                    @Override
+                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                        Activity thisObj = (Activity) param.thisObject;
+                                        int keyCode = (int) param.args[0];
+                                        KeyEvent event = (KeyEvent) param.args[1];
+                                        int mDefaultKeyMode = XposedHelpers.getIntField(thisObj,"mDefaultKeyMode");
+                                        SpannableStringBuilder mDefaultKeySsb = (SpannableStringBuilder) XposedHelpers.getObjectField(thisObj,"mDefaultKeySsb");
+                                        if (keyCode == KeyEvent.KEYCODE_BACK) {
+                                            if (thisObj.getApplicationInfo().targetSdkVersion
+                                                    >= Build.VERSION_CODES.ECLAIR) {
+                                                event.startTracking();
+                                            } else {
+                                                ActivityDefaultOnBackPressed(thisObj,ActivityClientClass,RequestFinishCallbackConstructor,androidxFragmentControllerClass,FragmentControllerClass);
+                                            }
+                                            return true;
+                                        }
+
+                                        if (mDefaultKeyMode == Activity.DEFAULT_KEYS_DISABLE) {
+                                            return false;
+                                        } else if (mDefaultKeyMode == Activity.DEFAULT_KEYS_SHORTCUT) {
+                                            Window w = thisObj.getWindow();
+                                            if (w.hasFeature(Window.FEATURE_OPTIONS_PANEL) &&
+                                                    w.performPanelShortcut(Window.FEATURE_OPTIONS_PANEL, keyCode, event,
+                                                            Menu.FLAG_ALWAYS_PERFORM_CLOSE)) {
+                                                return true;
+                                            }
+                                            return false;
+                                        } else if (keyCode == KeyEvent.KEYCODE_TAB) {
+                                            // Don't consume TAB here since it's used for navigation. Arrow keys
+                                            // aren't considered "typing keys" so they already won't get consumed.
+                                            return false;
+                                        } else {
+                                            // Common code for DEFAULT_KEYS_DIALER & DEFAULT_KEYS_SEARCH_*
+                                            boolean clearSpannable = false;
+                                            boolean handled;
+                                            if ((event.getRepeatCount() != 0) || event.isSystem()) {
+                                                clearSpannable = true;
+                                                handled = false;
+                                            } else {
+                                                handled = TextKeyListener.getInstance().onKeyDown(
+                                                        null, mDefaultKeySsb, keyCode, event);
+                                                if (handled && mDefaultKeySsb.length() > 0) {
+                                                    // something useable has been typed - dispatch it now.
+
+                                                    final String str = mDefaultKeySsb.toString();
+                                                    clearSpannable = true;
+
+                                                    switch (mDefaultKeyMode) {
+                                                        case Activity.DEFAULT_KEYS_DIALER:
+                                                            Intent intent = new Intent(Intent.ACTION_DIAL,  Uri.parse("tel:" + str));
+                                                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                                            thisObj.startActivity(intent);
+                                                            break;
+                                                        case Activity.DEFAULT_KEYS_SEARCH_LOCAL:
+                                                            thisObj.startSearch(str, false, null, false);
+                                                            break;
+                                                        case Activity.DEFAULT_KEYS_SEARCH_GLOBAL:
+                                                            thisObj.startSearch(str, false, null, true);
+                                                            break;
+                                                    }
+                                                }
+                                            }
+                                            if (clearSpannable) {
+                                                mDefaultKeySsb.clear();
+                                                mDefaultKeySsb.clearSpans();
+                                                Selection.setSelection(mDefaultKeySsb,0);
+                                            }
+                                            return handled;
+                                        }
+                                    }
+                                });
+                            }
+                            {
+                                XposedBridge.hookAllMethods(hookClass, "onKeyUp", new XC_MethodReplacement() {
+                                    @Override
+                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                        Activity thisObj = (Activity) param.thisObject;
+                                        int keyCode = (int) param.args[0];
+                                        KeyEvent event = (KeyEvent) param.args[1];
+                                        if (thisObj.getApplicationInfo().targetSdkVersion
+                                                >= Build.VERSION_CODES.ECLAIR) {
+                                            if (keyCode == KeyEvent.KEYCODE_BACK && event.isTracking()
+                                                    && !event.isCanceled()) {
+                                                ActivityDefaultOnBackPressed(thisObj,ActivityClientClass,RequestFinishCallbackConstructor,androidxFragmentControllerClass,FragmentControllerClass);
+                                                return true;
+                                            }
+                                        }
+                                        return false;
+                                    }
+                                });
+                            }
+                            {
+                                XposedBridge.hookAllMethods(hookClass, "onBackPressed", new XC_MethodReplacement() {
+                                    @Override
+                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                        ActivityDefaultOnBackPressed((Activity) param.thisObject,ActivityClientClass,RequestFinishCallbackConstructor,androidxFragmentControllerClass,FragmentControllerClass);
+                                        return null;
+                                    }
+                                });
                             }
                         }
                     }catch (Exception e){
@@ -1385,5 +1506,67 @@ public class HookAppClass {
         public void onActivityPostDestroyed(@NonNull Activity activity) {
             Application.ActivityLifecycleCallbacks.super.onActivityPostDestroyed(activity);
         }
+    }
+
+
+    public static void ActivityDefaultOnBackPressed(Activity thisObj,Class<?> ActivityClientClass,Constructor<?> RequestFinishCallbackConstructor,Class<?> androidxFragmentControllerClass,Class<?> FragmentControllerClass) throws InvocationTargetException, IllegalAccessException, InstantiationException {
+
+//            Activity thisObj = (Activity) activityParam.thisObject;
+        ActionBar mActionBar = (ActionBar) XposedHelpers.getObjectField(thisObj,"mActionBar");
+        Object mFragments = XposedHelpers.getObjectField(thisObj,"mFragments");
+        IBinder mToken = (IBinder) XposedHelpers.getObjectField(thisObj,"mToken");
+        Intent mIntent = (Intent) XposedHelpers.getObjectField(thisObj,"mIntent");
+        String EXTRA_RESTORE_SESSION_TOKEN = (String) XposedHelpers.getStaticObjectField(AutofillManager.class,"EXTRA_RESTORE_SESSION_TOKEN");
+        if (mActionBar != null && (boolean)XposedHelpers.callMethod(mActionBar,"collapseActionView")) {
+            return;
+        }
+
+//        LoggerLog("mFragments: "+mFragments.getClass().getTypeName());
+        Object fragmentManager = null;//mFragments.getFragmentManager();
+        try {
+            boolean controllerFlag = false;
+            if (FragmentControllerClass != null){
+                if (FragmentControllerClass.isInstance(mFragments)){
+                    controllerFlag = true;
+                }
+            }
+            if (mFragments instanceof FragmentController || controllerFlag) {
+                fragmentManager = XposedHelpers.callMethod(mFragments, "getFragmentManager");
+            } else if (androidxFragmentControllerClass.isInstance(mFragments)) {
+                fragmentManager = XposedHelpers.callMethod(mFragments, "getSupportFragmentManager");
+            } else {
+                fragmentManager = mFragments;
+            }
+            ;
+            boolean isStateSaved = (boolean) XposedHelpers.getBooleanField(fragmentManager, "mStateSaved");
+            if (!isStateSaved
+                    && ((boolean) XposedHelpers.callMethod(fragmentManager, "popBackStackImmediate"))) {
+                return;
+            }
+        }catch (Exception e){
+            LoggerLog(e);
+        }
+        if (!thisObj.isTaskRoot()) {
+            // If the activity is not the root of the task, allow finish to proceed normally.
+            thisObj.finishAfterTransition();
+            return;
+        }
+        // Inform activity task manager that the activity received a back press while at the
+        // root of the task. This call allows ActivityTaskManager to intercept or move the task
+        // to the back.
+        XposedHelpers.callMethod(
+                XposedHelpers.callStaticMethod(ActivityClientClass,"getInstance"),
+                "onBackPressedOnTaskRoot",
+                mToken,
+                RequestFinishCallbackConstructor.newInstance(new WeakReference<>(thisObj))
+        );
+
+        // Activity was launched when user tapped a link in the Autofill Save UI - Save UI must
+        // be restored now.
+        if (mIntent != null && mIntent.hasExtra(EXTRA_RESTORE_SESSION_TOKEN)) {
+            XposedHelpers.callMethod(thisObj,"restoreAutofillSaveUi");
+        }
+        return;
+
     }
 }

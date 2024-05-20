@@ -1,6 +1,6 @@
 package com.linearity.deviceaddresstweaker.AndroidHooks.android.content;
 
-import static com.linearity.utils.LoggerUtils.disableMethod;
+import static com.linearity.utils.HookUtils.disableMethod;
 
 import android.content.ClipboardManager;
 
@@ -47,6 +47,7 @@ public class HookContentClass {
                 hookClass = XposedHelpers.findClassIfExists(ClipboardManager.class.getName(),lpparam.classLoader);
                 if (hookClass != null){
                     for (Method m:hookClass.getDeclaredMethods()){
+                        if (m.getName().equals("setPrimaryClip")){continue;}
                         disableMethod(m, hookClass);//now all of U cannot steal my clipboard
                     }
                 }

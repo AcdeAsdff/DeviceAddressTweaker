@@ -1,18 +1,5 @@
 package com.linearity.utils;
 
-import static com.linearity.utils.ReturnReplacements.returnByteZero;
-import static com.linearity.utils.ReturnReplacements.returnCharZero;
-import static com.linearity.utils.ReturnReplacements.returnDoubleZero;
-import static com.linearity.utils.ReturnReplacements.returnFalse;
-import static com.linearity.utils.ReturnReplacements.returnFloatZero;
-import static com.linearity.utils.ReturnReplacements.returnIntegerZero;
-import static com.linearity.utils.ReturnReplacements.returnLongZero;
-import static com.linearity.utils.ReturnReplacements.returnNull;
-import static com.linearity.utils.ReturnReplacements.returnSelf;
-import static com.linearity.utils.ReturnReplacements.returnShortZero;
-import static com.linearity.utils.ReturnReplacements.returnStringOne;
-
-import de.robv.android.xposed.XC_MethodReplacement;
 import de.robv.android.xposed.XposedBridge;
 
 import android.view.View;
@@ -20,9 +7,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import java.lang.reflect.Array;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Collection;
 import java.util.HashSet;
@@ -365,48 +350,4 @@ public class LoggerUtils {
             }
         }
 
-    public static void disableMethod(Method m, Class<?> selfClass){
-        Class<?> t = m.getReturnType();
-        if (Modifier.isAbstract(m.getModifiers())){return;}
-        if (t.equals(Void.TYPE)){
-            XposedBridge.hookMethod(m,returnNull);
-        }else if (t.equals(Boolean.class) || t.equals(boolean.class)){
-            XposedBridge.hookMethod(m,returnFalse);
-        }else if (t.equals(int.class) || t.equals(Integer.class)){
-            XposedBridge.hookMethod(m,returnIntegerZero);
-        }else if (t.equals(long.class) || t.equals(Long.class)){
-            XposedBridge.hookMethod(m,returnLongZero);
-        }else if (t.equals(short.class) || t.equals(Short.class)){
-            XposedBridge.hookMethod(m,returnShortZero);
-        }else if (t.equals(double.class) || t.equals(Double.class)){
-            XposedBridge.hookMethod(m,returnDoubleZero);
-        }else if (t.equals(float.class) || t.equals(Float.class)){
-            XposedBridge.hookMethod(m,returnFloatZero);
-        }else if (t.equals(byte.class) || t.equals(Byte.class)){
-            XposedBridge.hookMethod(m,returnByteZero);
-        }else if (t.equals(char.class) || t.equals(Character.class)){
-            XposedBridge.hookMethod(m,returnCharZero);
-        }else if(t.equals(String.class)){
-            XposedBridge.hookMethod(m,returnStringOne);
-        }
-        else if((t.isAssignableFrom(selfClass) || t.equals(selfClass))){
-            if (!Modifier.isStatic(m.getModifiers())){
-                XposedBridge.hookMethod(m, returnSelf);
-            }else{
-                Constructor<?> constructor = XposedHelpers.findConstructorExactIfExists(selfClass);
-                if (constructor != null){
-                    XposedBridge.hookMethod(m, new XC_MethodReplacement() {
-                        @Override
-                        protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                            return constructor.newInstance();
-                        }
-                    });
-                }else {
-                    XposedBridge.hookMethod(m,returnNull);
-                }
-            }
-        } else {
-            XposedBridge.hookMethod(m,returnNull);
-        }
-    }
 }

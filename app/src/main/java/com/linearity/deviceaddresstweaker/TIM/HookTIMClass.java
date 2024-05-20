@@ -4,9 +4,13 @@ import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 import static android.telephony.TelephonyManager.NETWORK_TYPE_LTE;
 import static com.linearity.deviceaddresstweaker.AndroidHooks.android.net.HookNetClass.byteArray114514;
 import static com.linearity.deviceaddresstweaker.DeviceAddressTweaker.*;
+import static com.linearity.utils.FakeClass.java.util.EmptyArrays.EMPTY_INT_ARRAY;
+import static com.linearity.utils.HookUtils.disableClass;
+import static com.linearity.utils.HookUtils.disableMethod;
 import static com.linearity.utils.LoggerUtils.LoggerLog;
 import static com.linearity.utils.ReturnReplacements.getRandomString;
 import static com.linearity.utils.LoggerUtils.showObjectFields;
+import static com.linearity.utils.ReturnReplacements.returnNull;
 
 import android.annotation.SuppressLint;
 import android.app.PendingIntent;
@@ -42,7 +46,6 @@ import android.widget.TextView;
 import com.linearity.deviceaddresstweaker.DeviceAddressTweaker;
 import com.linearity.utils.HookUtils;
 import com.linearity.utils.HookerThread;
-import com.linearity.utils.LoggerUtils;
 import com.linearity.deviceaddresstweaker.R;
 import com.linearity.utils.ReturnReplacements;
 
@@ -59,8 +62,10 @@ public class HookTIMClass {
         if (HookTIM) {
             try {
 
-                HookerThread hook1 = new HookerThread(lpparam.classLoader,HookerThread.TIMHookedPackagesPart1,HookerThread.TIMHookedPackagesPart3,HookerThread.TIMHookedPackagesPart4);
-                hook1.run();
+                if (!lpparam.processName.equals("com.tencent.tim:peak")){
+                    HookerThread hook1 = new HookerThread(lpparam.classLoader, HookerThread.TIMHookedPackagesPart1, HookerThread.TIMHookedPackagesPart3, HookerThread.TIMHookedPackagesPart4);
+                    hook1.run();
+                }
                 //tim or st. else(give it a try)
                 try {
                     if (XposedHelpers.findMethodExactIfExists(
@@ -1489,12 +1494,14 @@ public class HookTIMClass {
                     hookClass = XposedHelpers.findClassIfExists("com.tencent.smtt.sdk.TbsLogReport",lpparam.classLoader);
                     if (hookClass != null){
                         for (Method m:hookClass.getDeclaredMethods()){
-                            Class<?> returnType = m.getReturnType();
-                            if (returnType.equals(Void.TYPE)){
-                                XposedBridge.hookMethod(m, ReturnReplacements.returnNull);
-                            }else if (returnType.equals(Boolean.TYPE)){
-                                XposedBridge.hookMethod(m, ReturnReplacements.returnFalse);
-                            }
+                            if (m.getName().equals("getInstance") || m.getName().equals("tbsLogInfo")){continue;}
+                            disableMethod(m,hookClass);
+                        }
+                    }
+                    hookClass = XposedHelpers.findClassIfExists("com.tencent.smtt.sdk.TbsLogReport$TbsLogInfo",lpparam.classLoader);
+                    if (hookClass != null){
+                        for (Method m:hookClass.getDeclaredMethods()){
+                            disableMethod(m,hookClass);
                         }
                     }
                 } catch (Exception e) {
@@ -1582,7 +1589,7 @@ public class HookTIMClass {
                                         result.addState(drawable.getStateSet(0),gradientDrawable);
                                         gradientDrawable = (GradientDrawable) drawable.getStateDrawable(1);
                                         gradientDrawable.setColor(Color.parseColor("#4039C5BB"));
-                                        result.addState(new int[0],gradientDrawable);
+                                        result.addState(EMPTY_INT_ARRAY,gradientDrawable);
                                         param.setResult(result);
                                     }
                                 });
@@ -1866,7 +1873,7 @@ public class HookTIMClass {
                         hookClass = XposedHelpers.findClassIfExists("com.tencent.biz.pubaccount.readinjoy.ugc." + s, lpparam.classLoader);
                         if (hookClass != null && !Modifier.isAbstract(hookClass.getModifiers())){
                             for (Method m : hookClass.getDeclaredMethods()) {
-                                LoggerUtils.disableMethod(m,hookClass);
+                                HookUtils.disableMethod(m,hookClass);
                             }
                         }
                     }
@@ -1879,7 +1886,7 @@ public class HookTIMClass {
                         hookClass = XposedHelpers.findClassIfExists("com.tencent.mobileqq.vas." + s, lpparam.classLoader);
                         if (hookClass != null && !Modifier.isAbstract(hookClass.getModifiers())){
                             for (Method m : hookClass.getDeclaredMethods()) {
-                                LoggerUtils.disableMethod(m,hookClass);
+                                HookUtils.disableMethod(m,hookClass);
                             }
                         }
                     }
@@ -1910,6 +1917,39 @@ public class HookTIMClass {
                     }
                 }
 
+//                {
+//                    hookClass = XposedHelpers.findClassIfExists("com.tencent.mobileqq.webview.swift.WebViewPluginEngine",lpparam.classLoader);
+//                    if (hookClass != null){
+//                        XposedBridge.hookAllMethods(hookClass, "handleEvent", new XC_MethodHook() {
+//                            @Override
+//                            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+//                                super.beforeHookedMethod(param);
+//                                long l = (Long) param.args[1];
+//                                if (l == 1024L){
+//                                    param.setResult(true);
+//                                }
+//                            }
+//                        });
+//                    }
+//                }
+//                {
+//                    hookClass = XposedHelpers.findClassIfExists("whd",lpparam.classLoader);
+//                    if (hookClass != null){
+//                        XposedBridge.hookAllMethods(hookClass, "cj", returnNull);
+//                    }
+//                }
+//                {
+//                    hookClass = XposedHelpers.findClassIfExists("aqzd$b",lpparam.classLoader);
+//                    if (hookClass != null){
+//                        XposedBridge.hookAllMethods(hookClass, "onPageFinished", new XC_MethodHook() {
+//                            @Override
+//                            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+//                                super.beforeHookedMethod(param);
+//                                LoggerLog(new Exception("not an exception"));
+//                            }
+//                        });
+//                    }
+//                }
             } catch (Exception e) {
                 LoggerLog(e);
             }

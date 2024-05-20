@@ -1,5 +1,7 @@
 package com.linearity.utils;
 
+import static com.linearity.utils.FakeClass.java.util.EmptyArrays.EMPTY_BYTE_ARRAY;
+
 import java.util.Arrays;
 
 /**
@@ -56,7 +58,7 @@ public class Base58Util {
     //Base58解码
     public static byte[] decode(String input) {
         if (input.length() == 0) {
-            return new byte[0];
+            return EMPTY_BYTE_ARRAY;
         }
         // 将BASE58编码的ASCII字符转换为BASE58字节序列
         byte[] input58 = new byte[input.length()];

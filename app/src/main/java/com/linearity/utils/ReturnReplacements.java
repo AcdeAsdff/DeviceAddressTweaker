@@ -5,9 +5,16 @@ import static com.linearity.deviceaddresstweaker.AndroidHooks.android.net.HookNe
 import android.accounts.Account;
 import android.os.Bundle;
 
+import com.linearity.utils.FakeClass.java.util.CantUseArrayList;
+import com.linearity.utils.FakeClass.java.util.CantUseEnumeration;
+import com.linearity.utils.FakeClass.java.util.CantUseHashmap;
+import com.linearity.utils.FakeClass.java.util.CantUseVector;
+
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
+import java.util.UUID;
 
 import de.robv.android.xposed.XC_MethodReplacement;
 
@@ -138,38 +145,58 @@ public class ReturnReplacements {
             return getRandomString(20);
         }
     };
-    public static Bundle EmptyBundle = new Bundle();
+    public static final Bundle EmptyBundle = new Bundle();
     public static final XC_MethodReplacement returnEmptyBundle = new XC_MethodReplacement() {
         @Override
         protected Object replaceHookedMethod(MethodHookParam param) {
             return EmptyBundle;
         }
     };
-    public static Map<String, Integer> EmptyMap_String_Integer = new HashMap<>();
-    public static final XC_MethodReplacement returnEmptyMap_String_Integer = new XC_MethodReplacement() {
-        @Override
-        protected Object replaceHookedMethod(MethodHookParam param) {
-            return EmptyMap_String_Integer;
-        }
-    };
-    public static Map<String, Object> EmptyMap_String_Object = new HashMap<>();
+    public static final Map<String, Object> EmptyMap_String_Object = new HashMap<>();
     public static final XC_MethodReplacement returnEmptyMap_String_Object = new XC_MethodReplacement() {
         @Override
         protected Object replaceHookedMethod(MethodHookParam param) {
             return EmptyMap_String_Object;
         }
     };
-    public static Map<Account, Integer> EmptyMap_Account_Integer = new HashMap<>();
-    public static final XC_MethodReplacement returnEmptyMap_Account_Integer = new XC_MethodReplacement() {
+    public static final XC_MethodReplacement returnCantUseHashMap = new XC_MethodReplacement() {
         @Override
-        protected Object replaceHookedMethod(MethodHookParam param) {
-            return EmptyMap_Account_Integer;
+        protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+            return CantUseHashmap.INSTANCE;
         }
     };
-    public static Random random = new Random();
+
+    public static final XC_MethodReplacement returnCantUseArrayList = new XC_MethodReplacement() {
+        @Override
+        protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+            return CantUseArrayList.INSTANCE;
+        }
+    };
+
+    public static final XC_MethodReplacement returnRandomUUID = new XC_MethodReplacement() {
+        @Override
+        protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+            return UUID.randomUUID();
+        }
+    };
+
+    public static final XC_MethodReplacement returnCantUseVector = new XC_MethodReplacement() {
+        @Override
+        protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+            return new CantUseVector<>();
+        }
+    };
+
+    public static final XC_MethodReplacement returnCantUseEnumeration = new XC_MethodReplacement() {
+        @Override
+        protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+            return CantUseEnumeration.INSTANCE;
+        }
+    };
+
+    public static final Random random = new Random();
 
     public static String getRandomString(int length){
-        random = new Random();
 //        int minLength = length/2;
 //        int exactLength = random.nextInt(length - minLength) + minLength + 1;
         String str="abpqmnoEFGHIJrstRSTUVWujkl56YKLX234ZvwxyzABCDcdefghi01MNOPQ789";
