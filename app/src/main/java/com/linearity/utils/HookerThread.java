@@ -1,5 +1,6 @@
 package com.linearity.utils;
 
+import static com.linearity.utils.HookUtils.disableClass;
 import static com.linearity.utils.ReturnReplacements.returnNull;
 import static com.linearity.utils.HookUtils.disableMethod;
 
@@ -221,7 +222,7 @@ public class HookerThread{
             "com.tencent.qqmini.minigame.manager.GameInfoManager", "com.tencent.qqmini.minigame.manager.GameReportManager",
             "com.tencent.qqmini.minigame.manager.GameVideoPlayerManager", "com.tencent.qqmini.minigame.manager.JsApiUpdateManager",
             "com.tencent.qqmini.minigame.gpkg.GpkgManager", "com.tencent.qqmini.minigame.action.GetGameInfoManager",
-            "com.tencent.qqmini.minigame.plugins.UpdateManagerJsPlugin",
+            "com.tencent.qqmini.minigame.plugins.UpdateManagerJsPlugin","com.tencent.biz.pubaccount.readinjoy.engine.KandianMergeManager",
 //            "com.tencent.qqmini.minigame.gpkg.MiniGamePkg", "com.tencent.qqmini.minigame.model.BlockAdInfo",
 //            "com.tencent.qqmini.minigame.plugins.BlockAdPlugin",
 //            "com.tencent.qqmini.minigame.plugins.CustomButtonPlugin", "com.tencent.qqmini.minigame.plugins.GameDataJsPlugin",
@@ -371,7 +372,21 @@ public class HookerThread{
 //            "com.tencent.bugly.proguard.v", "com.tencent.bugly.proguard.w", "com.tencent.bugly.proguard.x",
             "com.tencent.bugly.proguard.y", "com.tencent.bugly.proguard.z", "com.tencent.bugly.a", "com.tencent.bugly.b",
             "com.tencent.feedback.eup.CrashReport",
-            "com.tencent.ark.ArkDebugger"
+            "com.tencent.ark.ArkDebugger",
+            "com.tencent.smtt.sdk.TbsLogReport$TbsLogInfo","com.tencent.smtt.sdk.TbsLogReport",
+            "com.tencent.mobileqq.msf.sdk.y",
+            "com.tencent.mobileqq.msf.core.c.k",
+            "com.tencent.mobileqq.Pandora.util.BackgroundUtil","eipc.EIPCClient",
+            "cooperation.qzone.CrashGuard","cooperation.qzone.QZoneCrashHandler",
+            "com.tencent.mobileqq.gamecenter.message.GameMsgManager",
+            "com.tencent.mobileqq.gamecenter.message.GameMsgManager$2",
+            "com.tencent.qphone.base.util.QLog",
+            "com.tencent.mobileqq.msf.core.MsfCore.statReporter",
+//            "com.tencent.biz.qqstory.takevideo2.StoryPublishLauncher",
+//            "com.tencent.biz.qqstory.takevideo2.StoryPublishLauncher$2",
+            "ahsd",
+//            "rlx",
+//            "ayve"
 //            "com.tencent.biz.qqstory.playvideo.player.mediaplayer.AudioPlayback$AudioThread"
     };
     private final String[][] classesToDisable;
@@ -387,14 +402,8 @@ public class HookerThread{
             for (String[] sArr : classesToDisable) {
                 for (String s:sArr){
                     hookClass = XposedHelpers.findClassIfExists(s, classLoader);
-                    if (hookClass == null){break;}
-                    if (!Modifier.isAbstract(hookClass.getModifiers()) && !Modifier.isInterface(hookClass.getModifiers())) {
-                        XposedBridge.hookAllConstructors(hookClass, returnNull);
-                        for (Method m : hookClass.getDeclaredMethods()) {
-                            disableMethod(m, hookClass);
-                        }
-                    }
-
+                    if (hookClass == null){continue;}
+                    disableClass(hookClass);
                 }
             }
 //        }

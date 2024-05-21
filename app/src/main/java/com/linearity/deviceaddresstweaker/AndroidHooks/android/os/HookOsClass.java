@@ -11,7 +11,11 @@ import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
+import static com.linearity.utils.FakeProcInfoGenerator.infoMap;
+import static com.linearity.utils.FakeProcInfoGenerator.random;
 import static com.linearity.utils.ReturnReplacements.returnFalse;
+import static com.linearity.utils.ReturnReplacements.returnLongMAX;
+import static com.linearity.utils.ReturnReplacements.returnNull;
 import static com.linearity.utils.ReturnReplacements.returnRandomStr20;
 import static com.linearity.utils.LoggerUtils.LoggerLog;
 
@@ -19,10 +23,14 @@ import com.linearity.utils.HookUtils;
 import com.linearity.utils.ReturnReplacements;
 
 import java.io.File;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.HashSet;
 
 public class HookOsClass {
+    public static final boolean logSysProperties = false;
     public static StructStatVfs emptyStructStatVfs =
             new StructStatVfs(
                     4096L,
@@ -41,6 +49,7 @@ public class HookOsClass {
     public static boolean HookEnvironment = true;
     public static boolean HookStatFs = true;
     public static boolean HookPowerManager = true;
+    public static boolean HookSystemProperties = true;
 
     public static String[] foolCpuAll = new String[]{
             "x86",
@@ -56,6 +65,7 @@ public class HookOsClass {
         HookEnvironment = sharedPreferences.getBoolean("HookOsClass_HookEnvironment", true);
         HookStatFs = sharedPreferences.getBoolean("HookOsClass_HookStatFs", true);
         HookPowerManager = sharedPreferences.getBoolean("HookOsClass_HookPowerManager", true);
+        HookSystemProperties = sharedPreferences.getBoolean("HookOsClass_HookSystemProperties",true);
 
                 ArrayList<String> temp = new ArrayList<>();
         String UrCpu = (String) XposedHelpers.getStaticObjectField(Build.class, "CPU_ABI");
@@ -93,10 +103,6 @@ public class HookOsClass {
                         }
                         {
                             HookUtils.findAndHookMethodIfExists(hookClass,
-                                    "getRadioVersion", returnRandomStr20);
-                        }
-                        {
-                            HookUtils.findAndHookMethodIfExists(hookClass,
                                     "getSerial",
                                     new XC_MethodReplacement(114514) {
                                         @Override
@@ -105,6 +111,17 @@ public class HookOsClass {
                                         }
                                     }
                             );
+                            XposedBridge.hookAllMethods(hookClass,
+                                    "getString",
+                                    new XC_MethodReplacement(114514) {
+                                        @Override
+                                        protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                            return infoMap.get((String) param.args[0]);
+                                        }
+                                    }
+                            );
+                            XposedBridge.hookAllMethods(hookClass,"getRadioVersion",returnNull);
+                            XposedBridge.hookAllMethods(hookClass,"getLong",returnLongMAX);
                         }
                         hookClass = XposedHelpers.findClassIfExists(Build.VERSION.class.getName(),lpparam.classLoader);
                         if (hookClass != null){
@@ -584,6 +601,125 @@ public class HookOsClass {
                             );
                         }
                     }catch (Exception e){LoggerLog(e);}
+                }
+            }
+            if (HookSystemProperties){
+                hookClass = XposedHelpers.findClassIfExists("android.os.SystemProperties",lpparam.classLoader);
+                if (hookClass != null){
+                    HashSet<String> out = new HashSet<>();
+                    XposedBridge.hookAllMethods(hookClass, "native_get", new XC_MethodHook() {
+                        @Override
+                        protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                            super.beforeHookedMethod(param);
+                            if (infoMap.containsKey((String) param.args[0])){
+                                param.setResult((infoMap.get((String) param.args[0])));return;
+                            }
+                            if (param.args[0].equals("debug.force_rtl")){param.setResult("false");return;}
+                            if (param.args[0].equals("cache_key.package_info")){param.setResult(String.valueOf(random.nextLong()));return;}
+                            if (((String)param.args[0]).startsWith("ro.gfx.driver")){param.setResult("");return;}
+//                            param.setResult("0");
+                            if (logSysProperties){
+                                StringBuilder sb = new StringBuilder();
+                                for (Object o : param.args) {
+                                    sb.append("|").append(o.toString());
+                                }
+                                String toShow = "native_find  " + sb + " " + param.getResult();
+                                if (out.contains(toShow)) {
+                                    return;
+                                }
+                                out.add(toShow);
+                                LoggerLog(toShow);
+                            }
+                        }
+                    });
+                    XposedBridge.hookAllMethods(hookClass, "native_get_long", new XC_MethodHook() {
+                        @Override
+                        protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                            super.beforeHookedMethod(param);
+                            if (infoMap.containsKey((String) param.args[0])){
+                                param.setResult(Long.parseLong(infoMap.get((String) param.args[0])));return;
+                            }
+//                            param.setResult(0L);
+                            if (logSysProperties){
+                                StringBuilder sb = new StringBuilder();
+                                for (Object o : param.args) {
+                                    sb.append("|").append(o.toString());
+                                }
+                                String toShow = "native_find  " + sb + " " + param.getResult();
+                                if (out.contains(toShow)) {
+                                    return;
+                                }
+                                out.add(toShow);
+                                LoggerLog(toShow);
+                            }
+                        }
+                    });
+                    XposedBridge.hookAllMethods(hookClass, "native_find", new XC_MethodHook() {
+                        @Override
+                        protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                            super.beforeHookedMethod(param);
+                            if (infoMap.containsKey((String) param.args[0])){
+                                param.setResult(Long.parseLong(infoMap.get((String) param.args[0])));return;
+                            }
+//                            param.setResult(0L);
+                            if (logSysProperties){
+                                StringBuilder sb = new StringBuilder();
+                                for (Object o : param.args) {
+                                    sb.append("|").append(o.toString());
+                                }
+                                String toShow = "native_find  " + sb + " " + param.getResult();
+                                if (out.contains(toShow)) {
+                                    return;
+                                }
+                                out.add(toShow);
+                                LoggerLog(toShow);
+                            }
+                        }
+                    });
+                    XposedBridge.hookAllMethods(hookClass, "native_get_boolean", new XC_MethodHook() {
+                        @Override
+                        protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                            super.beforeHookedMethod(param);
+                            if (infoMap.containsKey((String) param.args[0])){
+                                param.setResult(Boolean.parseBoolean(infoMap.get((String) param.args[0])));return;
+                            }
+//                            param.setResult(0);
+                            if (logSysProperties){
+                                StringBuilder sb = new StringBuilder();
+                                for (Object o : param.args) {
+                                    sb.append("|").append(o.toString());
+                                }
+                                String toShow = "native_find  " + sb + " " + param.getResult();
+                                if (out.contains(toShow)) {
+                                    return;
+                                }
+                                out.add(toShow);
+                                LoggerLog(toShow);
+                            }
+                        }
+                    });
+                    XposedBridge.hookAllMethods(hookClass, "native_get_int", new XC_MethodHook() {
+                        @Override
+                        protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                            super.beforeHookedMethod(param);
+                            if (infoMap.containsKey((String) param.args[0])){
+                                param.setResult(Integer.parseInt(infoMap.get((String) param.args[0])));return;
+                            }
+//                            param.setResult(0);
+                            if (logSysProperties){
+                                StringBuilder sb = new StringBuilder();
+                                for (Object o : param.args) {
+                                    sb.append("|").append(o.toString());
+                                }
+                                String toShow = "native_find  " + sb + " " + param.getResult();
+                                if (out.contains(toShow)) {
+                                    return;
+                                }
+                                out.add(toShow);
+                                LoggerLog(toShow);
+                            }
+                        }
+                    });
                 }
             }
         }

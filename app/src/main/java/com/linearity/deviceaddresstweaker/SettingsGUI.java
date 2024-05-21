@@ -124,6 +124,7 @@ public class SettingsGUI extends Activity {
         DefaultResult.add(new Pair<>("HookOsClass_HookEnvironment", true));
         DefaultResult.add(new Pair<>("HookOsClass_HookStatFs", true));
         DefaultResult.add(new Pair<>("HookOsClass_HookPowerManager", true));
+        DefaultResult.add(new Pair<>("HookOsClass_HookSystemProperties",true));
         DefaultResult.add(new Pair<>("HookNetClass_HookWifiClass_HookWifi", true));
         DefaultResult.add(new Pair<>("HookNetClass_HookWifiClass_HookWifiInfo", true));
         DefaultResult.add(new Pair<>("HookNetClass_HookWifiClass_HookWifiManager", false));

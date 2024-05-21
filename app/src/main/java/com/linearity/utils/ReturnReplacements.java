@@ -208,4 +208,28 @@ public class ReturnReplacements {
         }
         return sb.toString();
     }
+    public static String getRandomHexUpper(int length){
+//        int minLength = length/2;
+//        int exactLength = random.nextInt(length - minLength) + minLength + 1;
+        String str="0123456789ABCDEF";
+        Random random=new Random();
+        StringBuilder sb=new StringBuilder();
+        for(int i=0;i<length;i++){
+            int number=random.nextInt(str.length());
+            sb.append(str.charAt(number));
+        }
+        return sb.toString();
+    }
+    public static String getRandomHexlower(int length){
+//        int minLength = length/2;
+//        int exactLength = random.nextInt(length - minLength) + minLength + 1;
+        String str="0123456789abcdef";
+        Random random=new Random();
+        StringBuilder sb=new StringBuilder();
+        for(int i=0;i<length;i++){
+            int number=random.nextInt(str.length());
+            sb.append(str.charAt(number));
+        }
+        return sb.toString();
+    }
 }

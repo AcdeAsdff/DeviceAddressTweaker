@@ -1,6 +1,9 @@
 package com.linearity.deviceaddresstweaker.JavaHooks.java.lang;
 
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Arrays;
+import java.util.Objects;
 
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XC_MethodReplacement;
@@ -9,9 +12,11 @@ import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
+import static com.linearity.utils.FakeProcInfoGenerator.emptyProcess;
 import static com.linearity.utils.HookUtils.findAndHookMethodIfExists;
 import static com.linearity.utils.LoggerUtils.LoggerLog;
 import com.linearity.deviceaddresstweaker.JavaHooks.java.lang.reflect.HookReflect;
+import com.linearity.utils.FakeProcInfoGenerator;
 
 public class HookLang {
     public static boolean HookLang = true;
@@ -46,10 +51,10 @@ public class HookLang {
                                 new XC_MethodHook(114514) {
                                     @Override
                                     protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                                        String replaceToCommand = "sh";
+                                        String replaceToCommand = "getprop none";
                                         //LoggerLog(lpparam.packageName + "调用Runtime.class exec()" + param.getResult());
                                         Object[] args = param.args;
-                                        //LoggerLog(lpparam.packageName + "Runtime.class exec args" + Arrays.toString(args));
+//                                        LoggerLog(lpparam.packageName + "Runtime.class exec args" + Arrays.toString(args));
                                         Process process;
                                         String command;
                                         if (args[0] instanceof String[]){
@@ -57,9 +62,10 @@ public class HookLang {
                                         }else {
                                             command = (String) args[0];
                                         }
-                                        if (command.equals(replaceToCommand)){return;}
-                                        if (command.equals("getprop net.dns1")){return;}
-                                        if (command.equals("getprop net.dns2")){return;}
+                                        if (command.contains("getprop")){
+                                            param.setResult(FakeProcInfoGenerator.INSTANCE.generate(null));
+                                            return;
+                                        }
 //                                        {
 //                                            if (command.contains("getprop")) {
 //                                                if (command.equals("getprop debug.sf.hw")) {
@@ -82,10 +88,18 @@ public class HookLang {
 //                                                }
 //                                            }
 //                                        }
-//                                        LoggerLog(new Exception("executing:"+ command));
-                                        process = Runtime.getRuntime().exec(replaceToCommand);
-                                        param.setResult(process);
+                                        if (!Objects.equals(command, "sh")){
+                                            LoggerLog("[linearity-ShellListener]",new Exception("executing:"+ command));
+                                        }
+                                        param.setResult(emptyProcess);
                                     }
+
+//                                    @Override
+//                                    protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+//                                        super.afterHookedMethod(param);
+//                                        Process result = (Process) param.getResult();
+//                                        LoggerLog(result.getOutputStream().getClass().getTypeName());
+//                                    }
                                 }
                         );
                     } catch (Exception e) {
@@ -403,4 +417,6 @@ public class HookLang {
             HookReflect.DoHook(lpparam,procHead,sharedPreferences);
         }
     }
+
+
 }

@@ -31,8 +31,15 @@ public class LoggerUtils {
             LoggerLog("[linearity]", log);
         }
 
+        public static void LoggerLog(String prefix,Throwable e){
+            LoggerLog(prefix, e.toString());
+            for (StackTraceElement s:e.getStackTrace()){
+                LoggerLog(prefix,"        at "+s);
+            }
+            LoggerLog(prefix,"--------------------------------");
+        }
         public static void LoggerLog(Throwable e){
-            LoggerLog("[linearity]", e);
+            LoggerLog("[linearity]", e.toString());
             for (StackTraceElement s:e.getStackTrace()){
                 LoggerLog("        at "+s);
             }
@@ -42,12 +49,6 @@ public class LoggerUtils {
         public static void LoggerLog(String prefix, String log){
             if (useLogger){
                 XposedBridge.log(prefix + log);//not best?
-            }
-        }
-
-        public static void LoggerLog(String prefix, Throwable e){
-            if (useLogger){
-                XposedBridge.log(prefix + e);//not best?
             }
         }
 

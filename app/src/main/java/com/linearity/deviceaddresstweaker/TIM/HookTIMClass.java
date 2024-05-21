@@ -10,7 +10,10 @@ import static com.linearity.utils.HookUtils.disableMethod;
 import static com.linearity.utils.LoggerUtils.LoggerLog;
 import static com.linearity.utils.ReturnReplacements.getRandomString;
 import static com.linearity.utils.LoggerUtils.showObjectFields;
+import static com.linearity.utils.ReturnReplacements.returnFalse;
+import static com.linearity.utils.ReturnReplacements.returnIntegerZero;
 import static com.linearity.utils.ReturnReplacements.returnNull;
+import static com.linearity.utils.ReturnReplacements.returnTrue;
 
 import android.annotation.SuppressLint;
 import android.app.PendingIntent;
@@ -20,6 +23,7 @@ import android.content.res.XResForwarder;
 import android.content.res.XResources;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.StateListDrawable;
 import android.net.ConnectivityManager;
@@ -41,6 +45,7 @@ import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.linearity.deviceaddresstweaker.DeviceAddressTweaker;
@@ -63,29 +68,21 @@ public class HookTIMClass {
             try {
 
                 if (!lpparam.processName.equals("com.tencent.tim:peak")){
-                    HookerThread hook1 = new HookerThread(lpparam.classLoader, HookerThread.TIMHookedPackagesPart1, HookerThread.TIMHookedPackagesPart3, HookerThread.TIMHookedPackagesPart4);
+                    HookerThread hook1 = new HookerThread(lpparam.classLoader,
+                            HookerThread.TIMHookedPackagesPart1,
+                            HookerThread.TIMHookedPackagesPart3,
+                            HookerThread.TIMHookedPackagesPart4
+                    );
                     hook1.run();
                 }
                 //tim or st. else(give it a try)
-                try {
-                    if (XposedHelpers.findMethodExactIfExists(
-                            "moai.core.utilities.appstate.AppStatuses",
-                            lpparam.classLoader,
-                            "isAppOnForeground",
-                            Context.class) != null) {
+                {
+                    Class<?> hookClass = XposedHelpers.findClassIfExists("moai.core.utilities.appstate.AppStatuses",lpparam.classLoader);
+                    if (hookClass != null) {
                         XposedBridge.hookAllMethods(
-                                XposedHelpers.findClass("moai.core.utilities.appstate.AppStatuses",lpparam.classLoader),
-                                "isAppOnForeground",
-                                new XC_MethodReplacement(114514) {
-                                    @Override
-                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                        return true;
-                                    }
-                                }
-                        );
+                                hookClass,
+                                "isAppOnForeground",returnTrue);
                     }
-                } catch (Exception e) {
-                    LoggerLog(e);
                 }
                 try {
                     if (XposedHelpers.findMethodExactIfExists(
@@ -307,7 +304,7 @@ public class HookTIMClass {
                 } catch (Exception e) {
                     LoggerLog(e);
                 }
-                try {
+                {
                     Class<?> tencentAppInterface = XposedHelpers.findClassIfExists("com.tencent.common.app.AppInterface", lpparam.classLoader);
                     if (tencentAppInterface != null) {
 
@@ -322,10 +319,8 @@ public class HookTIMClass {
                                 }
                         );
                     }
-                } catch (Exception e) {
-                    LoggerLog(e);
                 }
-                try {
+                {
 
                     try {
                         Class<?> tencentAppInterface = XposedHelpers.findClassIfExists("com.tencent.android.tpush.common.AppInfos", lpparam.classLoader);
@@ -1092,103 +1087,7 @@ public class HookTIMClass {
                     } catch (Exception e) {
                         LoggerLog(e);
                     }
-                    try {
-                        Class<?> tencentAppInterface = XposedHelpers.findClassIfExists("cooperation.qzone.QZoneCrashHandler", lpparam.classLoader);
-                        if (tencentAppInterface != null) {
-                            try {
-                                XposedBridge.hookAllMethods(
-                                        tencentAppInterface,
-                                        "appendLog", ReturnReplacements.returnNull
-                                );
-                            } catch (Exception e) {
-                                LoggerLog(e);
-                            }
-                            try {
-                                XposedBridge.hookAllMethods(
-                                        tencentAppInterface,
-                                        "getLastCrashInf", ReturnReplacements.returnNull
-                                );
-                            } catch (Exception e) {
-                                LoggerLog(e);
-                            }
-                            try {
-                                XposedBridge.hookAllMethods(
-                                        tencentAppInterface,
-                                        "saveLastCrashInf", ReturnReplacements.returnNull
-                                );
-                            } catch (Exception e) {
-                                LoggerLog(e);
-                            }
-                            try {
-                                XposedBridge.hookAllMethods(
-                                        tencentAppInterface,
-                                        "getCpuNumber",
-                                        new XC_MethodReplacement(114514) {
-                                            @Override
-                                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                                return Integer.MIN_VALUE;
-                                            }
-                                        }
-                                );
-                            } catch (Exception e) {
-                                LoggerLog(e);
-                            }
-                        }
-                    } catch (Exception e) {
-                        LoggerLog(e);
-                    }
-                    try {
-                        Class<?> tencentAppInterface = XposedHelpers.findClassIfExists("cooperation.qzone.CrashGuard", lpparam.classLoader);
-                        if (tencentAppInterface != null) {
-                            try {
-                                XposedBridge.hookAllMethods(
-                                        tencentAppInterface,
-                                        "getCrashMaxCount",
-                                        new XC_MethodReplacement(114514) {
-                                            @Override
-                                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                                return 1;
-                                            }
-                                        }
-                                );
-                            } catch (Exception e) {
-                                LoggerLog(e);
-                            }
-                            try {
-                                XposedBridge.hookAllMethods(
-                                        tencentAppInterface,
-                                        "onAppLaunch", ReturnReplacements.returnNull
-                                );
-                            } catch (Exception e) {
-                                LoggerLog(e);
-                            }
-                            try {
-                                XposedBridge.hookAllMethods(
-                                        tencentAppInterface,
-                                        "onException", ReturnReplacements.returnNull
-                                );
-                            } catch (Exception e) {
-                                LoggerLog(e);
-                            }
-                            try {
-                                XposedBridge.hookAllMethods(
-                                        tencentAppInterface,
-                                        "getCpuNumber",
-                                        new XC_MethodReplacement(114514) {
-                                            @Override
-                                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                                return Integer.MIN_VALUE;
-                                            }
-                                        }
-                                );
-                            } catch (Exception e) {
-                                LoggerLog(e);
-                            }
-                        }
-                    } catch (Exception e) {
-                        LoggerLog(e);
-                    }
-                    try {
+                    {
                         Class<?> tencentAppInterface = XposedHelpers.findClassIfExists("acnq", lpparam.classLoader);
                         if (tencentAppInterface != null) {
                             try {
@@ -1200,10 +1099,8 @@ public class HookTIMClass {
                                 LoggerLog(e);
                             }
                         }
-                    } catch (Exception e) {
-                        LoggerLog(e);
                     }
-                    try {
+                    {
                         Class<?> tencentAppInterface = XposedHelpers.findClassIfExists("anoc", lpparam.classLoader);
                         if (tencentAppInterface != null) {
                             try {
@@ -1295,8 +1192,6 @@ public class HookTIMClass {
                                 LoggerLog(e);
                             }
                         }
-                    } catch (Exception e) {
-                        LoggerLog(e);
                     }
 //                try {
 //                    Class<?> tencentAppInterface = XposedHelpers.findClassIfExists("com.tencent.pb.getbusiinfo.BusinessInfoCheckUpdate$AppInfo", lpparam.classLoader);
@@ -1343,171 +1238,29 @@ public class HookTIMClass {
 //                } catch (Exception e) {
 //                    LoggerLog(e);
 //                }
-                } catch (Exception e) {
-                    LoggerLog(e);
                 }
-                try {
-                    Class<?> hookClass = XposedHelpers.findClassIfExists("argh",lpparam.classLoader);
-                    if (hookClass != null){
-                        XposedBridge.hookAllMethods(hookClass,
-                                "a",
-                                new XC_MethodHook() {
-                                    @Override
-                                    protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                                        super.afterHookedMethod(param);
-                                        if (param.getResult() != null && param.getResult().getClass().equals(hookClass))
-                                        {
-                                            XposedHelpers.setObjectField(param.getResult(),
-                                                    "gl",
-                                                    new ColorDrawable(Color.parseColor("#8039C5BB")
-                                                    ));
-                                        }
-                                    }
-                                });
-                        XposedBridge.hookAllMethods(hookClass,
-                                "b",
-                                new XC_MethodHook() {
-                                    @Override
-                                    protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                                        super.afterHookedMethod(param);
-                                        if (param.getResult() != null && param.getResult().getClass().equals(hookClass))
-                                        {
-                                            XposedHelpers.setObjectField(param.getResult(),
-                                                    "gl",
-                                                    new ColorDrawable(Color.parseColor("#8039C5BB")
-                                                    ));
-                                        }
-                                    }
-                                });
-                    }
-                } catch (Exception e) {
-                    LoggerLog(e);
-                }
-                try {
-                    Class<?> hookClass = XposedHelpers.findClassIfExists("eipc.EIPCClient",lpparam.classLoader);
-                    if (hookClass != null){
-                        for (Method m:hookClass.getDeclaredMethods()){
-                            if (m.getReturnType().equals(Void.TYPE)){
-                                XposedBridge.hookMethod(m, new XC_MethodReplacement() {
-                                    @Override
-                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                        return null;
-                                    }
-                                });
-                            }
-                        }
-                    }
-                } catch (Exception e) {
-                    LoggerLog(e);
-                }
-                try {
+                {
                     Class<?> hookClass = XposedHelpers.findClassIfExists("com.tencent.ark.open.ArkAppMgr",lpparam.classLoader);
                     if (hookClass != null){
                         HookUtils.findAndHookMethodIfExists(hookClass,
                                 "compareVersionString",
                                 String.class,
-                                String.class,
-                                new XC_MethodReplacement() {
-                                    @Override
-                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                        return 0;
-                                    }
-                                });
+                                String.class,returnIntegerZero);
                     }
-                } catch (Exception e) {
-                    LoggerLog(e);
                 }
-                try {
+                {
                     Class<?> hookClass = XposedHelpers.findClassIfExists("angt",lpparam.classLoader);
                     if (hookClass != null){
-                        XposedBridge.hookAllMethods(hookClass, "uj", new XC_MethodReplacement() {
-                            @Override
-                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                return true;
-                            }
-                        });
+                        XposedBridge.hookAllMethods(hookClass, "uj", returnTrue);
                     }
-                } catch (Exception e) {
-                    LoggerLog(e);
                 }
-                try {
+                {
                     Class<?> hookClass = XposedHelpers.findClassIfExists("ajka",lpparam.classLoader);
                     if (hookClass != null){
-                        XposedBridge.hookAllMethods(hookClass, "g", new XC_MethodReplacement() {
-                            @Override
-                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                return true;
-                            }
-                        });
+                        XposedBridge.hookAllMethods(hookClass, "g", returnTrue);
                     }
-                } catch (Exception e) {
-                    LoggerLog(e);
                 }
-                try {
-                    Class<?> hookClass = XposedHelpers.findClassIfExists("com.tencent.mobileqq.Pandora.util.BackgroundUtil",lpparam.classLoader);
-                    if (hookClass != null){
-                        for (Method m:hookClass.getDeclaredMethods()){
-                            Class<?> returnType = m.getReturnType();
-                            if (returnType.equals(Void.TYPE)){
-                                XposedBridge.hookMethod(m, new XC_MethodReplacement() {
-                                    @Override
-                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                        return null;
-                                    }
-                                });
-                            }else if (returnType.equals(Boolean.TYPE)){
-                                XposedBridge.hookMethod(m, new XC_MethodReplacement() {
-                                    @Override
-                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                        return false;
-                                    }
-                                });
-                            }
-                        }
-                    }
-                } catch (Exception e) {
-                    LoggerLog(e);
-                }
-                try {
-                    Class<?> hookClass = XposedHelpers.findClassIfExists("com.tencent.mobileqq.msf.core.c.k",lpparam.classLoader);
-                    if (hookClass != null){
-                        for (Method m:hookClass.getDeclaredMethods()){
-                            Class<?> returnType = m.getReturnType();
-                            if (returnType.equals(Void.TYPE)){
-                                XposedBridge.hookMethod(m, ReturnReplacements.returnNull);
-                            }else if (returnType.equals(Boolean.TYPE)){
-                                XposedBridge.hookMethod(m, ReturnReplacements.returnFalse);
-                            }
-                        }
-                    }
-                    hookClass = XposedHelpers.findClassIfExists("com.tencent.mobileqq.msf.sdk.y",lpparam.classLoader);
-                    if (hookClass != null){
-                        for (Method m:hookClass.getDeclaredMethods()){
-                            Class<?> returnType = m.getReturnType();
-                            if (returnType.equals(Void.TYPE)){
-                                XposedBridge.hookMethod(m, ReturnReplacements.returnNull);
-                            }else if (returnType.equals(Boolean.TYPE)){
-                                XposedBridge.hookMethod(m, ReturnReplacements.returnFalse);
-                            }
-                        }
-                    }
-                    hookClass = XposedHelpers.findClassIfExists("com.tencent.smtt.sdk.TbsLogReport",lpparam.classLoader);
-                    if (hookClass != null){
-                        for (Method m:hookClass.getDeclaredMethods()){
-                            if (m.getName().equals("getInstance") || m.getName().equals("tbsLogInfo")){continue;}
-                            disableMethod(m,hookClass);
-                        }
-                    }
-                    hookClass = XposedHelpers.findClassIfExists("com.tencent.smtt.sdk.TbsLogReport$TbsLogInfo",lpparam.classLoader);
-                    if (hookClass != null){
-                        for (Method m:hookClass.getDeclaredMethods()){
-                            disableMethod(m,hookClass);
-                        }
-                    }
-                } catch (Exception e) {
-                    LoggerLog(e);
-                }
-                try {
+                {
                     Class<?> hookClass = XposedHelpers.findClassIfExists("wis",lpparam.classLoader);
                     if (hookClass != null){
                         XposedBridge.hookAllMethods(hookClass,
@@ -1524,56 +1277,26 @@ public class HookTIMClass {
                                     }
                                 });
                     }
-                } catch (Exception e) {
-                    LoggerLog(e);
                 }
-                try {
+                {
                     Class<?> hookClass = XposedHelpers.findClassIfExists("com.tencent.qphone.base.util.QLog",lpparam.classLoader);
                     if (hookClass != null){
                         XposedBridge.hookAllMethods(hookClass,
-                                "writeLogToFile",
-                                new XC_MethodReplacement() {
-                                    @Override
-                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                        return false;
-                                    }
-                                });
+                                "writeLogToFile",returnTrue);
                         XposedBridge.hookAllMethods(hookClass,
-                                "addLogItem",
-                                new XC_MethodReplacement() {
-                                    @Override
-                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                        return null;
-                                    }
-                                });
+                                "addLogItem",returnNull);
                         HookUtils.findAndHookMethodIfExists(hookClass,
-                                "isColorLevel",
-                                new XC_MethodReplacement() {
-                                    @Override
-                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                        return true;
-                                    }
-                                });
+                                "isColorLevel",returnTrue);
                     }
-                } catch (Exception e) {
-                    LoggerLog(e);
                 }
-                try {
+                {
                     Class<?> hookClass = XposedHelpers.findClassIfExists("ayvc",lpparam.classLoader);
                     if (hookClass != null){
                         XposedBridge.hookAllMethods(hookClass,
-                                "cr",
-                                new XC_MethodReplacement() {
-                                    @Override
-                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                        return null;
-                                    }
-                                });
+                                "cr",returnNull);
                     }
-                } catch (Exception e) {
-                    LoggerLog(e);
                 }
-                try {
+                {
                     Class<?> hookClass = XposedHelpers.findClassIfExists("aszn",lpparam.classLoader);
                     if (hookClass != null){
                         XposedBridge.hookAllMethods(hookClass,
@@ -1594,68 +1317,13 @@ public class HookTIMClass {
                                     }
                                 });
                     }
-                } catch (Exception e) {
-                    LoggerLog(e);
                 }
-                try {
+                {
                     Class<?> hookClass = XposedHelpers.findClassIfExists("aicd",lpparam.classLoader);
                     if (hookClass != null){
                         XposedBridge.hookAllMethods(hookClass,
-                                "aoM",
-                                new XC_MethodReplacement() {
-                                    @Override
-                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                        return false;
-                                    }
-                                });
+                                "aoM",returnFalse);
                     }
-                } catch (Exception e) {
-                    LoggerLog(e);
-                }
-                try {
-                    Class<?> hookClass = XposedHelpers.findClassIfExists("com.tencent.biz.pubaccount.readinjoy.engine.KandianMergeManager",lpparam.classLoader);
-                    if (hookClass != null){
-                        XposedBridge.hookAllConstructors(hookClass,
-                                new XC_MethodReplacement() {
-                                    @Override
-                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                        return param.thisObject;
-                                    }
-                                });
-                        for (Method m:hookClass.getDeclaredMethods()){
-                            if (m.getReturnType().equals(Integer.TYPE)){
-                                XposedBridge.hookMethod(m, new XC_MethodReplacement() {
-                                    @Override
-                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                        return 0;
-                                    }
-                                });
-                            }else if (m.getReturnType().equals(Long.TYPE)){
-                                XposedBridge.hookMethod(m, new XC_MethodReplacement() {
-                                    @Override
-                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                        return 0L;
-                                    }
-                                });
-                            }else if (m.getReturnType().equals(Boolean.TYPE)){
-                                XposedBridge.hookMethod(m, new XC_MethodReplacement() {
-                                    @Override
-                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                        return false;
-                                    }
-                                });
-                            }else {
-                                XposedBridge.hookMethod(m, new XC_MethodReplacement() {
-                                    @Override
-                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                        return null;
-                                    }
-                                });
-                            }
-                        }
-                    }
-                } catch (Exception e) {
-                    LoggerLog(e);
                 }
 //                try {
 //                    Class<?> hookClass = XposedHelpers.findClassIfExists("com.tencent.biz.pubaccount.readinjoy.engine.KandianDailyManager",lpparam.classLoader);
@@ -1916,40 +1584,182 @@ public class HookTIMClass {
                         });
                     }
                 }
-
 //                {
-//                    hookClass = XposedHelpers.findClassIfExists("com.tencent.mobileqq.webview.swift.WebViewPluginEngine",lpparam.classLoader);
+//                    hookClass = XposedHelpers.findClassIfExists("dov.com.qq.im.QIMCameraCaptureActivity",lpparam.classLoader);
 //                    if (hookClass != null){
-//                        XposedBridge.hookAllMethods(hookClass, "handleEvent", new XC_MethodHook() {
-//                            @Override
-//                            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-//                                super.beforeHookedMethod(param);
-//                                long l = (Long) param.args[1];
-//                                if (l == 1024L){
-//                                    param.setResult(true);
+//                        XposedBridge.hookAllMethods(
+//                                hookClass, "onCreate", new XC_MethodHook() {
+//                                    @Override
+//                                    protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+//                                        super.beforeHookedMethod(param);
+//                                        LoggerLog(new Exception("not an exception"));
+//                                    }
+//
+//                                    @Override
+//                                    protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+//                                        super.afterHookedMethod(param);
+//                                        if (param.getThrowable() != null){
+//                                            LoggerLog(param.getThrowable());
+//                                        }else {
+//                                            LoggerLog("no throwable");
+//                                        }
+//                                    }
 //                                }
-//                            }
-//                        });
+//                        );
+//                    }
+//                    hookClass = XposedHelpers.findClassIfExists("axhd",lpparam.classLoader);
+//                    if(hookClass != null){
+//                        for (String s:new String[]{
+//                                "d","i","w","e"
+//                        }){
+//                            XposedBridge.hookAllMethods(hookClass, s, new XC_MethodHook() {
+//                                @Override
+//                                protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+//                                    super.beforeHookedMethod(param);
+//                                    LoggerLog(new Exception(s + " " + param.args[0] + " " + param.args[1]));
+//                                }
+//                            });
+//                        }
 //                    }
 //                }
-//                {
-//                    hookClass = XposedHelpers.findClassIfExists("whd",lpparam.classLoader);
-//                    if (hookClass != null){
-//                        XposedBridge.hookAllMethods(hookClass, "cj", returnNull);
-//                    }
-//                }
-//                {
-//                    hookClass = XposedHelpers.findClassIfExists("aqzd$b",lpparam.classLoader);
-//                    if (hookClass != null){
-//                        XposedBridge.hookAllMethods(hookClass, "onPageFinished", new XC_MethodHook() {
-//                            @Override
-//                            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-//                                super.beforeHookedMethod(param);
-//                                LoggerLog(new Exception("not an exception"));
-//                            }
-//                        });
-//                    }
-//                }
+
+                {
+
+                    GradientDrawable gradientDrawable = new GradientDrawable();
+                    gradientDrawable.setColor(Color.parseColor("#a039C5BB"));
+                    XC_MethodReplacement setViewBackground0039C5BB = new XC_MethodReplacement() {
+                        @Override
+                        protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                            ((View)param.thisObject).setBackgroundColor(Color.parseColor("#0039C5BB"));
+                            return null;
+                        }
+                    };
+                    hookClass = XposedHelpers.findClassIfExists("com.tencent.biz.pubaccount.readinjoy.view.pullrefresh.SkinPullRefreshHeader",lpparam.classLoader);
+                    if (hookClass != null){
+                        XposedBridge.hookAllConstructors(hookClass, new XC_MethodHook() {
+                            @Override
+                            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                                super.afterHookedMethod(param);
+                                int color = Color.parseColor("#0039C5BB");
+                                XposedHelpers.setIntField(param.thisObject,"baH",color);
+                                ((View)param.thisObject).setBackgroundColor(color);
+                            }
+                        });
+                        XposedBridge.hookAllMethods(hookClass, "setHeaderBgRes", setViewBackground0039C5BB);
+                        XposedBridge.hookAllMethods(hookClass, "setHeaderBgDrawable", setViewBackground0039C5BB);
+                        XposedBridge.hookAllMethods(hookClass, "setHeaderBgColor", setViewBackground0039C5BB);
+                    }
+                    hookClass = XposedHelpers.findClassIfExists("com.tencent.mobileqq.activity.contacts.pullrefresh.ContactRefreshHeader",lpparam.classLoader);
+                    if (hookClass != null){
+                        XposedBridge.hookAllMethods(hookClass, "setHeaderBgRes", setViewBackground0039C5BB);
+                        XposedBridge.hookAllMethods(hookClass, "setHeaderBgDrawable", setViewBackground0039C5BB);
+                        XposedBridge.hookAllMethods(hookClass, "setHeaderBgColor", setViewBackground0039C5BB);
+                        XposedBridge.hookAllConstructors(hookClass, new XC_MethodHook() {
+                            @Override
+                            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                                super.afterHookedMethod(param);
+                                int color = Color.parseColor("#0039C5BB");
+                                ((View)param.thisObject).setBackgroundColor(color);
+                            }
+                        });
+                    }
+                    hookClass = XposedHelpers.findClassIfExists("com.tencent.mobileqq.widget.PullRefreshHeader",lpparam.classLoader);
+                    if (hookClass != null){
+                        XposedBridge.hookAllMethods(hookClass, "setHeaderBgRes", setViewBackground0039C5BB);
+                        XposedBridge.hookAllMethods(hookClass, "setHeaderBgDrawable", setViewBackground0039C5BB);
+                        XposedBridge.hookAllMethods(hookClass, "setHeaderBgColor", setViewBackground0039C5BB);
+                        XposedBridge.hookAllConstructors(hookClass, new XC_MethodHook() {
+                            @Override
+                            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                                super.afterHookedMethod(param);
+                                int color = Color.parseColor("#0039C5BB");
+                                ((View)param.thisObject).setBackgroundColor(color);
+                            }
+                        });
+
+                    }
+                    hookClass = XposedHelpers.findClassIfExists("com.tencent.widget.immersive.SystemBarCompact",lpparam.classLoader);
+                    if (hookClass != null){
+                        XposedBridge.hookAllMethods(hookClass, "setStatusBarDrawable", new XC_MethodHook() {
+                            @Override
+                            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                                super.beforeHookedMethod(param);
+                                GradientDrawable gradientDrawable = new GradientDrawable();
+                                gradientDrawable.setColor(Color.parseColor("#a039C5BB"));
+                                param.args[0] = gradientDrawable;
+                            }
+                        });
+                        XposedBridge.hookAllMethods(hookClass, "setStatusBarColor", new XC_MethodHook() {
+                            @Override
+                            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                                super.beforeHookedMethod(param);
+                                param.args[0] = Color.parseColor("#a039C5BB");
+                            }
+                        });
+                        XposedBridge.hookAllMethods(hookClass, "setStatusDrawable", new XC_MethodHook() {
+                            @Override
+                            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                                super.beforeHookedMethod(param);
+                                param.args[0] = gradientDrawable;
+                            }
+                        });
+                        XposedBridge.hookAllMethods(hookClass, "setStatusColor", new XC_MethodHook() {
+                            @Override
+                            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                                super.beforeHookedMethod(param);
+                                param.args[0] = Color.parseColor("#a039C5BB");
+                            }
+                        });
+                    }
+                    hookClass = XposedHelpers.findClassIfExists("com.tencent.mobileqq.activity.emogroupstore.EmoticonGroupStoreFragment",lpparam.classLoader);
+                    if (hookClass != null){
+                        XposedBridge.hookAllMethods(hookClass, "bVi", new XC_MethodHook() {
+                            @Override
+                            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                                super.afterHookedMethod(param);
+                                View view = (View) XposedHelpers.callMethod(param.thisObject,"getTitleBarView");
+//                                view.setBackgroundDrawable(gradientDrawable);
+                                view.setBackgroundColor(Color.parseColor("#FF39C5BB"));
+                            }
+                        });
+                    }
+
+                    hookClass = XposedHelpers.findClassIfExists("argh",lpparam.classLoader);
+                    if (hookClass != null) {
+                        XposedBridge.hookAllMethods(hookClass,
+                                "a",
+                                new XC_MethodHook() {
+                                    @Override
+                                    protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                                        super.afterHookedMethod(param);
+                                        Object result = param.getResult();
+                                        if (result == null ){return;}
+                                        if ((XposedHelpers.findFieldIfExists(result.getClass(),"gl") == null)){return;}
+                                        if (!(XposedHelpers.getObjectField(result,"gl") instanceof Drawable)){return;}
+                                        XposedHelpers.setObjectField(result,
+                                                "gl",
+                                                new ColorDrawable(Color.parseColor("#8039C5BB")
+                                                ));
+                                    }
+                                });
+                        XposedBridge.hookAllMethods(hookClass,
+                                "b",
+                                new XC_MethodHook() {
+                                    @Override
+                                    protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                                        super.afterHookedMethod(param);
+                                        Object result = param.getResult();
+                                        if (result == null ){return;}
+                                        if ((XposedHelpers.findFieldIfExists(result.getClass(),"gl") == null)){return;}
+                                        if (!(XposedHelpers.getObjectField(result,"gl") instanceof Drawable)){return;}
+                                        XposedHelpers.setObjectField(result,
+                                                "gl",
+                                                new ColorDrawable(Color.parseColor("#8039C5BB")
+                                                ));
+                                    }
+                                });
+                    }
+                }
             } catch (Exception e) {
                 LoggerLog(e);
             }
@@ -1964,27 +1774,31 @@ public class HookTIMClass {
         String pkg = instance.resparam.packageName;
         XModuleResources modRes = XModuleResources.createInstance(instance.modulePath, xres);
         try{
-//            xres.hookLayout(
+//            hookLayoutIfExists(xres,
 //                    pkg,
 //                    "layout",
 //
 //            )
             XResForwarder Color_Miku = modRes.fwd(R.color.miku);
             XResForwarder Color_Teal700 = modRes.fwd(R.color.teal_700);
+            XResForwarder Color_Miku_a60 = modRes.fwd(R.color.miku_alpha60);
             XResForwarder Color_Miku_a80 = modRes.fwd(R.color.miku_alpha80);
+            XResForwarder Color_Miku_aa0 = modRes.fwd(R.color.miku_alphaa0);
+            XResForwarder Color_Pink = modRes.fwd(R.color.ideal_pink);
+            XResForwarder Color_Pink_2 = modRes.fwd(R.color.ideal_pink_2);
             {
-                xres.setReplacement(pkg, "color", "al3", Color_Miku_a80);
-                xres.setReplacement(pkg, "drawable", "je", modRes.fwd(R.color.C86C7C5));
-                xres.setReplacement(pkg, "drawable", "gxb", modRes.fwd(R.color.miku_alpha80));
+                setReplacementIfExists(xres,pkg, "color", "al3", Color_Miku_a80);
+                setReplacementIfExists(xres,pkg, "drawable", "je", modRes.fwd(R.color.C86C7C5));
+                setReplacementIfExists(xres,pkg, "drawable", "gxb", modRes.fwd(R.color.miku_alpha80));
                 xres.setReplacement(0x7f0235b1, modRes.fwd(R.color.C86C7C5));
                 xres.setReplacement(0x7f0235ad, modRes.fwd(R.color.miku_alpha80));
-                xres.setReplacement(0x7f023525, modRes.fwd(R.color.miku_alpha60));
+                xres.setReplacement(0x7f023525, Color_Miku_a60);
                 xres.setReplacement(0x7f023528, modRes.fwd(R.drawable.skin_header_bar_bg_min_tweaked));
                 xres.setReplacement(0x7f0234f0, modRes.fwd(R.drawable.skin_common_btn_small_blue_local_albums_disabled_tweaked));
                 xres.setReplacement(0x7f0234f1, modRes.fwd(R.drawable.skin_common_btn_small_blue_local_albums_pressed_tweaked));
                 xres.setReplacement(0x7f0234d4, modRes.fwd(R.drawable.skin_background_local_albums_tweaked));
                 xres.setReplacement(0x7f02341d, modRes.fwd(R.color.miku_alpha80));
-                xres.setReplacement(0x7f0233d4, modRes.fwd(R.color.miku_alpha60));
+                xres.setReplacement(0x7f0233d4, Color_Miku_a60);
                 xres.setReplacement(0x7f0233d5, modRes.fwd(R.color.miku_alpha80));
                 xres.setReplacement(0x7f0233d6, modRes.fwd(R.color.miku_alphaa0));
                 xres.setReplacement(0x7f0709a6, modRes.fwd(R.color.miku));
@@ -2004,7 +1818,7 @@ public class HookTIMClass {
                 xres.setReplacement(0x7f0208e2, modRes.fwd(R.drawable.e0));
                 xres.setReplacement(0x7f0208df, modRes.fwd(R.drawable.e0));
                 xres.setReplacement(0x7f100175, modRes.fwd(R.drawable.e0));
-                xres.setReplacement(0x7f023650, modRes.fwd(R.drawable.skin_tips_newmessage_tweaked));
+//                xres.setReplacement(0x7f023650, modRes.fwd(R.drawable.pink_dot));
                 xres.setReplacement(0x7f023656, modRes.fwd(R.drawable.skin_tips_newmessage_ninetynine_tweaked));
                 xres.setReplacement(0x7f07096b, modRes.fwd(R.color.miku));
                 xres.setReplacement(0x7f0235c4, modRes.fwd(R.color.miku_alphaa0));
@@ -2041,7 +1855,7 @@ public class HookTIMClass {
                 xres.setReplacement(0x7f07075e, modRes.fwd(R.color.miku));
                 xres.setReplacement(0x7f07026d, modRes.fwd(R.color.teal_custom_1));
                 xres.setReplacement(0x7f023608, modRes.fwd(R.drawable._bg_texture__by_pixiv_uid_14270992_2));
-                xres.setReplacement(0x7f02351f, modRes.fwd(R.color.miku_alpha60));
+                xres.setReplacement(0x7f02351f, Color_Miku_a60);
                 xres.setReplacement(0x7f023522, modRes.fwd(R.color.miku_alpha80));
                 xres.setReplacement(0x7f021325, modRes.fwd(R.drawable.profile_bg_by_pixiv_procrastinator_userid_83351375));
                 xres.setReplacement(0x7f020574, modRes.fwd(R.drawable.bg_texture_by_fenghu));
@@ -2069,30 +1883,30 @@ public class HookTIMClass {
                 xres.setReplacement(0x7f023623, modRes.fwd(R.color.C86C7C5));
                 xres.setReplacement(0x7f02362f, modRes.fwd(R.color.C86C7C5));
                 xres.setReplacement(0x7f023630, modRes.fwd(R.color.C86C7C5));
-                xres.setReplacement(0x7f0206e6, modRes.fwd(R.color.miku_alpha60));
+                xres.setReplacement(0x7f0206e6, Color_Miku_a60);
                 xres.setReplacement(0x7f02341b, modRes.fwd(R.color.miku_alpha80));
                 xres.setReplacement(0x7f02341c, modRes.fwd(R.color.miku_alpha80));
                 xres.setReplacement(0x7f02341d, modRes.fwd(R.color.miku_alpha80));
-                xres.setReplacement(0x7f02341e, modRes.fwd(R.color.miku_alpha60));//input color 1
-                xres.setReplacement(0x7f02341f, modRes.fwd(R.color.miku_alpha60));//input color 2
-                xres.setReplacement(0x7f02341f, modRes.fwd(R.color.miku_alpha60));
-                xres.setReplacement(0x7f070100, modRes.fwd(R.color.miku_alpha60));
-                xres.setReplacement(0x7f070511, modRes.fwd(R.color.miku_alpha60));
-                xres.setReplacement(0x7f020d0e, modRes.fwd(R.drawable.icon_bubble));
-                xres.setReplacement(0x7f020d10, modRes.fwd(R.drawable.icon_bubble_left));
-                xres.setReplacement(0x7f020d11, modRes.fwd(R.drawable.icon_bubble_left_pressed));
-                xres.setReplacement(0x7f020d13, modRes.fwd(R.drawable.icon_bubble_no_arrow_dark_default));
-                xres.setReplacement(0x7f020d14, modRes.fwd(R.drawable.icon_bubble_no_arrow_dark_pressed));
-                xres.setReplacement(0x7f020d15, modRes.fwd(R.drawable.icon_bubble_pressed));
+                xres.setReplacement(0x7f02341e, Color_Miku_a60);//input color 1
+                xres.setReplacement(0x7f02341f, Color_Miku_a60);//input color 2
+                xres.setReplacement(0x7f02341f, Color_Miku_a60);
+                xres.setReplacement(0x7f070100, Color_Miku_a60);
+                xres.setReplacement(0x7f070511, Color_Miku_a60);
+                setReplacementIfExists(xres,pkg,"drawable","icon_bubble", modRes.fwd(R.drawable.icon_bubble));
+                setReplacementIfExists(xres,pkg,"drawable","icon_bubble_left", modRes.fwd(R.drawable.icon_bubble_left));
+                setReplacementIfExists(xres,pkg,"drawable","icon_bubble_left_pressed", modRes.fwd(R.drawable.icon_bubble_left_pressed));
+                setReplacementIfExists(xres,pkg,"drawable","icon_bubble_no_arrow_dark_default", modRes.fwd(R.drawable.icon_bubble_no_arrow_dark_default));
+                setReplacementIfExists(xres,pkg,"drawable","icon_bubble_no_arrow_dark_pressed", modRes.fwd(R.drawable.icon_bubble_no_arrow_dark_pressed));
+                setReplacementIfExists(xres,pkg,"drawable","icon_bubble_pressed", modRes.fwd(R.drawable.icon_bubble_pressed));
                 xres.setReplacement(0x7f0222db, modRes.fwd(R.drawable.aeq));
                 xres.setReplacement(0x7f07085e, modRes.fwd(R.color.black));//Ur chat text color
 //                xres.setReplacement(0x7f07085a, modRes.fwd(R.color.miku_alpha80));//and others
                 xres.setReplacement(0x7f07085d, modRes.fwd(R.color.blue));//Ur link color
                 xres.setReplacement(0x7f07085c, modRes.fwd(R.color.blue));//and others
-                xres.setReplacement(0x7f0234bc, modRes.fwd(R.color.miku_alpha60));//skin_aio_user_bubble_nor
-                xres.setReplacement(0x7f0234bd, modRes.fwd(R.color.miku_alphaa0));//skin_aio_user_bubble_pressed
-                xres.setReplacement(0x7f02340b, modRes.fwd(R.color.miku_alpha60));//skin_aio_friend_bubble_nor
-                xres.setReplacement(0x7f02340c, modRes.fwd(R.color.miku_alphaa0));//skin_aio_friend_bubble_pressed
+                setReplacementIfExists(xres,pkg,"drawable","skin_aio_user_bubble_nor", Color_Miku_a60);
+                setReplacementIfExists(xres,pkg,"drawable","skin_aio_user_bubble_pressed", modRes.fwd(R.color.miku_alphaa0));
+                setReplacementIfExists(xres,pkg,"drawable","skin_aio_friend_bubble_nor", Color_Miku_a60);
+                setReplacementIfExists(xres,pkg,"drawable","skin_aio_friend_bubble_pressed", modRes.fwd(R.color.miku_alphaa0));
                 xres.setReplacement(0x7f070745, modRes.fwd(R.color.miku_alpha80));
                 xres.setReplacement(0x7f070748, modRes.fwd(R.color.miku_alpha80));
                 xres.setReplacement(0x7f07074b, modRes.fwd(R.color.teal_200_alpha80));
@@ -2109,15 +1923,15 @@ public class HookTIMClass {
                 xres.setReplacement(0x7f070756, modRes.fwd(R.color.teal_200_alpha80));
                 xres.setReplacement(0x7f070764, modRes.fwd(R.color.teal_200_alpha80));
                 xres.setReplacement(0x7f0236dc, modRes.fwd(R.color.miku_alpha80));
-                xres.setReplacement(0x7f020867, modRes.fwd(R.color.miku_alpha60));
-                xres.setReplacement(0x7f020868, modRes.fwd(R.color.miku_alpha60));
-                xres.setReplacement(0x7f07096f, modRes.fwd(R.color.miku_alpha60));
-                xres.setReplacement(0x7f0708a6, modRes.fwd(R.color.miku_alpha60));
-//                xres.setReplacement(0x7f0708a7, modRes.fwd(R.color.miku_alpha60));
-                xres.setReplacement(0x7f0709c1, modRes.fwd(R.color.miku_alpha60));
-                xres.setReplacement(0x7f0709c2, modRes.fwd(R.color.miku_alpha60));
-                xres.setReplacement(0x7f0709c3, modRes.fwd(R.color.miku_alpha60));
-                xres.setReplacement(0x7f0709c4, modRes.fwd(R.color.miku_alpha60));
+                xres.setReplacement(0x7f020867, Color_Miku_a60);
+                xres.setReplacement(0x7f020868, Color_Miku_a60);
+                xres.setReplacement(0x7f07096f, Color_Miku_a60);
+                xres.setReplacement(0x7f0708a6, Color_Miku_a60);
+//                xres.setReplacement(0x7f0708a7, Color_Miku_a60);
+                xres.setReplacement(0x7f0709c1, Color_Miku_a60);
+                xres.setReplacement(0x7f0709c2, Color_Miku_a60);
+                xres.setReplacement(0x7f0709c3, Color_Miku_a60);
+                xres.setReplacement(0x7f0709c4, Color_Miku_a60);
 
                 xres.setReplacement(0x7f020a03, modRes.fwd(R.color.teal_200_alpha80));
             }
@@ -2126,40 +1940,71 @@ public class HookTIMClass {
 //            xres.setReplacement(0x7f022e79,modRes.fwd(R.drawable.acdeshead));
 
 //            xres.setReplacement(0x7f0235d1,modRes.fwd(R.color.teal_200));
-//            xres.setReplacement(pkg,"color","lf", Color_Miku);
-//            xres.setReplacement(pkg,"color","mj", Color_Miku);
-//            xres.setReplacement(pkg,"color","alb", Color_Miku);
-            xres.setReplacement(pkg,"color","ajr", Color_Teal700);
+//            setReplacementIfExists(xres,pkg,"color","lf", Color_Miku);
+//            setReplacementIfExists(xres,pkg,"color","mj", Color_Miku);
+//            setReplacementIfExists(xres,pkg,"color","alb", Color_Miku);
+            setReplacementIfExists(xres,pkg,"color","ajr", Color_Teal700);
 
-//            xres.setReplacement(pkg,"color","windowBackground", Color_Miku);
+//            setReplacementIfExists(xres,pkg,"color","windowBackground", Color_Miku);
 //            LoggerLog(pkg);
-            xres.setReplacement(pkg,"color", "emoview_aio_guide_bg_color", Color_Miku_a80);
-            xres.setReplacement(pkg,"color", "emoview_aio_guide_stroke_color", Color_Miku_a80);
-            xres.setReplacement(pkg,"color", "emoview_aio_emoji_bkg", Color_Miku_a80);
-            xres.setReplacement(pkg,"color", "emoview_aio_bottom_tab_bkg", Color_Miku_a80);
-//            xres.setReplacement(pkg,"color", "card_color_white", 0X8039C5BB);
-            xres.setReplacement(pkg,"color", "skin_black", modRes.fwd(R.color.teal_700));//settings text color
-            xres.setReplacement(pkg,"color", "album_list_mask_color", Color_Miku);
-            xres.setReplacement(pkg,"color", "xi", modRes.fwd(R.color.teal_200));
-            xres.setReplacement(pkg,"color", "ahl", Color_Miku);
-            xres.setReplacement(pkg,"color", "ahb", Color_Miku);//unknown text color
-            xres.setReplacement(pkg,"color", "skin_unite_search_text_black_000000_6991b8", Color_Miku);//unknown text color
-            xres.setReplacement(pkg,"color", "skin_gray3", Color_Miku);//unknown text color
-            xres.setReplacement(pkg,"color", "skin_gray2_item", Color_Miku);//unknown text color
-            xres.setReplacement(pkg,"color", "skin_black_item", Color_Miku);//unknown text color
-            xres.setReplacement(pkg,"color", "skin_color_title_immersive_bar", Color_Miku_a80);
-            xres.setReplacement(pkg,"color", "skin_notification", Color_Miku_a80);
-            xres.setReplacement(pkg,"color", "aj3", Color_Miku_a80);
-            xres.setReplacement(pkg,"drawable", "euc", modRes.fwd(R.drawable.p));
-//            xres.setReplacement(pkg,"drawable", "h03", modRes.fwd(R.drawable.p));
-//            xres.setReplacement(pkg,"drawable", "skin_header_bar_bg", modRes.fwd(R.drawable.p));
+            setReplacementIfExists(xres,pkg,"color", "emoview_aio_guide_bg_color", Color_Miku_a80);
+            setReplacementIfExists(xres,pkg,"color", "emoview_aio_guide_stroke_color", Color_Miku_a80);
+            setReplacementIfExists(xres,pkg,"color", "emoview_aio_emoji_bkg", Color_Miku_a80);
+            setReplacementIfExists(xres,pkg,"color", "emoview_aio_bottom_tab_bkg", Color_Miku_a80);
+//            setReplacementIfExists(xres,pkg,"color", "card_color_white", 0X8039C5BB);
+            setReplacementIfExists(xres,pkg,"color", "skin_black", modRes.fwd(R.color.teal_700));//settings text color
+            setReplacementIfExists(xres,pkg,"color", "album_list_mask_color", Color_Miku);
+            {
+                setReplacementIfExists(xres, pkg, "drawable", "hev", Color_Miku_aa0);
+                //👆 background of 👇
+                //Windows QQ 已登录     口 口
+                setReplacementIfExists(xres, pkg, "color", "ana", Color_Miku_aa0);
+                //👆 background of 👇
+                //手机静音              (  o)
+            }
+            setReplacementIfExists(xres,pkg,"color", "xi", modRes.fwd(R.color.teal_200));
+            setReplacementIfExists(xres,pkg,"color", "ahl", Color_Miku);
+            setReplacementIfExists(xres,pkg,"color", "action_sheet_button_red", Color_Pink);
+            setReplacementIfExists(xres,pkg,"color", "ar", Color_Pink);
+            setReplacementIfExists(xres,pkg,"color", "b1", Color_Pink);
+            setReplacementIfExists(xres,pkg,"color", "b2", Color_Pink);
+            setReplacementIfExists(xres,pkg,"color", "bottle_topbar_unread_count_bg", Color_Pink);
+            setReplacementIfExists(xres,pkg,"color", "calendar_red", Color_Pink_2);
+            setReplacementIfExists(xres,pkg,"color", "f2", Color_Pink_2);
+            setReplacementIfExists(xres,pkg,"color", "hz", Color_Pink_2);
+            setReplacementIfExists(xres,pkg,"color", "dialog_btn_text_red", Color_Pink_2);
+            setReplacementIfExists(xres,pkg,"color", "editor_text_color_red", Color_Pink_2);
+            setReplacementIfExists(xres,pkg,"color", "red", Color_Pink_2);
+            setReplacementIfExists(xres,pkg,"color", "s_unread_red", Color_Pink_2);
+            setReplacementIfExists(xres,pkg,"color", "a_l", Color_Pink_2);
+            setReplacementIfExists(xres,pkg,"color", "jg", Color_Pink_2);
+            setReplacementIfExists(xres,pkg,"drawable", "skin_tips_newmessage", modRes.fwd(R.drawable.pink_dot));
+            setReplacementIfExists(xres,pkg,"drawable", "common_list_overscoll_top_bg", Color_Miku_a60);
+            setReplacementIfExists(xres,pkg,"color", "ahb", Color_Miku);//unknown text color
+            setReplacementIfExists(xres,pkg,"color", "skin_unite_search_text_black_000000_6991b8", Color_Miku);//unknown text color
+            setReplacementIfExists(xres,pkg,"color", "skin_gray3", Color_Miku);//unknown text color
+            setReplacementIfExists(xres,pkg,"color", "skin_gray2_item", Color_Miku);//unknown text color
+            setReplacementIfExists(xres,pkg,"color", "skin_black_item", Color_Miku);//unknown text color
+            setReplacementIfExists(xres,pkg,"color", "skin_color_title_immersive_bar", Color_Miku_a80);
+            setReplacementIfExists(xres,pkg,"color", "skin_notification", Color_Miku_a80);
+            setReplacementIfExists(xres,pkg,"color", "black_trans_50", Color_Miku_a80);
+            setReplacementIfExists(xres,pkg,"drawable", "a97", Color_Miku_a80);
+            setReplacementIfExists(xres,pkg,"drawable", "a98", Color_Miku_a80);
+            setReplacementIfExists(xres,pkg,"color", "aj3", Color_Miku_a80);
+            setReplacementIfExists(xres,pkg,"color", "x0", Color_Miku_a80);
+            setReplacementIfExists(xres,pkg,"color", "el", Color_Miku_aa0);
 
-            xres.setReplacement(pkg,"layout", "cod", modRes.fwd(R.layout.cod));
-            xres.setReplacement(pkg,"layout", "coe", modRes.fwd(R.layout.coe));
-//            xres.setReplacement(pkg,"color", "transparent", Color_Miku);
-//            xres.setReplacement(pkg,"drawable", "bg_maillist_addaccount", modRes.fwd(R.drawable.bg_maillist_addaccount));
+            setReplacementIfExists(xres,pkg,"drawable", "skin_group_list_sub_entry_theme_version2", Color_Miku_a80);
+            setReplacementIfExists(xres,pkg,"drawable", "k4", Color_Miku_a80);
 
-            try{xres.hookLayout(pkg,
+            setReplacementIfExists(xres,pkg,"drawable", "euc", modRes.fwd(R.drawable.p));
+//            setReplacementIfExists(xres,pkg,"drawable", "h03", modRes.fwd(R.drawable.p));
+//            setReplacementIfExists(xres,pkg,"drawable", "skin_header_bar_bg", modRes.fwd(R.drawable.p));
+
+            setReplacementIfExists(xres,pkg,"layout", "cod", modRes.fwd(R.layout.cod));
+            setReplacementIfExists(xres,pkg,"layout", "coe", modRes.fwd(R.layout.coe));
+
+            {hookLayoutIfExists(xres,pkg,
                     "layout",
                     "ach",
                     new XC_LayoutInflated() {
@@ -2172,10 +2017,8 @@ public class HookTIMClass {
                             tv.setBackgroundColor(Color.parseColor("#39c5bb"));
                         }
                     });
-            }catch(Exception e){
-                LoggerLog(e);
             }
-            try{xres.hookLayout(pkg,
+            {hookLayoutIfExists(xres,pkg,
                     "layout",
                     "acg",
                     new XC_LayoutInflated() {
@@ -2187,10 +2030,8 @@ public class HookTIMClass {
                             tv.setBackgroundColor(Color.parseColor("#39c5bb"));
                         }
                     });
-            }catch(Exception e){
-                LoggerLog(e);
             }
-            try{xres.hookLayout(pkg,
+            {hookLayoutIfExists(xres,pkg,
                     "layout",
                     "a",
                     new XC_LayoutInflated() {
@@ -2203,10 +2044,8 @@ public class HookTIMClass {
                             tv.setBackgroundColor(Color.parseColor("#39c5bb"));
                         }
                     });
-            }catch(Exception e){
-                LoggerLog(e);
             }
-            try{xres.hookLayout(pkg,
+            {hookLayoutIfExists(xres,pkg,
                     "layout",
                     "cmn",
                     new XC_LayoutInflated() {
@@ -2218,37 +2057,8 @@ public class HookTIMClass {
                             view.setBackgroundColor(Color.parseColor("#6039c5bb"));
                         }
                     });
-            }catch(Exception e){
-                LoggerLog(e);
             }
-//            try{xres.hookLayout(pkg,
-//                    "layout",
-//                    "ik",
-//                    new XC_LayoutInflated() {
-//                        @SuppressLint("ResourceAsColor")
-//                        @Override
-//                        public void handleLayoutInflated(LayoutInflatedParam liparam) throws Throwable {
-//                            View view = liparam.view.findViewById(liparam.res.getIdentifier("recent_chat_list", "id", pkg));
-//                            view.setBackgroundColor(R.color.C_8039C5BB);
-//                            view = liparam.view.findViewById(liparam.res.getIdentifier("content", "id", pkg));
-//
-//                            if (view != null){
-//                                view.setBackgroundColor(R.color.C_8039C5BB);
-//                            }
-//                            view = liparam.view.findViewById(liparam.res.getIdentifier("jq6", "id", pkg));
-//                            if (view != null){
-//                                view.setBackgroundColor(R.color.C_8039C5BB);
-//                            }
-//                            view = liparam.view.findViewById(liparam.res.getIdentifier("j2j", "id", pkg));
-//                            if (view != null){
-//                                view.setBackgroundColor(R.color.C_8039C5BB);
-//                            }
-//                        }
-//                    });
-//            }catch(Exception e){
-//                LoggerLog(e);
-//            }
-            try{xres.hookLayout(pkg,
+            {hookLayoutIfExists(xres,pkg,
                     "layout",
                     "b5b",
                     new XC_LayoutInflated() {
@@ -2259,10 +2069,8 @@ public class HookTIMClass {
                             view.setBackgroundColor(Color.parseColor("#39c5bb"));
                         }
                     });
-            }catch(Exception e){
-                LoggerLog(e);
             }
-            try{xres.hookLayout(pkg,
+            {hookLayoutIfExists(xres,pkg,
                     "layout",
                     "coh",
                     new XC_LayoutInflated() {
@@ -2301,29 +2109,8 @@ public class HookTIMClass {
 
                         }
                     });
-            }catch(Exception e){
-                LoggerLog(e);
             }
-//            try{xres.hookLayout(pkg,
-//                    "layout",
-//                    "cod",
-//                    new XC_LayoutInflated() {
-//                        @Override
-//                        public void handleLayoutInflated(LayoutInflatedParam liparam) throws Throwable {
-////                            LoggerLog(liparam.view.getParent());
-////                            liparam.view.setVisibility(View.INVISIBLE);
-////                            liparam.view.setBackground(null);
-////                            liparam.view.setDrawingCacheBackgroundColor(Color.parseColor("#6039c5bb"));
-//                            liparam.res
-////                            View view = liparam.view.findViewById(liparam.res.getIdentifier("nk4", "id", pkg));
-////                            view.setBackground(null);
-////                            view.setAlpha(1);
-//                        }
-//                    });
-//            }catch(Exception e){
-//                LoggerLog(e);
-//            }
-            try{xres.hookLayout(pkg,
+            {hookLayoutIfExists(xres,pkg,
                     "layout",
                     "coe",
                     new XC_LayoutInflated() {
@@ -2337,10 +2124,8 @@ public class HookTIMClass {
 
                         }
                     });
-            }catch(Exception e){
-                LoggerLog(e);
             }
-            try{xres.hookLayout(pkg,
+            {hookLayoutIfExists(xres,pkg,
                     "layout",
                     "action_sheet_cancel_button",
                     new XC_LayoutInflated() {
@@ -2354,10 +2139,8 @@ public class HookTIMClass {
 
                         }
                     });
-            }catch(Exception e){
-                LoggerLog(e);
             }
-            try{xres.hookLayout(pkg,
+            {hookLayoutIfExists(xres,pkg,
                     "layout",
                     "bx4",
                     new XC_LayoutInflated() {
@@ -2368,10 +2151,8 @@ public class HookTIMClass {
 
                         }
                     });
-            }catch(Exception e){
-                LoggerLog(e);
             }
-            try{xres.hookLayout(pkg,
+            {hookLayoutIfExists(xres,pkg,
                     "layout",
                     "bla",
                     new XC_LayoutInflated() {
@@ -2382,10 +2163,8 @@ public class HookTIMClass {
 
                         }
                     });
-            }catch(Exception e){
-                LoggerLog(e);
             }
-            try{xres.hookLayout(pkg,
+            {hookLayoutIfExists(xres,pkg,
                     "layout",
                     "b1x",
                     new XC_LayoutInflated() {
@@ -2396,24 +2175,39 @@ public class HookTIMClass {
 
                         }
                     });
-            }catch(Exception e){
-                LoggerLog(e);
             }
-
-//            try{xres.hookLayout(pkg,
-//                    "layout",
-//                    "ik",
-//                    new XC_LayoutInflated() {
-//                        @Override
-//                        public void handleLayoutInflated(LayoutInflatedParam liparam) throws Throwable {
-//                            View view = liparam.view.findViewById(liparam.res.getIdentifier("d7a", "id", pkg));
-//                            view.setVisibility(View.INVISIBLE);
-//
-//                        }
-//                    });
-//            }catch(Exception e){
-//                LoggerLog(e);
-//            }
+            hookLayoutIfExists(xres,pkg,
+                    "layout",
+                    "bc2",
+                    new XC_LayoutInflated() {
+                        @Override
+                        public void handleLayoutInflated(LayoutInflatedParam liparam) throws Throwable {
+                            View view = liparam.view.findViewById(liparam.res.getIdentifier("cxs", "id", pkg));
+                            view.setBackgroundColor(Color.parseColor("#8039c5bb"));
+                            View view1 = liparam.view.findViewById(liparam.res.getIdentifier("ahs", "id", pkg));
+                            view1.setBackgroundColor(Color.parseColor("#8039c5bb"));
+                            View view2 = liparam.view.findViewById(liparam.res.getIdentifier("fsk", "id", pkg));
+                            view2.setBackgroundColor(Color.parseColor("#8039c5bb"));
+                            View view3 = liparam.view.findViewById(liparam.res.getIdentifier("kdv", "id", pkg));
+                            view3.setBackgroundColor(Color.parseColor("#6039c5bb"));
+                        }
+                    });
+            hookLayoutIfExists(xres,pkg,
+                    "layout",
+                    "bc4",
+                    new XC_LayoutInflated() {
+                        @Override
+                        public void handleLayoutInflated(LayoutInflatedParam liparam) throws Throwable {
+                            LinearLayout linearLayout = liparam.view.findViewById(liparam.res.getIdentifier("buw", "id", pkg));
+                            linearLayout.setBackgroundColor(Color.parseColor("#8039c5bb"));
+                            for (int i=0;i<linearLayout.getChildCount();i++){
+                                View child = linearLayout.getChildAt(i);
+                                if (child instanceof LinearLayout){
+                                    child.setBackgroundColor(Color.parseColor("#8039c5bb"));
+                                }
+                            }
+                        }
+                    });
         }catch(Exception e){
             LoggerLog(e);
         }
@@ -2443,5 +2237,18 @@ public class HookTIMClass {
             LoggerLog(e);
         }
     }
-
+    
+    
+    public static void setReplacementIfExists(XResources xres,String pkg,String type,String name,Object replacement){
+        if (xres.getIdentifier(name,type,pkg) != 0){
+            xres.setReplacement(pkg,type,name,replacement);
+        }else {
+            LoggerLog("[linearity-ResourceNotFound]",pkg + "|" + type + "|" + name);
+        }
+    }
+    public static void hookLayoutIfExists(XResources xres,String pkg,String type,String name,XC_LayoutInflated hooker){
+        if (xres.getIdentifier(name,type,pkg) != 0){
+            xres.hookLayout(pkg, type, name,hooker);
+        }
+    }
 }
