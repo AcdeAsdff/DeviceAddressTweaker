@@ -41,6 +41,7 @@ import android.view.Menu;
 import java.io.FileDescriptor;
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -567,109 +568,109 @@ public class HookAppClass {
                                         }
                                 );
                             }
-                            //👇protecting method
-                            {
-                                XposedBridge.hookAllMethods(hookClass, "onKeyDown", new XC_MethodReplacement() {
-                                    @Override
-                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                        Activity thisObj = (Activity) param.thisObject;
-                                        int keyCode = (int) param.args[0];
-                                        KeyEvent event = (KeyEvent) param.args[1];
-                                        int mDefaultKeyMode = XposedHelpers.getIntField(thisObj,"mDefaultKeyMode");
-                                        SpannableStringBuilder mDefaultKeySsb = (SpannableStringBuilder) XposedHelpers.getObjectField(thisObj,"mDefaultKeySsb");
-                                        if (keyCode == KeyEvent.KEYCODE_BACK) {
-                                            if (thisObj.getApplicationInfo().targetSdkVersion
-                                                    >= Build.VERSION_CODES.ECLAIR) {
-                                                event.startTracking();
-                                            } else {
-                                                ActivityDefaultOnBackPressed(thisObj,ActivityClientClass,RequestFinishCallbackConstructor,androidxFragmentControllerClass,FragmentControllerClass);
-                                            }
-                                            return true;
-                                        }
-
-                                        if (mDefaultKeyMode == Activity.DEFAULT_KEYS_DISABLE) {
-                                            return false;
-                                        } else if (mDefaultKeyMode == Activity.DEFAULT_KEYS_SHORTCUT) {
-                                            Window w = thisObj.getWindow();
-                                            if (w.hasFeature(Window.FEATURE_OPTIONS_PANEL) &&
-                                                    w.performPanelShortcut(Window.FEATURE_OPTIONS_PANEL, keyCode, event,
-                                                            Menu.FLAG_ALWAYS_PERFORM_CLOSE)) {
-                                                return true;
-                                            }
-                                            return false;
-                                        } else if (keyCode == KeyEvent.KEYCODE_TAB) {
-                                            // Don't consume TAB here since it's used for navigation. Arrow keys
-                                            // aren't considered "typing keys" so they already won't get consumed.
-                                            return false;
-                                        } else {
-                                            // Common code for DEFAULT_KEYS_DIALER & DEFAULT_KEYS_SEARCH_*
-                                            boolean clearSpannable = false;
-                                            boolean handled;
-                                            if ((event.getRepeatCount() != 0) || event.isSystem()) {
-                                                clearSpannable = true;
-                                                handled = false;
-                                            } else {
-                                                handled = TextKeyListener.getInstance().onKeyDown(
-                                                        null, mDefaultKeySsb, keyCode, event);
-                                                if (handled && mDefaultKeySsb.length() > 0) {
-                                                    // something useable has been typed - dispatch it now.
-
-                                                    final String str = mDefaultKeySsb.toString();
-                                                    clearSpannable = true;
-
-                                                    switch (mDefaultKeyMode) {
-                                                        case Activity.DEFAULT_KEYS_DIALER:
-                                                            Intent intent = new Intent(Intent.ACTION_DIAL,  Uri.parse("tel:" + str));
-                                                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                                            thisObj.startActivity(intent);
-                                                            break;
-                                                        case Activity.DEFAULT_KEYS_SEARCH_LOCAL:
-                                                            thisObj.startSearch(str, false, null, false);
-                                                            break;
-                                                        case Activity.DEFAULT_KEYS_SEARCH_GLOBAL:
-                                                            thisObj.startSearch(str, false, null, true);
-                                                            break;
-                                                    }
-                                                }
-                                            }
-                                            if (clearSpannable) {
-                                                mDefaultKeySsb.clear();
-                                                mDefaultKeySsb.clearSpans();
-                                                Selection.setSelection(mDefaultKeySsb,0);
-                                            }
-                                            return handled;
-                                        }
-                                    }
-                                });
-                            }
-                            {
-                                XposedBridge.hookAllMethods(hookClass, "onKeyUp", new XC_MethodReplacement() {
-                                    @Override
-                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                        Activity thisObj = (Activity) param.thisObject;
-                                        int keyCode = (int) param.args[0];
-                                        KeyEvent event = (KeyEvent) param.args[1];
-                                        if (thisObj.getApplicationInfo().targetSdkVersion
-                                                >= Build.VERSION_CODES.ECLAIR) {
-                                            if (keyCode == KeyEvent.KEYCODE_BACK && event.isTracking()
-                                                    && !event.isCanceled()) {
-                                                ActivityDefaultOnBackPressed(thisObj,ActivityClientClass,RequestFinishCallbackConstructor,androidxFragmentControllerClass,FragmentControllerClass);
-                                                return true;
-                                            }
-                                        }
-                                        return false;
-                                    }
-                                });
-                            }
-                            {
-                                XposedBridge.hookAllMethods(hookClass, "onBackPressed", new XC_MethodReplacement() {
-                                    @Override
-                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                        ActivityDefaultOnBackPressed((Activity) param.thisObject,ActivityClientClass,RequestFinishCallbackConstructor,androidxFragmentControllerClass,FragmentControllerClass);
-                                        return null;
-                                    }
-                                });
-                            }
+//                            //👇protecting method
+//                            {
+//                                XposedBridge.hookAllMethods(hookClass, "onKeyDown", new XC_MethodReplacement() {
+//                                    @Override
+//                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+//                                        Activity thisObj = (Activity) param.thisObject;
+//                                        int keyCode = (int) param.args[0];
+//                                        KeyEvent event = (KeyEvent) param.args[1];
+//                                        int mDefaultKeyMode = XposedHelpers.getIntField(thisObj,"mDefaultKeyMode");
+//                                        SpannableStringBuilder mDefaultKeySsb = (SpannableStringBuilder) XposedHelpers.getObjectField(thisObj,"mDefaultKeySsb");
+//                                        if (keyCode == KeyEvent.KEYCODE_BACK) {
+//                                            if (thisObj.getApplicationInfo().targetSdkVersion
+//                                                    >= Build.VERSION_CODES.ECLAIR) {
+//                                                event.startTracking();
+//                                            } else {
+//                                                ActivityDefaultOnBackPressed(thisObj,ActivityClientClass,RequestFinishCallbackConstructor,androidxFragmentControllerClass,FragmentControllerClass);
+//                                            }
+//                                            return true;
+//                                        }
+//
+//                                        if (mDefaultKeyMode == Activity.DEFAULT_KEYS_DISABLE) {
+//                                            return false;
+//                                        } else if (mDefaultKeyMode == Activity.DEFAULT_KEYS_SHORTCUT) {
+//                                            Window w = thisObj.getWindow();
+//                                            if (w.hasFeature(Window.FEATURE_OPTIONS_PANEL) &&
+//                                                    w.performPanelShortcut(Window.FEATURE_OPTIONS_PANEL, keyCode, event,
+//                                                            Menu.FLAG_ALWAYS_PERFORM_CLOSE)) {
+//                                                return true;
+//                                            }
+//                                            return false;
+//                                        } else if (keyCode == KeyEvent.KEYCODE_TAB) {
+//                                            // Don't consume TAB here since it's used for navigation. Arrow keys
+//                                            // aren't considered "typing keys" so they already won't get consumed.
+//                                            return false;
+//                                        } else {
+//                                            // Common code for DEFAULT_KEYS_DIALER & DEFAULT_KEYS_SEARCH_*
+//                                            boolean clearSpannable = false;
+//                                            boolean handled;
+//                                            if ((event.getRepeatCount() != 0) || event.isSystem()) {
+//                                                clearSpannable = true;
+//                                                handled = false;
+//                                            } else {
+//                                                handled = TextKeyListener.getInstance().onKeyDown(
+//                                                        null, mDefaultKeySsb, keyCode, event);
+//                                                if (handled && mDefaultKeySsb.length() > 0) {
+//                                                    // something useable has been typed - dispatch it now.
+//
+//                                                    final String str = mDefaultKeySsb.toString();
+//                                                    clearSpannable = true;
+//
+//                                                    switch (mDefaultKeyMode) {
+//                                                        case Activity.DEFAULT_KEYS_DIALER:
+//                                                            Intent intent = new Intent(Intent.ACTION_DIAL,  Uri.parse("tel:" + str));
+//                                                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//                                                            thisObj.startActivity(intent);
+//                                                            break;
+//                                                        case Activity.DEFAULT_KEYS_SEARCH_LOCAL:
+//                                                            thisObj.startSearch(str, false, null, false);
+//                                                            break;
+//                                                        case Activity.DEFAULT_KEYS_SEARCH_GLOBAL:
+//                                                            thisObj.startSearch(str, false, null, true);
+//                                                            break;
+//                                                    }
+//                                                }
+//                                            }
+//                                            if (clearSpannable) {
+//                                                mDefaultKeySsb.clear();
+//                                                mDefaultKeySsb.clearSpans();
+//                                                Selection.setSelection(mDefaultKeySsb,0);
+//                                            }
+//                                            return handled;
+//                                        }
+//                                    }
+//                                });
+//                            }
+//                            {
+//                                XposedBridge.hookAllMethods(hookClass, "onKeyUp", new XC_MethodReplacement() {
+//                                    @Override
+//                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+//                                        Activity thisObj = (Activity) param.thisObject;
+//                                        int keyCode = (int) param.args[0];
+//                                        KeyEvent event = (KeyEvent) param.args[1];
+//                                        if (thisObj.getApplicationInfo().targetSdkVersion
+//                                                >= Build.VERSION_CODES.ECLAIR) {
+//                                            if (keyCode == KeyEvent.KEYCODE_BACK && event.isTracking()
+//                                                    && !event.isCanceled()) {
+//                                                ActivityDefaultOnBackPressed(thisObj,ActivityClientClass,RequestFinishCallbackConstructor,androidxFragmentControllerClass,FragmentControllerClass);
+//                                                return true;
+//                                            }
+//                                        }
+//                                        return false;
+//                                    }
+//                                });
+//                            }
+//                            {
+//                                XposedBridge.hookAllMethods(hookClass, "onBackPressed", new XC_MethodReplacement() {
+//                                    @Override
+//                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+//                                        ActivityDefaultOnBackPressed((Activity) param.thisObject,ActivityClientClass,RequestFinishCallbackConstructor,androidxFragmentControllerClass,FragmentControllerClass);
+//                                        return null;
+//                                    }
+//                                });
+//                            }
                         }
                     }catch (Exception e){
                         LoggerLog(e);
@@ -1532,19 +1533,23 @@ public class HookAppClass {
             }
             if (mFragments instanceof FragmentController || controllerFlag) {
                 fragmentManager = XposedHelpers.callMethod(mFragments, "getFragmentManager");
-            } else if (androidxFragmentControllerClass.isInstance(mFragments)) {
+            } else if (androidxFragmentControllerClass != null && androidxFragmentControllerClass.isInstance(mFragments)) {
                 fragmentManager = XposedHelpers.callMethod(mFragments, "getSupportFragmentManager");
             } else {
                 fragmentManager = mFragments;
             }
-            ;
-            boolean isStateSaved = (boolean) XposedHelpers.getBooleanField(fragmentManager, "mStateSaved");
+            boolean isStateSaved = true;
+            for (Field f:fragmentManager.getClass().getDeclaredFields()){
+                if (f.getType().equals(boolean.class) && f.getName().equals("mStateSaved")){
+                    isStateSaved = (boolean) XposedHelpers.getBooleanField(fragmentManager, f.getName());
+                }
+            }
             if (!isStateSaved
                     && ((boolean) XposedHelpers.callMethod(fragmentManager, "popBackStackImmediate"))) {
                 return;
             }
         }catch (Exception e){
-            LoggerLog(e);
+//            LoggerLog(e);
         }
         if (!thisObj.isTaskRoot()) {
             // If the activity is not the root of the task, allow finish to proceed normally.
