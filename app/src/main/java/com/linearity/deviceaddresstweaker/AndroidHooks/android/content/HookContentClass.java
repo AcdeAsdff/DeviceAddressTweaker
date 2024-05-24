@@ -32,7 +32,7 @@ public class HookContentClass {
     public static boolean HookIntentFilter = true;
 
     public static final String[] bannedIntentHead = new String[]{
-            "android",//go fuck yourself
+            "android.",//go fuck yourself
 //            "android.net",
 //            "android.intent.action.MEDIA","android.security","android.hardware",
 //            "android.intent.action.BATTERY_CHANGED","android.intent.action.PROXY_CHANGE","android.intent.action.PROXY_CHANGE",
@@ -120,7 +120,8 @@ public class HookContentClass {
                             if (toAdd==null){return;}
                             for (String checkHead:bannedIntentHead){
                                 if (toAdd.startsWith(checkHead)){
-                                    param.setResult(null);return;
+                                    param.setResult(null);
+                                    return;
                                 }
                             }
 //                            LoggerLog("Adding action for IntentFilter:" + toAdd);
@@ -140,9 +141,11 @@ public class HookContentClass {
 //        }
         mActions.removeIf(s -> {
             for (String checkHead:bannedIntentHead){
-                if (s.startsWith(checkHead)){return false;}
+                if (s.startsWith(checkHead)){
+                    return true;
+                }
             }
-            return true;
+            return false;
         });
     }
 }
