@@ -16,17 +16,22 @@ import java.util.Locale;
 
 import de.robv.android.xposed.XC_MethodHook;
 import android.content.SharedPreferences;
+import android.util.DisplayMetrics;
 
+import de.robv.android.xposed.XC_MethodReplacement;
+import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
 import static com.linearity.utils.HookUtils.findAndHookMethodIfExists;
 import static com.linearity.utils.LoggerUtils.LoggerLog;
 import static com.linearity.utils.ReturnReplacements.random;
+import static com.linearity.utils.ReturnReplacements.randomSmallDouble;
 
 public class HookResClass {
     public static boolean HookRes = true;
     public static boolean HookResources = true;
+    public static DisplayMetrics defaultDisplayMetrics = null;
     public static void DoHook(XC_LoadPackage.LoadPackageParam lpparam, String procHead, SharedPreferences sharedPreferences){
         Class<?> hookClass;
         HookRes = sharedPreferences.getBoolean("HookContentClass_HookResClass_HookRes", true);
@@ -37,7 +42,7 @@ public class HookResClass {
                 if (hookClass != null){
                     try {//      android.content.res.Resources.class getConfiguration()
                         {
-                            findAndHookMethodIfExists(hookClass,
+                            XposedBridge.hookAllMethods(hookClass,
                                     "getConfiguration"
                                     , new XC_MethodHook(114514) {
                                         @Override
@@ -91,31 +96,24 @@ public class HookResClass {
                         //                }
                         //      android.content.res.Resources.class getResourcePackageName()
                         {
-                            findAndHookMethodIfExists(hookClass,
+                            XposedBridge.hookAllMethods(hookClass,
                                     "getResourcePackageName",
-                                    int.class,
                                     new XC_MethodHook(114514) {
                                         @Override
                                         protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                                            //                        super.afterHookedMethod(param);
                                             if (param.getResult() != null) {
                                                 String result = (String) param.getResult();
-                                                //                                result.getResourcePackageName()
-                                                if (!result.equals(lpparam.packageName)) {
+                                                if (!result.contains(lpparam.packageName)) {
                                                     LoggerLog(lpparam.packageName + "调用getResourcePackageName()" + result);
-                                                    //                                            param.setResult(null);
                                                 }
                                             }
                                         }
                                     });
                         }
                         //      android.content.res.Resources.class getIdentifier(String,String,String)
-                         {
-                            findAndHookMethodIfExists(hookClass,
+                        {
+                            XposedBridge.hookAllMethods(hookClass,
                                     "getIdentifier",
-                                    String.class,
-                                    String.class,
-                                    String.class,
                                     new XC_MethodHook(114514) {
                                         @Override
                                         protected void afterHookedMethod(MethodHookParam param) throws Throwable {
@@ -127,13 +125,33 @@ public class HookResClass {
                                                     || args.contains("magisk")
                                                     || args.contains("posed")
                                                     || args.contains("google")
-                                            ) {
-                                                //                                        LoggerLog(lpparam.packageName + "调用getIdentifier(String,String,String)" + param.getResult());
-                                                //                                        LoggerLog(lpparam.packageName + "调用getIdentifier(String,String,String) args:" + Arrays.toString(param.args));
-                                                param.setResult(random.nextInt(Integer.MAX_VALUE));
+                                            ) {param.setResult(random.nextInt(Integer.MAX_VALUE));
                                             }
                                         }
                                     });
+                    }
+
+                        {
+                            XposedBridge.hookAllMethods(hookClass, "getDisplayMetrics", new XC_MethodHook() {
+                                @Override
+                                protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                                    super.afterHookedMethod(param);
+                                    DisplayMetrics result = (DisplayMetrics) param.getResult();
+                                    if (defaultDisplayMetrics == null){
+                                        defaultDisplayMetrics = new DisplayMetrics();
+                                        defaultDisplayMetrics.setTo(result);
+                                    }
+                                    result.density = defaultDisplayMetrics.density + (float) randomSmallDouble(result.density*0.001);
+                                    result.scaledDensity = defaultDisplayMetrics.scaledDensity + (float) randomSmallDouble(result.scaledDensity*0.001);
+                                    result.xdpi = defaultDisplayMetrics.xdpi + (float) randomSmallDouble(result.xdpi*0.001);
+                                    result.ydpi = defaultDisplayMetrics.ydpi + (float) randomSmallDouble(result.ydpi*0.001);
+                                    result.densityDpi = defaultDisplayMetrics.densityDpi+random.nextInt(10)*(random.nextBoolean()?-1:1);
+                                    result.widthPixels = defaultDisplayMetrics.widthPixels+random.nextInt(10)*(random.nextBoolean()?-1:1);
+                                    result.heightPixels = defaultDisplayMetrics.heightPixels+random.nextInt(10)*(random.nextBoolean()?-1:1);
+//                                    LoggerLog(defaultDisplayMetrics.density+"|"+defaultDisplayMetrics.scaledDensity+"|"+defaultDisplayMetrics.xdpi+"|"+defaultDisplayMetrics.ydpi+"|"+defaultDisplayMetrics.densityDpi+"|"+defaultDisplayMetrics.widthPixels+"|"+defaultDisplayMetrics.heightPixels);
+//                                    LoggerLog(result.density+"|"+result.scaledDensity+"|"+result.xdpi+"|"+result.ydpi+"|"+result.densityDpi+"|"+result.widthPixels+"|"+result.heightPixels);
+                                }
+                            });
                         }
                     } catch (Exception e) {
                         LoggerLog(e);
@@ -142,4 +160,6 @@ public class HookResClass {
             }
         }
     }
+
+
 }

@@ -3,18 +3,28 @@ package com.linearity.deviceaddresstweaker.AndroidHooks.android.content.pm;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.util.SparseArray;
 
 import de.robv.android.xposed.XC_MethodHook;
+import de.robv.android.xposed.XC_MethodReplacement;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 import static com.linearity.utils.LoggerUtils.LoggerLog;
 import static com.linearity.utils.ReturnReplacements.getRandomString;
+import static com.linearity.utils.ReturnReplacements.returnByteArr114514;
+import static com.linearity.utils.ReturnReplacements.returnCantUseArrayList;
+import static com.linearity.utils.ReturnReplacements.returnIntegerMAX;
+import static com.linearity.utils.ReturnReplacements.returnIntegerZero;
+import static com.linearity.utils.ReturnReplacements.returnNull;
+import static com.linearity.utils.ReturnReplacements.returnTrue;
 
 import com.linearity.utils.FakeClass.java.util.CantUseArrayList;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public class HookPmClass {
@@ -28,21 +38,86 @@ public class HookPmClass {
                     hookClass = XposedHelpers.findClassIfExists(PackageManager.class.getName(),lpparam.classLoader);
                     if (hookClass != null){
                         XposedHelpers.setStaticIntField(PackageManager.class,"PERMISSION_DENIED",PackageManager.PERMISSION_GRANTED);
-
                     }
                     hookClass = XposedHelpers.findClassIfExists("android.app.ApplicationPackageManager",lpparam.classLoader);
                     if (hookClass != null){
+//                        LoggerLog("found ApplicationPackageManager");
                         XposedBridge.hookAllMethods(hookClass, "getApplicationInfoAsUser", new XC_MethodHook() {
                             @Override
                             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                                 super.afterHookedMethod(param);
                                 String inputPackage = (String) param.args[0];
                                 if (inputPackage.equals(lpparam.packageName)){return;}
-                                LoggerLog(new Exception("calling method:getApplicationInfoAsUser |" + inputPackage));
-                                ApplicationInfo result = (ApplicationInfo) param.getResult();
-                                param.setResult(confuseApplicationInfo(result));
+                                param.setResult(null);
                             }
                         });
+                        XposedBridge.hookAllMethods(hookClass, "getPackageInfoAsUser", new XC_MethodHook() {
+                            @Override
+                            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                                super.afterHookedMethod(param);
+                                String inputPackage = (String) param.args[0];
+                                if (inputPackage.equals(lpparam.packageName)){return;}
+                                param.setResult(null);
+                            }
+                        });
+                        XposedBridge.hookAllMethods(hookClass, "getPackageUidAsUser", new XC_MethodHook() {
+                            @Override
+                            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                                super.afterHookedMethod(param);
+                                String inputPackage = (String) param.args[0];
+                                if (inputPackage.equals(lpparam.packageName)){return;}
+                                ApplicationInfo result = (ApplicationInfo) param.getResult();
+                                param.setResult(Integer.MAX_VALUE);
+                            }
+                        });
+                        XposedBridge.hookAllMethods(hookClass, "getInstalledApplicationsAsUser", new XC_MethodHook() {
+                            @Override
+                            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                                super.afterHookedMethod(param);
+                                List<ApplicationInfo> result = new ArrayList<>();
+                                for (ApplicationInfo applicationInfo:(List<ApplicationInfo>)param.getResult()){
+                                    if (applicationInfo.packageName.contains("tencent") || applicationInfo.packageName.contains("alipay") || applicationInfo.packageName.equals(lpparam.packageName)){
+                                        result.add(applicationInfo);
+                                    }
+                                }
+                                param.setResult(result);
+                            }
+                        });
+                        XposedBridge.hookAllMethods(hookClass, "getInstalledPackagesAsUser", new XC_MethodHook() {
+                            @Override
+                            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                                super.beforeHookedMethod(param);
+                                LoggerLog("called getInstalledPackagesAsUser");
+                                param.setResult(null);
+                            }
+                            //                            @Override
+//                            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+//                                super.afterHookedMethod(param);
+//                                List<PackageInfo> result = new ArrayList<>();
+//                                for (PackageInfo applicationInfo:(List<PackageInfo>)param.getResult()){
+//                                    if (applicationInfo.packageName.contains("tencent") || applicationInfo.packageName.contains("alipay") || applicationInfo.packageName.equals(lpparam.packageName)){
+//                                        result.add(applicationInfo);
+//                                    }
+//                                }
+//                                param.setResult(result);
+//                            }
+                        });
+                        XposedHelpers.findAndHookMethod(hookClass, "isInstantApp",String.class, new XC_MethodReplacement() {
+                            @Override
+                            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                String arg = (String) param.args[0];
+                                if (arg.contains("tencent") || arg.contains("alipay") || arg.equals(lpparam.packageName)){return true;}
+                                return false;
+                            }
+                        });
+                        XposedBridge.hookAllMethods(hookClass, "getInstantAppIcon", returnNull);
+                        XposedBridge.hookAllMethods(hookClass, "getInstantAppCookieMaxBytes", returnIntegerZero);
+                        XposedBridge.hookAllMethods(hookClass, "getInstantAppCookieMaxSize", returnIntegerZero);
+                        XposedBridge.hookAllMethods(hookClass, "getInstantAppCookie", returnByteArr114514);
+                        XposedBridge.hookAllMethods(hookClass, "clearInstantAppCookie", returnNull);
+                        XposedBridge.hookAllMethods(hookClass, "updateInstantAppCookie", returnNull);
+                        XposedBridge.hookAllMethods(hookClass, "setInstantAppCookie", returnTrue);//not finished!
+
                     }
                 }catch (Exception e){
                     LoggerLog(e);

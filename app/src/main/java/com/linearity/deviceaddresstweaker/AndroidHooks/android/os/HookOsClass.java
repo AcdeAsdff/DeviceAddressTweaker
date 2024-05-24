@@ -33,17 +33,17 @@ public class HookOsClass {
     public static final boolean logSysProperties = false;
     public static StructStatVfs emptyStructStatVfs =
             new StructStatVfs(
-                    4096L,
-                    4096L,
-                    28050939L,
-                    12633283L,
-                    12633283L,
-                    13511677L,
-                    12666051L,
-                    12633283L,
-                    64517L,
-                    1030L,
-                    255L);
+                    4096L,//Math.abs(4096L + random.nextInt(4097))
+                    4096L,//Math.abs(4096L + random.nextInt(4097))
+                    Math.abs(28050939L + random.nextInt(Integer.MAX_VALUE)),
+                    Math.abs(12633283L + random.nextInt(Integer.MAX_VALUE)),
+                    Math.abs(12633283L + random.nextInt(Integer.MAX_VALUE)),
+                    Math.abs(13511677L + random.nextInt(Integer.MAX_VALUE)),
+                    Math.abs(12666051L + random.nextInt(Integer.MAX_VALUE)),
+                    Math.abs(12666051L + random.nextInt(Integer.MAX_VALUE)),
+                    Math.abs(64517L + random.nextInt(Integer.MAX_VALUE)),
+                    Math.abs(1030L + random.nextInt(Integer.MAX_VALUE)),
+                    Math.abs(255L + random.nextInt(256)));
     public static boolean HookOs = true;
     public static boolean HookBuild = true;
     public static boolean HookEnvironment = true;
@@ -295,26 +295,12 @@ public class HookOsClass {
                         android.os.StatFs.class.getName(),
                         lpparam.classLoader);
                  if (hookClass != null){
-                    HookUtils.findAndHookMethodIfExists(hookClass,
+                    XposedBridge.hookAllMethods(hookClass,
                             "doStat",
-                            String.class,
-//                            new XC_MethodHook(114514) {
-//                                @Override
-//                                protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-//                                    super.beforeHookedMethod(param);
-//                                    param.args[0] = "/data";
-//                                }
-//                                @Override
-//                                protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-//                                    super.afterHookedMethod(param);
-//                                    LoggerLog(((StructStatVfs)param.getResult()).toString());
-//                                }
-//                            }
                             new XC_MethodReplacement(114514) {
                                 @Override
                                 protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-//                                    return emptyStructStatVfs;
-                                    return emptyStructStatVfs;
+                                    return generateStructStatVfs();
                                 }
                             }
                     );
@@ -723,5 +709,20 @@ public class HookOsClass {
                 }
             }
         }
+    }
+
+    public static StructStatVfs generateStructStatVfs(){
+        return new StructStatVfs(
+                4096L,//Math.abs(4096L + random.nextInt(4097))
+                4096L,//Math.abs(4096L + random.nextInt(4097))
+                Math.abs(28050939L + random.nextInt(Integer.MAX_VALUE)),
+                Math.abs(12633283L + random.nextInt(Integer.MAX_VALUE)),
+                Math.abs(12633283L + random.nextInt(Integer.MAX_VALUE)),
+                Math.abs(13511677L + random.nextInt(Integer.MAX_VALUE)),
+                Math.abs(12666051L + random.nextInt(Integer.MAX_VALUE)),
+                Math.abs(12666051L + random.nextInt(Integer.MAX_VALUE)),
+                Math.abs(64517L + random.nextInt(Integer.MAX_VALUE)),
+                Math.abs(1030L + random.nextInt(Integer.MAX_VALUE)),
+                Math.abs(255L + random.nextInt(256)));
     }
 }

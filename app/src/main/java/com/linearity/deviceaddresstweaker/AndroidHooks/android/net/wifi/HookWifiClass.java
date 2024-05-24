@@ -2,6 +2,7 @@ package com.linearity.deviceaddresstweaker.AndroidHooks.android.net.wifi;
 
 import static com.linearity.deviceaddresstweaker.DeviceAddressTweaker.fakeWifiInfo;
 import static com.linearity.utils.HookUtils.findAndHookMethodIfExists;
+import static com.linearity.utils.ReturnReplacements.random;
 import static com.linearity.utils.ReturnReplacements.returnFalse;
 import static com.linearity.utils.ReturnReplacements.returnIntegerMAX;
 import static com.linearity.utils.ReturnReplacements.returnIntegerMIN;
@@ -38,7 +39,7 @@ public class HookWifiClass {
     public static String wpsInfoStr = "setup: 4\nBSSID: null\npin: null";
     public static String wifiNetworkSuggestionStr =
             "[ SSID=\"114514\", " +
-            "BSSID=01:01:04:05:01:04, " +
+            "BSSID=" + Integer.toString(random.nextInt(255),16)+":"+Integer.toString(random.nextInt(255),16)+":"+Integer.toString(random.nextInt(255),16)+":"+Integer.toString(random.nextInt(255),16)+":"+Integer.toString(random.nextInt(255),16)+":"+Integer.toString(random.nextInt(255),16) + ", " +
             "FQDN=null, " +
             "SecurityParams= open, " +
             "isAppInteractionRequired=false, " +
@@ -57,7 +58,7 @@ public class HookWifiClass {
             "meteredness=0 ]";
     public static String wifiNetworkSpecifierStr = "[, " +
             "SSID Match pattern=PatternMatcher{LITERAL: 114514}, " +
-            "BSSID Match pattern=Pair{01:01:04:05:01:04 01:01:04:05:01:04}, " +
+            "BSSID Match pattern=Pair{" + Integer.toString(random.nextInt(255),16)+":"+Integer.toString(random.nextInt(255),16)+":"+Integer.toString(random.nextInt(255),16)+":"+Integer.toString(random.nextInt(255),16)+":"+Integer.toString(random.nextInt(255),16)+":"+Integer.toString(random.nextInt(255),16) + " " + Integer.toString(random.nextInt(255),16)+":"+Integer.toString(random.nextInt(255),16)+":"+Integer.toString(random.nextInt(255),16)+":"+Integer.toString(random.nextInt(255),16)+":"+Integer.toString(random.nextInt(255),16)+":"+Integer.toString(random.nextInt(255),16) + "}, " +
             "SSID=\"114514\", " +
             "BSSID=null, " +
             "band=2147483647]";
@@ -151,7 +152,7 @@ public class HookWifiClass {
                                     new XC_MethodReplacement(114514) {
                                         @Override
                                         protected Object replaceHookedMethod(MethodHookParam param){
-                                            return "01:01:04:05:01:04";
+                                            return Integer.toString(random.nextInt(255),16)+":"+Integer.toString(random.nextInt(255),16)+":"+Integer.toString(random.nextInt(255),16)+":"+Integer.toString(random.nextInt(255),16)+":"+Integer.toString(random.nextInt(255),16)+":"+Integer.toString(random.nextInt(255),16);
                                         }
                                     }
                             );

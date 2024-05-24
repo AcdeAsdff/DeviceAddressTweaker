@@ -59,6 +59,8 @@ import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
+import static com.linearity.utils.ReturnReplacements.getRandomHexUpper;
+import static com.linearity.utils.ReturnReplacements.random;
 import static com.linearity.utils.ReturnReplacements.returnByteArr114514;
 import static com.linearity.utils.ReturnReplacements.returnFalse;
 import static com.linearity.utils.LoggerUtils.LoggerLog;
@@ -110,7 +112,7 @@ public class HookNetClass {
                 "failover: false, " +
                 "available: true, " +
                 "roaming: false]";
-        public static int[] intArray114514 = new int[]{1,1,4,5,1,4};
+        public static int[] intArray114514 = new int[]{random.nextInt(255),random.nextInt(255),random.nextInt(255),random.nextInt(255),random.nextInt(255),random.nextInt(255)};
         public static int[] EnterpriseIds = new int[]{1,2,3,4,5};
         public static int[] netCapIntArray = new int[]{
                 0,1,2,3,4,
@@ -127,9 +129,9 @@ public class HookNetClass {
         public static int[] transportTypes = new int[]{TRANSPORT_CELLULAR};
         public static SocketFactory defaultSocketFactory = SocketFactory.getDefault();
         public static InetAddress[] inetAddresses = new InetAddress[0];
-        public static byte[] byteArray114514 = new byte[]{1,1,4,5,1,4};
-        public static String macAddr114514 = "01:01:04:05:01:04";
-        public static String macAddrOui114 = "01:01:04";
+        public static byte[] byteArray114514 = new byte[]{(byte) random.nextInt(127),(byte) random.nextInt(127),(byte) random.nextInt(127),(byte) random.nextInt(127),(byte) random.nextInt(127),(byte) random.nextInt(127)};
+        public static String macAddr114514 = getRandomHexUpper(2)+":"+getRandomHexUpper(2)+":"+getRandomHexUpper(2)+":"+getRandomHexUpper(2)+":"+getRandomHexUpper(2)+":"+getRandomHexUpper(2);
+        public static String macAddrOui114 = getRandomHexUpper(2)+":"+getRandomHexUpper(2)+":"+getRandomHexUpper(2);
         public static List<LinkAddress> emptyLinkAddressList = new ArrayList<>();
         public static List<InetAddress> emptyInetAddressList = new ArrayList<>();
         public static List<RouteInfo> emptyRouteInfoList = new ArrayList<>();

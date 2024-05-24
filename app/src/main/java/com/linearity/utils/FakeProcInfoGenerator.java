@@ -4,12 +4,17 @@ import static com.linearity.utils.ReturnReplacements.getRandomHexUpper;
 import static com.linearity.utils.ReturnReplacements.getRandomHexlower;
 import static com.linearity.utils.ReturnReplacements.getRandomString;
 
+import android.text.format.DateFormat;
+
+import com.linearity.utils.ListenerUtils.ListenerByteArrayOutputStream;
+
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.security.SecureRandom;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -265,7 +270,7 @@ public class FakeProcInfoGenerator {
         infoMap.put("persist.sys.locale","zh-CN");//language
         infoMap.put("persist.sys.max.profiles","2");
         infoMap.put("persist.sys.oem.otg_support","false");
-        infoMap.put("persist.sys.sf.color_mode","9");
+        infoMap.put("persist.sys.sf.color_mode",String.valueOf(random.nextInt(14)));
         infoMap.put("persist.sys.sf.color_saturation","1.0");
         infoMap.put("persist.sys.sf.native_mode","2");
         infoMap.put("persist.sys.strictmode.disable","true");
@@ -275,22 +280,22 @@ public class FakeProcInfoGenerator {
         infoMap.put("persist.sys.vold_app_data_isolation_enabled","1");
         infoMap.put("persist.traced.enable","1");
         infoMap.put("persist.vendor.camera.frontMain.info",getRandomString(20));//"/vendor/lib64/camera/com.qti.sensormodule.lmi_sunny_s5k3t2_front.bin"
-        infoMap.put("persist.vendor.camera.frontMain.vendorID","01");
+        infoMap.put("persist.vendor.camera.frontMain.vendorID",String.valueOf(random.nextInt()));
         infoMap.put("persist.vendor.camera.mi.dualcal.detail","0");
         infoMap.put("persist.vendor.camera.mi.dualcal.exist","0");
         infoMap.put("persist.vendor.camera.mi.dualcal.state","0");
         infoMap.put("persist.vendor.camera.mi.module.info","back_main=imx686;back_ultra=ov13b10;back_depth=gc02m1;");
         infoMap.put("persist.vendor.camera.mi.module.infoext","front_main=s5k3t2;back_macro=s5k5e9;");
         infoMap.put("persist.vendor.camera.rearDepth.info",getRandomString(20));//"/vendor/lib64/camera/com.qti.sensormodule.lmi_ofilm_gc02m1_depth.bin"
-        infoMap.put("persist.vendor.camera.rearDepth.vendorID","07");
+        infoMap.put("persist.vendor.camera.rearDepth.vendorID",String.valueOf(random.nextInt()));
         infoMap.put("persist.vendor.camera.rearMacro.info",getRandomString(20));//"/vendor/lib64/camera/com.qti.sensormodule.lmi_sunny_s5k5e9yx04_macro.bin"
-        infoMap.put("persist.vendor.camera.rearMacro.vendorID","01");
+        infoMap.put("persist.vendor.camera.rearMacro.vendorID",String.valueOf(random.nextInt()));
         infoMap.put("persist.vendor.camera.rearMain.info",getRandomString(20));//"/vendor/lib64/camera/com.qti.sensormodule.lmi_sunny_imx686_wide_mp.bin"
-        infoMap.put("persist.vendor.camera.rearMain.vendorID","01");
+        infoMap.put("persist.vendor.camera.rearMain.vendorID",String.valueOf(random.nextInt()));
         infoMap.put("persist.vendor.camera.rearUltra.info",getRandomString(20));//"/vendor/lib64/camera/com.qti.sensormodule.lmi_sunny_ov13b10_ultra.bin"
-        infoMap.put("persist.vendor.camera.rearUltra.vendorID","01");
+        infoMap.put("persist.vendor.camera.rearUltra.vendorID",String.valueOf(random.nextInt()));
         infoMap.put("persist.vendor.dpm.feature","1");
-        infoMap.put("persist.vendor.sys.fp.expolevel","0x80");
+        infoMap.put("persist.vendor.sys.fp.expolevel","0x"+getRandomHexlower(2));
         infoMap.put("persist.vendor.sys.fp.fod.large_field","0");
         infoMap.put("persist.vendor.sys.fp.info","0xff" + getRandomHexlower(12));//0000450f000000
         infoMap.put("persist.vendor.sys.fp.module","Ofilm");
@@ -312,10 +317,19 @@ public class FakeProcInfoGenerator {
         infoMap.put("pm.dexopt.install-fast","skip");
         infoMap.put("pm.dexopt.post-boot","extract");
         infoMap.put("pm.dexopt.shared","speed");
-        infoMap.put("ril.ecclist","112,000,08,110,120,119,118,122,911,999");
-        infoMap.put("ril.ecclist1","112,000,08,110,120,119,118,122,911,999");
+        infoMap.put("ril.ecclist",
+                random.nextInt(256) +","+ random.nextInt(256)
+                        +","+ random.nextInt(256) +","+ random.nextInt(256)
+                        +","+ random.nextInt(256) +","+ random.nextInt(256)
+                        +","+ random.nextInt(256) +","+ random.nextInt(256)
+                        +","+ random.nextInt(256) +","+ random.nextInt(256));//"112,000,08,110,120,119,118,122,911,999"
+        infoMap.put("ril.ecclist1",random.nextInt(256) +","+ random.nextInt(256)
+                +","+ random.nextInt(256) +","+ random.nextInt(256)
+                +","+ random.nextInt(256) +","+ random.nextInt(256)
+                +","+ random.nextInt(256) +","+ random.nextInt(256)
+                +","+ random.nextInt(256) +","+ random.nextInt(256));//"112,000,08,110,120,119,118,122,911,999"
         infoMap.put("ril.fake_bs_flag0","FALSE:0");
-        infoMap.put("ril.mcc.mnc0","46001");
+        infoMap.put("ril.mcc.mnc0",String.valueOf(random.nextInt(50000)));//"46001"
         infoMap.put("ril.mcc.mnc1","");
         infoMap.put("ro.actionable_compatible_property.enabled","true");
         infoMap.put("ro.adb.secure","1");
@@ -350,21 +364,21 @@ public class FakeProcInfoGenerator {
         infoMap.put("ro.boot.serialno",getRandomHexlower(9));
         infoMap.put("ro.boot.usbcontroller",getRandomHexlower(14));
         infoMap.put("ro.boot.verifiedbootstate","green");
-        infoMap.put("ro.bootimage.build.date","Fri Aug  31 03:09:39 UTC 2007");//forgot
-        infoMap.put("ro.bootimage.build.date.utc","1188529779");//forgot
+        infoMap.put("ro.bootimage.build.date",DateFormat.format("EEE MMM  d HH:mm:ss 'UTC' yyyy",random.nextLong()).toString());//forgot
+        infoMap.put("ro.bootimage.build.date.utc",String.valueOf(random.nextLong()));//forgot
         infoMap.put("ro.bootimage.build.fingerprint",getRandomString(40));
         infoMap.put("ro.bootimage.build.id",getRandomString(10));
         infoMap.put("ro.bootimage.build.tags","release-keys");
         infoMap.put("ro.bootimage.build.type",getRandomString(10));
         infoMap.put("ro.bootimage.build.version.incremental",getRandomHexlower(9));
-        infoMap.put("ro.bootimage.build.version.release","9");
-        infoMap.put("ro.bootimage.build.version.release_or_codename","9");
-        infoMap.put("ro.bootimage.build.version.sdk","28");
+        infoMap.put("ro.bootimage.build.version.release",String.valueOf(random.nextInt(14)));
+        infoMap.put("ro.bootimage.build.version.release_or_codename",String.valueOf(random.nextInt(14)));
+        infoMap.put("ro.bootimage.build.version.sdk",String.valueOf(random.nextInt(34)));
         infoMap.put("ro.bootloader",getRandomString(10));//"unknown"
         infoMap.put("ro.bootmode",getRandomString(10));//"unknown"
         infoMap.put("ro.build.characteristics","default");
-        infoMap.put("ro.build.date","Fri Aug  31 03:09:39 UTC 2007");//forgot
-        infoMap.put("ro.build.date.utc","1188529779");//forgot
+        infoMap.put("ro.build.date",DateFormat.format("EEE MMM  d HH:mm:ss 'UTC' yyyy",random.nextLong()).toString());//forgot
+        infoMap.put("ro.build.date.utc",String.valueOf(random.nextLong()));//forgot
         infoMap.put("ro.build.description",getRandomString(40));
         infoMap.put("ro.build.display.id",getRandomString(40));
         infoMap.put("ro.build.fingerprint",getRandomString(40));
@@ -380,12 +394,12 @@ public class FakeProcInfoGenerator {
         infoMap.put("ro.build.version.codename",getRandomString(3));//"REL"
         infoMap.put("ro.build.version.incremental",getRandomHexlower(9));//"57e323c73e"
         infoMap.put("ro.build.version.min_supported_target_sdk","1");
-        infoMap.put("ro.build.version.preview_sdk","0");
+        infoMap.put("ro.build.version.preview_sdk",String.valueOf(random.nextInt(14)));
         infoMap.put("ro.build.version.preview_sdk_fingerprint",getRandomString(3));//"REL"
-        infoMap.put("ro.build.version.release","9");//
-        infoMap.put("ro.build.version.release_or_codename","9");//
-        infoMap.put("ro.build.version.sdk","28");//
-        infoMap.put("ro.build.version.security_patch","2007-08-31");//"2023-02-05"
+        infoMap.put("ro.build.version.release",String.valueOf(random.nextInt(14)));//
+        infoMap.put("ro.build.version.release_or_codename",String.valueOf(random.nextInt(14)));//
+        infoMap.put("ro.build.version.sdk",String.valueOf(random.nextInt(34)));//
+        infoMap.put("ro.build.version.security_patch",DateFormat.format("yyyy-MM-dd",random.nextLong()).toString());//"2023-02-05"
         infoMap.put("ro.camera.notify_nfc","1");
         infoMap.put("ro.carrier","unknown");
         infoMap.put("ro.com.android.dataroaming","true");
@@ -414,14 +428,14 @@ public class FakeProcInfoGenerator {
         infoMap.put("ro.kernel.version", String.valueOf(random.nextFloat() + 1));//"4.19"
 //        infoMap.put("ro.lineage.build.version","19.1");
 //        infoMap.put("ro.lineage.build.version.plat.rev","0");
-//        infoMap.put("ro.lineage.build.version.plat.sdk","9");
+//        infoMap.put("ro.lineage.build.version.plat.sdk",String.valueOf(random.nextInt(14)));
 //        infoMap.put("ro.lineage.device","lmi");
 //        infoMap.put("ro.lineage.display.version","19-20230304-NIGHTLY-lmi");
 //        infoMap.put("ro.lineage.releasetype","NIGHTLY");
 //        infoMap.put("ro.lineage.version","19.1-20230304-NIGHTLY-lmi");
 //        infoMap.put("ro.lineagelegal.url","https://lineageos.org/legal");
         infoMap.put("ro.lmk.kill_heaviest_task","true");
-        infoMap.put("ro.lmk.kill_timeout_ms","15");
+        infoMap.put("ro.lmk.kill_timeout_ms",String.valueOf(random.nextInt(7)+9));
         infoMap.put("ro.lmk.use_minfree_levels","true");
         infoMap.put("ro.logd.kernel","true");
         infoMap.put("ro.logd.size.stats","64K");
@@ -429,37 +443,37 @@ public class FakeProcInfoGenerator {
         infoMap.put("ro.media.xml_variant.codecs_performance",getRandomString(4));//"_kona"
         infoMap.put("ro.modversion",getRandomString(20));//"19.1-20230304-NIGHTLY-lmi"
         infoMap.put("ro.netflix.bsp_rev",getRandomString(20));//"Q8250-19134-1"
-        infoMap.put("ro.odm.build.date","Fri Aug  31 03:09:39 UTC 2007");//forgot
-        infoMap.put("ro.odm.build.date.utc","1188529779");//forgot
+        infoMap.put("ro.odm.build.date", DateFormat.format("EEE MMM  d HH:mm:ss 'UTC' yyyy",random.nextLong()).toString());//forgot
+        infoMap.put("ro.odm.build.date.utc",String.valueOf(random.nextLong()));//forgot
         infoMap.put("ro.odm.build.fingerprint",getRandomString(40));
         infoMap.put("ro.odm.build.version.incremental",getRandomHexlower(9));
         infoMap.put("ro.odm_dlkm.build.fingerprint",getRandomString(40));
         infoMap.put("ro.opengles.version", String.valueOf(random.nextLong()));//196610
         infoMap.put("ro.organization_owned","false");
         infoMap.put("ro.postinstall.fstab.prefix","/system");
-        infoMap.put("ro.product.board","kona");
+        infoMap.put("ro.product.board",getRandomString(20));//"kona"
         infoMap.put("ro.product.bootimage.brand",getRandomString(10));//"POCO"
         infoMap.put("ro.product.bootimage.device",getRandomString(10));//"lmi"
         infoMap.put("ro.product.bootimage.manufacturer",getRandomString(10));//"Xiaomi"
         infoMap.put("ro.product.bootimage.model",getRandomString(10));//"POCO F2 Pro"
         infoMap.put("ro.product.bootimage.name",getRandomString(10));//"lineage_lmi"
         infoMap.put("ro.product.brand",getRandomString(10));//"POCO"
-        infoMap.put("ro.product.build.date","Fri Aug  31 03:09:39 UTC 2007");//forgot
-        infoMap.put("ro.product.build.date.utc","1188529779");//forgot"2007-08-31");//forgot
+        infoMap.put("ro.product.build.date",DateFormat.format("EEE MMM  d HH:mm:ss 'UTC' yyyy",random.nextLong()).toString());//forgot
+        infoMap.put("ro.product.build.date.utc",String.valueOf(random.nextLong()));//forgot"2007-08-31");//forgot
         infoMap.put("ro.product.build.fingerprint",getRandomString(40));
         infoMap.put("ro.product.build.id",getRandomString(10));
         infoMap.put("ro.product.build.tags","release-keys");
         infoMap.put("ro.product.build.type",getRandomString(10));
         infoMap.put("ro.product.build.version.incremental",getRandomHexlower(9));//"57e323c73e"
-        infoMap.put("ro.product.build.version.release","9");//
-        infoMap.put("ro.product.build.version.release_or_codename","9");//
-        infoMap.put("ro.product.build.version.sdk","28");//
+        infoMap.put("ro.product.build.version.release",String.valueOf(random.nextInt(14)));//
+        infoMap.put("ro.product.build.version.release_or_codename",String.valueOf(random.nextInt(14)));//
+        infoMap.put("ro.product.build.version.sdk",String.valueOf(random.nextInt(34)));//
         infoMap.put("ro.product.cpu.abi","arm64-v8a");
         infoMap.put("ro.product.cpu.abilist","arm64-v8a,armeabi-v7a,armeabi");
         infoMap.put("ro.product.cpu.abilist32","armeabi-v7a,armeabi");
         infoMap.put("ro.product.cpu.abilist64","arm64-v8a");
         infoMap.put("ro.product.device",getRandomString(10));//"lmi"
-        infoMap.put("ro.product.first_api_level","1");//29
+        infoMap.put("ro.product.first_api_level",String.valueOf(random.nextInt()));//29
         infoMap.put("ro.product.locale",getRandomString(10));//"en-US"
         infoMap.put("ro.product.manufacturer",getRandomString(10));//"Xiaomi"
         infoMap.put("ro.product.marketname","");
@@ -505,15 +519,15 @@ public class FakeProcInfoGenerator {
         infoMap.put("ro.product.vendor_dlkm.marketname","");
         infoMap.put("ro.product.vendor_dlkm.model",getRandomString(10));//"POCO F2 Pro"
         infoMap.put("ro.product.vendor_dlkm.name",getRandomString(10));//"lineage_lmi"
-        infoMap.put("ro.property_service.version","2");
-        infoMap.put("ro.revision","0");
+        infoMap.put("ro.property_service.version",String.valueOf(random.nextInt(4)));//2
+        infoMap.put("ro.revision",String.valueOf(random.nextInt(14)));
         infoMap.put("ro.ril.factory_id", String.valueOf(random.nextInt(114514) + 1));
         infoMap.put("ro.ril.nal","");
         infoMap.put("ro.ril.operator","");
         infoMap.put("ro.ril.region","");
         infoMap.put("ro.secure","1");
         infoMap.put("ro.serialno",getRandomHexlower(9));//"6266a966"
-        infoMap.put("ro.sf.lcd_density","440");
+        infoMap.put("ro.sf.lcd_density",String.valueOf(440 + random.nextInt(10)*(random.nextBoolean()?-1:1)));
         infoMap.put("ro.soc.manufacturer","Qualcomm");
         infoMap.put("ro.soc.model",getRandomString(10));//"SM8250"
         infoMap.put("ro.storage_manager.enabled","true");
@@ -522,67 +536,67 @@ public class FakeProcInfoGenerator {
         infoMap.put("ro.surface_flinger.has_HDR_display","true");
         infoMap.put("ro.surface_flinger.has_wide_color_display","true");
         infoMap.put("ro.surface_flinger.max_frame_buffer_acquired_buffers","3");
-        infoMap.put("ro.surface_flinger.max_virtual_display_dimension","4096");
+        infoMap.put("ro.surface_flinger.max_virtual_display_dimension",String.valueOf(2048+random.nextInt(2049)));
         infoMap.put("ro.surface_flinger.protected_contents","true");
         infoMap.put("ro.surface_flinger.use_color_management","true");
         infoMap.put("ro.surface_flinger.wcg_composition_dataspace", String.valueOf(random.nextLong()));//"143261696"
-        infoMap.put("ro.system.build.date","Fri Aug  31 03:09:39 UTC 2007");//forgot
-        infoMap.put("ro.system.build.date.utc","1188529779");//forgot
+        infoMap.put("ro.system.build.date",DateFormat.format("EEE MMM  d HH:mm:ss 'UTC' yyyy",random.nextLong()).toString());//forgot
+        infoMap.put("ro.system.build.date.utc",String.valueOf(random.nextLong()));//forgot
         infoMap.put("ro.system.build.fingerprint",getRandomString(40));
         infoMap.put("ro.system.build.id",getRandomString(10));
         infoMap.put("ro.system.build.tags","release-keys");
         infoMap.put("ro.system.build.type",getRandomString(10));
         infoMap.put("ro.system.build.version.incremental",getRandomHexlower(9));//"57e323c73e"
-        infoMap.put("ro.system.build.version.release","9");//
-        infoMap.put("ro.system.build.version.release_or_codename","9");//
-        infoMap.put("ro.system.build.version.sdk","28");//
+        infoMap.put("ro.system.build.version.release",String.valueOf(random.nextInt(14)));//
+        infoMap.put("ro.system.build.version.release_or_codename",String.valueOf(random.nextInt(14)));//
+        infoMap.put("ro.system.build.version.sdk",String.valueOf(random.nextInt(34)));//
         infoMap.put("ro.system.product.cpu.abilist","arm64-v8a,armeabi-v7a,armeabi");
         infoMap.put("ro.system.product.cpu.abilist32","armeabi-v7a,armeabi");
         infoMap.put("ro.system.product.cpu.abilist64","arm64-v8a");
-        infoMap.put("ro.system_ext.build.date","Fri Aug  31 03:09:39 UTC 2007");//forgot
-        infoMap.put("ro.system_ext.build.date.utc","1188529779");//forgot
+        infoMap.put("ro.system_ext.build.date",DateFormat.format("EEE MMM  d HH:mm:ss 'UTC' yyyy",random.nextLong()).toString());//forgot
+        infoMap.put("ro.system_ext.build.date.utc",String.valueOf(random.nextLong()));//forgot
         infoMap.put("ro.system_ext.build.fingerprint",getRandomString(40));
         infoMap.put("ro.system_ext.build.id",getRandomString(10));
         infoMap.put("ro.system_ext.build.tags","release-keys");
         infoMap.put("ro.system_ext.build.type",getRandomString(10));
         infoMap.put("ro.system_ext.build.version.incremental",getRandomHexlower(9));//"57e323c73e"
-        infoMap.put("ro.system_ext.build.version.release","9");//"12"
-        infoMap.put("ro.system_ext.build.version.release_or_codename","9");//"12"
-        infoMap.put("ro.system_ext.build.version.sdk","28");//"32"
+        infoMap.put("ro.system_ext.build.version.release",String.valueOf(random.nextInt(14)));//"12"
+        infoMap.put("ro.system_ext.build.version.release_or_codename",String.valueOf(random.nextInt(14)));//"12"
+        infoMap.put("ro.system_ext.build.version.sdk",String.valueOf(random.nextInt(34)));//"32"
         infoMap.put("ro.telephony.call_ring.multiple","false");
-        infoMap.put("ro.telephony.default_network","22,22");
+        infoMap.put("ro.telephony.default_network",String.valueOf(random.nextInt()));
         infoMap.put("ro.treble.enabled","true");
-        infoMap.put("ro.vendor.build.date","Fri Aug  31 03:09:39 UTC 2007");//forgot
-        infoMap.put("ro.vendor.build.date.utc","1188529779");//forgot
+        infoMap.put("ro.vendor.build.date",DateFormat.format("EEE MMM  d HH:mm:ss 'UTC' yyyy",random.nextLong()).toString());//forgot
+        infoMap.put("ro.vendor.build.date.utc",String.valueOf(random.nextLong()));//forgot
         infoMap.put("ro.vendor.build.fingerprint",getRandomString(40));//"POCO/lmi_global/lmi:12/RKQ1.211001.001/V13.0.3.0.SJKMIXM:user/release-keys"
         infoMap.put("ro.vendor.build.id",getRandomString(10));//"SQ3A.220705.004"
-        infoMap.put("ro.vendor.build.security_patch","2007-08-31");//forgot
+        infoMap.put("ro.vendor.build.security_patch",DateFormat.format("yyyy-MM-dd",random.nextLong()).toString());//forgot
         infoMap.put("ro.vendor.build.tags","release-keys");
         infoMap.put("ro.vendor.build.type",getRandomString(10));//"userdebug"
         infoMap.put("ro.vendor.build.version.incremental",getRandomHexlower(9));//"57e323c73e"
-        infoMap.put("ro.vendor.build.version.release","9");//"12"
-        infoMap.put("ro.vendor.build.version.release_or_codename","9");//12
-        infoMap.put("ro.vendor.build.version.sdk","28");//32
+        infoMap.put("ro.vendor.build.version.release",String.valueOf(random.nextInt(14)));//"12"
+        infoMap.put("ro.vendor.build.version.release_or_codename",String.valueOf(random.nextInt(14)));//12
+        infoMap.put("ro.vendor.build.version.sdk",String.valueOf(random.nextInt(34)));//32
         infoMap.put("ro.vendor.product.cpu.abilist","arm64-v8a,armeabi-v7a,armeabi");
         infoMap.put("ro.vendor.product.cpu.abilist32","armeabi-v7a,armeabi");
         infoMap.put("ro.vendor.product.cpu.abilist64","arm64-v8a");
         infoMap.put("ro.vendor.qti.va_aosp.support","1");
         infoMap.put("ro.vendor.qti.va_odm.support","1");
-        infoMap.put("ro.vendor_dlkm.build.date","Fri Aug  31 03:09:39 UTC 2007");//forgot
-        infoMap.put("ro.vendor_dlkm.build.date.utc","1188529779");//forgot
+        infoMap.put("ro.vendor_dlkm.build.date",DateFormat.format("EEE MMM  d HH:mm:ss 'UTC' yyyy",random.nextLong()).toString());//forgot
+        infoMap.put("ro.vendor_dlkm.build.date.utc",String.valueOf(random.nextLong()));//forgot
         infoMap.put("ro.vendor_dlkm.build.fingerprint",getRandomString(40));//"POCO/lmi_global/lmi:12/RKQ1.211001.001/V13.0.3.0.SJKMIXM:user/release-keys"
         infoMap.put("ro.vendor_dlkm.build.id",getRandomString(10));//"SQ3A.220705.004"
         infoMap.put("ro.vendor_dlkm.build.tags","release-keys");
         infoMap.put("ro.vendor_dlkm.build.type",getRandomString(10));//"userdebug"
         infoMap.put("ro.vendor_dlkm.build.version.incremental",getRandomHexlower(9));
-        infoMap.put("ro.vendor_dlkm.build.version.release","9");//"12"
-        infoMap.put("ro.vendor_dlkm.build.version.release_or_codename","9");//"12"
-        infoMap.put("ro.vendor_dlkm.build.version.sdk","28");
-        infoMap.put("ro.vndk.version","28");
+        infoMap.put("ro.vendor_dlkm.build.version.release",String.valueOf(random.nextInt(14)));//"12"
+        infoMap.put("ro.vendor_dlkm.build.version.release_or_codename",String.valueOf(random.nextInt(14)));//"12"
+        infoMap.put("ro.vendor_dlkm.build.version.sdk",String.valueOf(random.nextInt(34)));
+        infoMap.put("ro.vndk.version",String.valueOf(random.nextInt(34)));
         infoMap.put("ro.wifi.channels","");
         infoMap.put("ro.zygote","zygote64_32");
         infoMap.put("security.perf_harden","1");
-        infoMap.put("selinux.restorecon_recursive","/data/misc_ce/10");
+        infoMap.put("selinux.restorecon_recursive",getRandomString(10));//"/data/misc_ce/10"
         infoMap.put("service.sf.present_timestamp","1");
         infoMap.put("sys.boot.reason","reboot,");
         infoMap.put("sys.boot.reason.last","reboot,");
@@ -594,10 +608,10 @@ public class FakeProcInfoGenerator {
         infoMap.put("sys.init.perf_lsm_hooks","1");
         infoMap.put("sys.oem_unlock_allowed","0");
         infoMap.put("sys.rescue_boot_count","1");
-        infoMap.put("sys.sysctl.extra_free_kbytes","30375");
+        infoMap.put("sys.sysctl.extra_free_kbytes",String.valueOf(random.nextInt(8206) + 22169));
         infoMap.put("sys.system_server.start_count","1");
-        infoMap.put("sys.system_server.start_elapsed","8206");
-        infoMap.put("sys.system_server.start_uptime","8206");
+        infoMap.put("sys.system_server.start_elapsed",String.valueOf(random.nextInt(8206)));
+        infoMap.put("sys.system_server.start_uptime",String.valueOf(random.nextInt(8206)));
         infoMap.put("sys.usb.config",getRandomString(20));
         infoMap.put("sys.usb.configfs","1");
         infoMap.put("sys.usb.controller","a600000.dwc3");
@@ -605,7 +619,7 @@ public class FakeProcInfoGenerator {
         infoMap.put("sys.usb.state",getRandomString(20));
         infoMap.put("sys.use_memfd","false");
         infoMap.put("sys.user.0.ce_available","true");
-        infoMap.put("sys.vendor.shutdown.waittime","500");
+        infoMap.put("sys.vendor.shutdown.waittime",String.valueOf(random.nextInt(500)));
         infoMap.put("sys.wifitracing.started","1");
         infoMap.put("vendor.camera.aux.packagelist","com.android.camera");//"org.codeaurora.snapcam,com.android.camera"
         infoMap.put("vendor.camera.sensor.frontMain.fuseID","sunn" + getRandomHexUpper(60));//"sunn001200D7999E0DE000000000000000000000000000000000000000000000"
@@ -653,7 +667,7 @@ public class FakeProcInfoGenerator {
             inputStream = new ByteArrayInputStream("\n".getBytes());
         }
 
-        return generateProcess(inputStream,outputStream,inputStream);
+        return generateProcess(inputStream,ListenerByteArrayOutputStream.INSTANCE,inputStream);
     }
 
     public static Process generateProcess(InputStream inputStream,OutputStream outputStream,InputStream errorStream){
@@ -693,7 +707,7 @@ public class FakeProcInfoGenerator {
     public static final Process emptyProcess = new Process() {
         @Override
         public OutputStream getOutputStream() {
-            return new ByteArrayOutputStream(1);
+            return ListenerByteArrayOutputStream.INSTANCE;
         }
 
         @Override

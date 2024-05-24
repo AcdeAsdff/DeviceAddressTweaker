@@ -35,40 +35,54 @@ public class HookIO {
             if (HookFile){
                 hookClass = XposedHelpers.findClassIfExists(java.io.File.class.getName(),lpparam.classLoader);
                 if (hookClass != null){
-//                    try {
-//                        XposedBridge.hookAllConstructors(hookClass,
-//                                new XC_MethodHook() {
-//                                    @Override
-//                                    protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-//                                        super.beforeHookedMethod(param);
-//
-//                                        if (checkBannedFile(param, lpparam)) {
-////                                        boolean pass = false;
-////                                        StringBuilder sb = new StringBuilder();
-////                                        for (Object i:param.args){
-////                                            sb.append("|");
-////                                            if (i != null){
-////                                                sb.append(i.toString());
-////                                            }
-////                                        }
-////                                        String check = sb.toString();
-////                                        if (check.contains(procHead)
-////                                                ||check.contains(lpparam.packageName)
-////                                                ||check.endsWith("/lib64")
-////                                                ||check.contains("/lib64|")
-////                                        ){
-////                                            pass = true;
-////                                        }
-////                                        if (!pass){
-////                                            LoggerLog("[file]"+sb);
-////                                        }
-////                                        return;
+                    try {
+                        XposedBridge.hookAllConstructors(hookClass,
+                                new XC_MethodHook() {
+                                    @Override
+                                    protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                                        super.beforeHookedMethod(param);
+                                        if (!checkBannedFile(param, lpparam)) {
+//                                            LoggerLog("caught " + param.args[0]);
+                                            String prefix = "/sdcard/Android/data/";
+                                            if (param.args[0] instanceof String){
+                                                param.args[0] = prefix+lpparam.packageName+param.args[0];
+                                            }
+                                            else if(param.args[0] instanceof File){
+                                                param.args[0] = new File(prefix+lpparam.packageName+((File)param.args[0]).getAbsolutePath());
+                                            }
+                                            else if(param.args[0] instanceof URI){
+                                                param.args[0] = new URI("file:/"+prefix+lpparam.packageName+
+                                                        ((URI)param.args[0]).toString().replace("file://",""));
+                                            }
+                                            else {
+                                                LoggerLog("cannot replace file arg:" + param.args[0].getClass().getName());
+                                            }
+//                                        boolean pass = false;
+//                                        StringBuilder sb = new StringBuilder();
+//                                        for (Object i:param.args){
+//                                            sb.append("|");
+//                                            if (i != null){
+//                                                sb.append(i.toString());
+//                                            }
 //                                        }
-//                                    }
-//                                });
-//                    } catch (Exception e) {
-//                        LoggerLog(e);
-//                    }
+//                                        String check = sb.toString();
+//                                        if (check.contains(procHead)
+//                                                ||check.contains(lpparam.packageName)
+//                                                ||check.endsWith("/lib64")
+//                                                ||check.contains("/lib64|")
+//                                        ){
+//                                            pass = true;
+//                                        }
+//                                        if (!pass){
+//                                            LoggerLog("[file]"+sb);
+//                                        }
+//                                        return;
+                                        }
+                                    }
+                                });
+                    } catch (Exception e) {
+                        LoggerLog(e);
+                    }
                     try {
                         {
                             findAndHookMethodIfExists(hookClass,
@@ -310,7 +324,20 @@ public class HookIO {
                                                 param.args[0] = path;
                                             }
                                         }
-                                        if (param.args[0] instanceof File){
+                                       else if (param.args[0] instanceof File){
+                                           if (param.args[0].toString().contains("/proc")
+                                                   ||param.args[0].toString().contains("/system/cpu/")
+                                                   ||param.args[0].toString().contains("/sys/block/")
+                                           ){
+                                               File f = ((File)param.args[0]);
+                                               if (!f.exists()) {
+                                                   f.getParentFile().mkdirs();
+                                                   f.createNewFile();
+                                               }
+                                               return;
+                                           }
+
+
                                             path = name != null ? ((File) name).getAbsolutePath() : "";
                                             path = checkReplaceFile(path, lpparam);
                                             if (!checkBannedInFile(path, lpparam)) {
@@ -335,8 +362,6 @@ public class HookIO {
     };
     @SuppressLint("SdCardPath")
     public static String[] bannedFileHead = new String[]{
-            "/sdcard",
-            "/storage/emulated",
             "/acct",
             "/apex",
             "/bin",
@@ -358,17 +383,20 @@ public class HookIO {
             "/data/local/bin/su",
     };
     public static String[] whiteListHead = new String[]{
+            "/system/lib",
             "/data/selfdefinedso",
             "/system/etc/security/cacerts",
             "/data/misc/user/0/cacerts-added",
             "/system/framework/core.jar.jex",
+            "/system/lib64",
+            "/system_ext/lib64",
+            "/storage/emulated/",
 //            ".dmpvedpogjhejs.cfg",
 //            ".imprint",
     };
 
     public static String[] tweakPathExact = new String[]{
             "/sdcard",
-            "/sdcard/",
             "/storage/emulated/0",
             "/storage/emulated/0/",
             "/storage/emulated/0/Pictures",
@@ -381,194 +409,35 @@ public class HookIO {
     public static boolean checkBannedFile(XC_MethodHook.MethodHookParam param, XC_LoadPackage.LoadPackageParam lpparam) throws Exception{
         String procHead = lpparam.processName.split(":")[0];
         boolean mark = true;
-        if (param.args.length == 1)
-        {
-            String path = "";
-            if (param.args[0] instanceof String)
-            {
-                path = (String) param.args[0];
-                String cache = path;
-                path = checkReplaceFile(path, lpparam);
-                if (path.equals(cache)){return true;}
-//                else {
-//                    LoggerLog(path);
-//                }
-                if ((path.contains("WeiXin")
-                        || path.contains("tencent"))
-                        && procHead.contains("tencent")) {
-                    return true;
-                }
-                if (useChecker){
-
-                    for (String checker : bannedFileHead) {
-                        boolean tempBreak = false;
-                        for (String checker2:whiteListHead){
-                            if (path.startsWith(checker2)){
-                                tempBreak = true;
-                                break;
-                            }
-                        }
-                        if (tempBreak){
-                            break;
-                        }
-                        if (path.startsWith(checker)) {
-//                            param.args[0] = getRandomString(14);
-                            mark = false;
-                            break;
-                        }
-                    }
-                    for (String checker : bannedFileExact) {
-                        if (path.equals(checker)) {
-//                            param.args[0] = getRandomString(14);
-                            mark = false;
-                            break;
-                        }
-                    }
-                }
-            }
-            else
-            {
-                if (param.args[0] != null){
-                    path = (String) param.args[0].toString();
-                }
-                String cache = path;
-                path = checkReplaceFile(path, lpparam);
-                if (path.equals(cache)){return true;}
-//                else {
-//                    LoggerLog(path);
-//                }
-                if ((path.contains("WeiXin") || path.contains("tencent")) && procHead.contains("tencent")) {
-                    return true;
-                }
-                if (useChecker){
-                    for (String checker : bannedFileHead) {
-                        boolean tempBreak = false;
-                        for (String checker2:whiteListHead){
-                            if (path.startsWith(checker2)){
-                                tempBreak = true;
-                                break;
-                            }
-                        }
-                        if (tempBreak){
-                            break;
-                        }
-                        if (path.startsWith(checker)) {
-                            param.args[0] = new URI(((URI)param.args[0]).toString() + "/" + procHead);
-                            mark = false;
-                            break;
-                        }
-                    }
-                    for (String checker : bannedFileExact) {
-                        if (path.equals(checker)) {
-                            param.args[0] =  new URI(((URI)param.args[0]).toString() + "/" + procHead);
-                            mark = false;
-                            break;
-                        }
-                    }
-                }
-            }
+        if (param.args[0] == null){return true;}
+        if (param.args[0].toString().contains(lpparam.packageName) || param.args[0].toString().contains(procHead)){return true;}
+        String path = param.args[0].toString();
+        if ((path.contains("WeiXin")
+                || path.contains("tencent"))
+                && procHead.contains("tencent")) {
+            return true;
         }
-        else
-        {
-            int ConstructorType = 0;
-            File file;
-            String path = "";
-            String parentPath = "";
-            if (param.args[0] instanceof File && param.args[1] instanceof String){
-                ConstructorType = FileConstructor_Type_File_String;
-                file = (File) param.args[0];
-                path = (String) param.args[1];
-                parentPath = file.getAbsolutePath();
-            }
-            else if (param.args[1] instanceof File && param.args[0] instanceof String){
-                ConstructorType = FileConstructor_Type_String_File;
-                file = (File) param.args[1];
-                path = (String) param.args[0];
-                parentPath = file.getAbsolutePath();
-            }
-            else if (param.args[0] instanceof String && param.args[1] instanceof String){
-                ConstructorType = FileConstructor_Type_String_String;
-                path = (String) param.args[1];
-                parentPath = (String) param.args[0];
-            }
-            else {
-                ConstructorType = FileConstructor_Type_String_Integer;
-                path = "";
-                if (param.args[0] instanceof String){
-                    parentPath = (String) param.args[0];
-                }else if (param.args[0] != null){
-                    parentPath = ((File) param.args[0]).getAbsolutePath();
-                }
-            }
-            String totalPath = "";
-            if (!parentPath.endsWith("/")) {
-                totalPath = parentPath + "/" + path;
-            } else {
-                totalPath = parentPath + path;
-            }
-            if ((totalPath.contains("WeiXin") || totalPath.contains("tencent")) && procHead.contains("tencent")) {
-                return true;
-            }
-            String cache = totalPath;
-            totalPath = checkReplaceFile(totalPath, lpparam);
-            if (
-                    totalPath.equals(cache)
-            )
-            {
-                return true;
-            }
-//            else {
-//                LoggerLog(totalPath);
-//                LoggerLog(cache);
-//            }
-            if (useChecker){
-                for (String checker : bannedFileHead) {
-                    if (totalPath.startsWith(checker)) {
-                        boolean tempBreak = false;
-                        for (String checker2:whiteListHead){
-                            if (totalPath.startsWith(checker2)){
-                                tempBreak = true;
-                                break;
-                            }
-                        }
-                        if (tempBreak){
-                            break;
-                        }
-                        if (ConstructorType == FileConstructor_Type_File_String) {
-                            param.args[0] =  new File(((File)param.args[0]).toString() + "/" + procHead);
-                            param.args[1] = ((String)param.args[1]) + "/" + procHead;
-                        } else if (ConstructorType == FileConstructor_Type_String_File) {
-                            param.args[0] = ((String)param.args[0]) + "/" + procHead;
-                            param.args[1] =  new File(((File)param.args[1]).toString() + "/" + procHead);
-                        } else if (ConstructorType == FileConstructor_Type_String_String) {
-                            param.args[0] = ((String)param.args[0]) + "/" + procHead;
-                            param.args[1] = ((String)param.args[1]) + "/" + procHead;
-                        } else {
-                            param.args[0] = ((String)param.args[0]) + "/" + procHead;
-                            param.args[1] = random.nextInt(Integer.MAX_VALUE);
-                        }
-                        mark = false;
+        if (useChecker){
+            for (String checker : bannedFileHead) {
+                boolean tempBreak = false;
+                for (String checker2:whiteListHead){
+                    if (path.startsWith(checker2)){
+                        tempBreak = true;
                         break;
                     }
                 }
-                for (String checker : bannedFileExact) {
-                    if ((totalPath).equals(checker)) {
-                        if (ConstructorType == FileConstructor_Type_File_String) {
-                            param.args[0] =  new File(((File)param.args[0]).toString() + "/" + procHead);
-                            param.args[1] = ((String)param.args[1]) + "/" + procHead;
-                        } else if (ConstructorType == FileConstructor_Type_String_File) {
-                            param.args[0] = ((String)param.args[0]) + "/" + procHead;
-                            param.args[1] =  new File(((File)param.args[1]).toString() + "/" + procHead);
-                        } else if (ConstructorType == FileConstructor_Type_String_String) {
-                            param.args[0] = ((String)param.args[0]) + "/" + procHead;
-                            param.args[1] = ((String)param.args[1]) + "/" + procHead;
-                        } else {
-                            param.args[0] = ((String)param.args[0]) + "/" + procHead;
-                            param.args[1] = random.nextInt(Integer.MAX_VALUE);
-                        }
-                        mark = false;
-                        break;
-                    }
+                if (tempBreak){
+                    break;
+                }
+                if (path.startsWith(checker)) {
+                    mark = false;
+                    break;
+                }
+            }
+            for (String checker : bannedFileExact) {
+                if (path.equals(checker)) {
+                    mark = false;
+                    break;
                 }
             }
         }

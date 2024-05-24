@@ -51,6 +51,7 @@ public class SettingsGUI extends Activity {
         DefaultResult.add(new Pair<>("HookJavaNetClass_HookHttpUrlConnection", true));
         DefaultResult.add(new Pair<>("HookJavaNetClass_HookUrl", true));
         DefaultResult.add(new Pair<>("HookLang_HookLang", true));
+        DefaultResult.add(new Pair<>("HookLang_HookSystem", true));
         DefaultResult.add(new Pair<>("HookLang_HookRuntime", true));
         DefaultResult.add(new Pair<>("HookLang_HookThrowable", true));
         DefaultResult.add(new Pair<>("HookLang_HookObject", true));
@@ -81,6 +82,8 @@ public class SettingsGUI extends Activity {
         DefaultResult.add(new Pair<>("HookContentClass_HookContent", true));
         DefaultResult.add(new Pair<>("HookContentClass_HookContext", true));
         DefaultResult.add(new Pair<>("HookContentClass_HookClipboardManager", true));
+        DefaultResult.add(new Pair<>("HookContentClass_HookIntentFilter", true));
+        DefaultResult.add(new Pair<>("HookContentClass_HookContextWrapper", true));
         DefaultResult.add(new Pair<>("HookContentClass_HookSharedPreferences", true));
         DefaultResult.add(new Pair<>("HookHardwareClass_HookHardware", true));
         DefaultResult.add(new Pair<>("HookHardwareClass_HookSensor", true));
@@ -151,6 +154,10 @@ public class SettingsGUI extends Activity {
         DefaultResult.add(new Pair<>("HookTelephonyClass_HookGSMCellLocation", true));
         DefaultResult.add(new Pair<>("HookTelephonyClass_HookCdmaCellLocation", true));
         DefaultResult.add(new Pair<>("HookTelephonyClass_HookHookExactLocation", true));
+        DefaultResult.add(new Pair<>("HookMediaClass",true));
+        DefaultResult.add(new Pair<>("HookMediaClass_HookMediaDRM",true));
+        DefaultResult.add(new Pair<>("HookView",true));
+        DefaultResult.add(new Pair<>("HookView_HookDisplay",true));
 
 
         return DefaultResult;

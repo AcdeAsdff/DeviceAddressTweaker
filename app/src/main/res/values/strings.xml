@@ -18,6 +18,7 @@
         <item>com.eg.android.AlipayGphone</item>
         <item>com.greenpoint.android.mc10086.activity</item>
         <item>com.android.webview</item>
+<!--        <item>com.android.runtime</item>-->
         <!--        <item>com.flyme.systemuiex</item>-->
     </string-array>
 </resources>

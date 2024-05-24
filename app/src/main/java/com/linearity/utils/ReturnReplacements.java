@@ -67,6 +67,12 @@ public class ReturnReplacements {
             return 1;
         }
     };
+    public static final XC_MethodReplacement returnIntegerRandom = new XC_MethodReplacement() {
+        @Override
+        protected Object replaceHookedMethod(MethodHookParam param) {
+            return random.nextInt();
+        }
+    };
     public static final XC_MethodReplacement returnStringOne = new XC_MethodReplacement() {
         @Override
         protected Object replaceHookedMethod(MethodHookParam param) {
@@ -109,6 +115,12 @@ public class ReturnReplacements {
             return 0.f;
         }
     };
+    public static final XC_MethodReplacement returnFloatRandom = new XC_MethodReplacement() {
+        @Override
+        protected Object replaceHookedMethod(MethodHookParam param) {
+            return random.nextFloat();
+        }
+    };
     public static final XC_MethodReplacement returnDoubleZero = new XC_MethodReplacement() {
         @Override
         protected Object replaceHookedMethod(MethodHookParam param) {
@@ -119,6 +131,12 @@ public class ReturnReplacements {
         @Override
         protected Object replaceHookedMethod(MethodHookParam param) {
             return 0L;
+        }
+    };
+    public static final XC_MethodReplacement returnLongRandom = new XC_MethodReplacement() {
+        @Override
+        protected Object replaceHookedMethod(MethodHookParam param) {
+            return random.nextLong();
         }
     };
     public static final XC_MethodReplacement returnLongOne = new XC_MethodReplacement() {
@@ -231,5 +249,15 @@ public class ReturnReplacements {
             sb.append(str.charAt(number));
         }
         return sb.toString();
+    }
+
+    public static double randomSmallDouble(double max){
+        double result = 0;
+        for (int i=0;i<5;i++){
+            max *= random.nextInt(10)*0.001;
+            result += max;
+        }
+        result *= (random.nextBoolean()?-1:1);
+        return result;
     }
 }

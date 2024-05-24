@@ -1,6 +1,7 @@
 package com.linearity.deviceaddresstweaker.Wechat;
 
 import static com.linearity.utils.HookUtils.findAndHookMethodIfExists;
+import static com.linearity.utils.ReturnReplacements.returnFalse;
 import static com.linearity.utils.ReturnReplacements.returnTrue;
 import static com.linearity.utils.LoggerUtils.LoggerLog;
 
@@ -18,11 +19,16 @@ public class HookWechatClass {
     public static void DoHook(XC_LoadPackage.LoadPackageParam lpparam, String procHead, SharedPreferences sharedPreferences){
         try{
             if (lpparam.processName.split(":")[0].contains("tencent.mm")) {
-                Class<?> dumpClass = XposedHelpers.findClass("com.tencent.mm.pluginsdk.model.app.h0", lpparam.classLoader);
+                Class<?> hookClass = XposedHelpers.findClassIfExists("com.tencent.mm.pluginsdk.model.app.h0", lpparam.classLoader);
 //                LoggerLog(Arrays.toString(dumpClass.getMethods()));
 //                    Class<?> fclass2 = XposedHelpers.findClass("com.tencent.mm.pluginsdk.model.app.g", lpparam.classLoader);
-                XposedBridge.hookAllMethods(dumpClass, "a",returnTrue);
-
+                if (hookClass != null){
+                    XposedBridge.hookAllMethods(hookClass, "a",returnTrue);
+                }
+                hookClass = XposedHelpers.findClassIfExists("com.tencent.xweb.pinus.PinusStandAloneChannel",lpparam.classLoader);
+                if (hookClass != null){
+                    XposedBridge.hookAllMethods(hookClass, "loadNativeLibraryDefault",returnFalse);
+                }
                 if (false) {
                     LoggerLog( "[linearity]HookToastReady");
                     findAndHookMethodIfExists(XposedHelpers.findClass("android.widget.Toast", lpparam.classLoader), "makeText", Context.class, CharSequence.class, int.class, new XC_MethodHook(114514) {

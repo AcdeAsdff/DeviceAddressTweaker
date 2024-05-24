@@ -4,7 +4,9 @@ import static android.app.ActivityManager.RunningAppProcessInfo.IMPORTANCE_CANT_
 import static android.content.res.Configuration.KEYBOARDHIDDEN_YES;
 import static android.content.res.Configuration.KEYBOARD_NOKEYS;
 import static com.linearity.deviceaddresstweaker.DeviceAddressTweaker.EmptyIntent;
+import static com.linearity.utils.HookUtils.disableClass;
 import static com.linearity.utils.HookUtils.findAndHookMethodIfExists;
+import static com.linearity.utils.ReturnReplacements.returnCantUseArrayList;
 import static com.linearity.utils.ReturnReplacements.returnCantUseHashMap;
 import static com.linearity.utils.ReturnReplacements.returnFalse;
 import static com.linearity.utils.ReturnReplacements.returnIntegerMAX;
@@ -568,109 +570,6 @@ public class HookAppClass {
                                         }
                                 );
                             }
-//                            //👇protecting method
-//                            {
-//                                XposedBridge.hookAllMethods(hookClass, "onKeyDown", new XC_MethodReplacement() {
-//                                    @Override
-//                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-//                                        Activity thisObj = (Activity) param.thisObject;
-//                                        int keyCode = (int) param.args[0];
-//                                        KeyEvent event = (KeyEvent) param.args[1];
-//                                        int mDefaultKeyMode = XposedHelpers.getIntField(thisObj,"mDefaultKeyMode");
-//                                        SpannableStringBuilder mDefaultKeySsb = (SpannableStringBuilder) XposedHelpers.getObjectField(thisObj,"mDefaultKeySsb");
-//                                        if (keyCode == KeyEvent.KEYCODE_BACK) {
-//                                            if (thisObj.getApplicationInfo().targetSdkVersion
-//                                                    >= Build.VERSION_CODES.ECLAIR) {
-//                                                event.startTracking();
-//                                            } else {
-//                                                ActivityDefaultOnBackPressed(thisObj,ActivityClientClass,RequestFinishCallbackConstructor,androidxFragmentControllerClass,FragmentControllerClass);
-//                                            }
-//                                            return true;
-//                                        }
-//
-//                                        if (mDefaultKeyMode == Activity.DEFAULT_KEYS_DISABLE) {
-//                                            return false;
-//                                        } else if (mDefaultKeyMode == Activity.DEFAULT_KEYS_SHORTCUT) {
-//                                            Window w = thisObj.getWindow();
-//                                            if (w.hasFeature(Window.FEATURE_OPTIONS_PANEL) &&
-//                                                    w.performPanelShortcut(Window.FEATURE_OPTIONS_PANEL, keyCode, event,
-//                                                            Menu.FLAG_ALWAYS_PERFORM_CLOSE)) {
-//                                                return true;
-//                                            }
-//                                            return false;
-//                                        } else if (keyCode == KeyEvent.KEYCODE_TAB) {
-//                                            // Don't consume TAB here since it's used for navigation. Arrow keys
-//                                            // aren't considered "typing keys" so they already won't get consumed.
-//                                            return false;
-//                                        } else {
-//                                            // Common code for DEFAULT_KEYS_DIALER & DEFAULT_KEYS_SEARCH_*
-//                                            boolean clearSpannable = false;
-//                                            boolean handled;
-//                                            if ((event.getRepeatCount() != 0) || event.isSystem()) {
-//                                                clearSpannable = true;
-//                                                handled = false;
-//                                            } else {
-//                                                handled = TextKeyListener.getInstance().onKeyDown(
-//                                                        null, mDefaultKeySsb, keyCode, event);
-//                                                if (handled && mDefaultKeySsb.length() > 0) {
-//                                                    // something useable has been typed - dispatch it now.
-//
-//                                                    final String str = mDefaultKeySsb.toString();
-//                                                    clearSpannable = true;
-//
-//                                                    switch (mDefaultKeyMode) {
-//                                                        case Activity.DEFAULT_KEYS_DIALER:
-//                                                            Intent intent = new Intent(Intent.ACTION_DIAL,  Uri.parse("tel:" + str));
-//                                                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//                                                            thisObj.startActivity(intent);
-//                                                            break;
-//                                                        case Activity.DEFAULT_KEYS_SEARCH_LOCAL:
-//                                                            thisObj.startSearch(str, false, null, false);
-//                                                            break;
-//                                                        case Activity.DEFAULT_KEYS_SEARCH_GLOBAL:
-//                                                            thisObj.startSearch(str, false, null, true);
-//                                                            break;
-//                                                    }
-//                                                }
-//                                            }
-//                                            if (clearSpannable) {
-//                                                mDefaultKeySsb.clear();
-//                                                mDefaultKeySsb.clearSpans();
-//                                                Selection.setSelection(mDefaultKeySsb,0);
-//                                            }
-//                                            return handled;
-//                                        }
-//                                    }
-//                                });
-//                            }
-//                            {
-//                                XposedBridge.hookAllMethods(hookClass, "onKeyUp", new XC_MethodReplacement() {
-//                                    @Override
-//                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-//                                        Activity thisObj = (Activity) param.thisObject;
-//                                        int keyCode = (int) param.args[0];
-//                                        KeyEvent event = (KeyEvent) param.args[1];
-//                                        if (thisObj.getApplicationInfo().targetSdkVersion
-//                                                >= Build.VERSION_CODES.ECLAIR) {
-//                                            if (keyCode == KeyEvent.KEYCODE_BACK && event.isTracking()
-//                                                    && !event.isCanceled()) {
-//                                                ActivityDefaultOnBackPressed(thisObj,ActivityClientClass,RequestFinishCallbackConstructor,androidxFragmentControllerClass,FragmentControllerClass);
-//                                                return true;
-//                                            }
-//                                        }
-//                                        return false;
-//                                    }
-//                                });
-//                            }
-//                            {
-//                                XposedBridge.hookAllMethods(hookClass, "onBackPressed", new XC_MethodReplacement() {
-//                                    @Override
-//                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-//                                        ActivityDefaultOnBackPressed((Activity) param.thisObject,ActivityClientClass,RequestFinishCallbackConstructor,androidxFragmentControllerClass,FragmentControllerClass);
-//                                        return null;
-//                                    }
-//                                });
-//                            }
                         }
                     }catch (Exception e){
                         LoggerLog(e);
@@ -726,93 +625,45 @@ public class HookAppClass {
                 if (hookClass != null) {
                     try {
 
-//                        android.app.ActivityManager.class getRecentTasks(int,int)
                         {
-                            findAndHookMethodIfExists(hookClass,
-                                    "getRecentTasks",
-                                    int.class, int.class,
-                                    new XC_MethodHook(114514) {
-                                        @Override
-                                        protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                                            //LoggerLog(lpparam.packageName + "调用android.app.ActivityManager.class getRecentTasks(int,int)" + param.getResult());
-                                            param.setResult(new ArrayList<ActivityManager.RecentTaskInfo>());
-                                        }
-                                    }
-                            );
+                            XposedBridge.hookAllMethods(hookClass,"getRecentTasks",returnCantUseArrayList);
+                            XposedBridge.hookAllMethods(hookClass,"getAppTasks",returnCantUseArrayList);
+                            XposedBridge.hookAllMethods(hookClass,"getRunningTasks",returnCantUseArrayList);
+                            XposedBridge.hookAllMethods(hookClass,"getRunningServices",returnCantUseArrayList);
+                            XposedBridge.hookAllMethods(hookClass,"getRunningServiceControlPanel",returnNull);
+                            XposedBridge.hookAllMethods(hookClass,"getProcessesInErrorState",returnNull);
+                            XposedBridge.hookAllMethods(hookClass, "getUidProcessState",returnCantSaveState);
+                            XposedBridge.hookAllMethods(hookClass, "getUidProcessCapabilities",returnIntegerOne);
+                            XposedBridge.hookAllMethods(hookClass, "getPackageImportance",returnCantSaveState);
+                            XposedBridge.hookAllMethods(hookClass, "getUidImportance",returnCantSaveState);
+                            XposedBridge.hookAllMethods(hookClass, "killBackgroundProcesses",returnNull);
+                            XposedBridge.hookAllMethods(hookClass, "killUid",returnNull);
+                            XposedBridge.hookAllMethods(hookClass,"forceStopPackage",returnNull);
+                            XposedBridge.hookAllMethods(hookClass, "getSupportedLocales",returnCantUseArrayList);
+                            XposedBridge.hookAllMethods(hookClass, "isUserAMonkey",returnFalse);
+                            XposedBridge.hookAllMethods(hookClass, "isRunningInTestHarness",returnFalse);
+                            XposedBridge.hookAllMethods(hookClass, "isRunningInUserTestHarness",returnFalse);
+                            XposedBridge.hookAllMethods(hookClass, "getCurrentUser",returnIntegerZero);
+                            XposedBridge.hookAllMethods(hookClass, "getSwitchingFromUserMessage",returnRandomStr20);
+                            XposedBridge.hookAllMethods(hookClass, "getSwitchingToUserMessage",returnRandomStr20);
+                            XposedBridge.hookAllMethods(hookClass, "updateMccMncConfiguration",returnTrue);
+                            XposedBridge.hookAllMethods(hookClass, "isVrModePackageEnabled",returnTrue);
+                            XposedBridge.hookAllMethods(hookClass, "getBugreportWhitelistedPackages",returnCantUseArrayList);
+                            XposedBridge.hookAllMethods(hookClass, "getHistoricalProcessExitReasons",returnCantUseArrayList);
+                            XposedBridge.hookAllMethods(hookClass, "getMemoryInfo",returnNull);
+                            XposedBridge.hookAllMethods(hookClass, "isActivityStartAllowedOnDisplay",returnTrue);
+                            XposedBridge.hookAllMethods(hookClass, "moveTaskToFront",returnNull);
+//                            XposedBridge.hookAllMethods(hookClass, "addAppTask",returnNull);
                         }
-//        android.app.ActivityManager.class getAppTasks()
                         {
-                            findAndHookMethodIfExists(hookClass,
-                                    "getAppTasks",
-                                    new XC_MethodHook(114514) {
-                                        @Override
-                                        protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                                            //LoggerLog(lpparam.packageName + "调用android.app.ActivityManager.class getAppTasks(int,int)" + param.getResult());
-                                            param.setResult(new ArrayList<ActivityManager.AppTask>());
-                                        }
-                                    }
-                            );
-                        }
-//        android.app.ActivityManager.class getRunningTasks(int)
-                        {
-                            findAndHookMethodIfExists(hookClass,
-                                    "getRunningTasks",
-                                    int.class,
-                                    new XC_MethodHook(114514) {
-                                        @Override
-                                        protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                                            //LoggerLog(lpparam.packageName + "调用android.app.ActivityManager.class getRunningTasks(int)" + param.getResult());
-                                            param.setResult(new ArrayList<ActivityManager.RunningTaskInfo>());
-                                        }
-                                    }
-                            );
-                        }
-//        android.app.ActivityManager.class getRunningServices(int)
-                        {
-                            findAndHookMethodIfExists(hookClass,
-                                    "getRunningServices",
-                                    int.class,
-                                    new XC_MethodHook(114514) {
-                                        @Override
-                                        protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                                            //LoggerLog(lpparam.packageName + "调用android.app.ActivityManager.class getRunningServices(int)" + param.getResult());
-                                            param.setResult(new ArrayList<ActivityManager.RunningServiceInfo>());
-                                        }
-                                    }
-                            );
-                        }
-//        android.app.ActivityManager.class getRunningServiceControlPanel(ComponentName)
-                        {
-                            findAndHookMethodIfExists(hookClass,
-                                    "getRunningServiceControlPanel",
-                                    ComponentName.class,returnNull
-                            );
-                        }
-//        android.app.ActivityManager.class getProcessesInErrorState()
-                        {
-                            findAndHookMethodIfExists(hookClass,
-                                    "getProcessesInErrorState",
-                                    new XC_MethodHook(114514) {
-                                        @Override
-                                        protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                                            //LoggerLog(lpparam.packageName + "调用android.app.ActivityManager.class getProcessesInErrorState()" + param.getResult());
-                                            param.setResult(new ArrayList<ActivityManager.ProcessErrorStateInfo>());
-                                        }
-                                    }
-                            );
-                        }
-//        android.app.ActivityManager.class getRunningExternalApplications()
-                        {
-                            findAndHookMethodIfExists(hookClass,
+                            XposedBridge.hookAllMethods(hookClass,
                                     "getRunningExternalApplications",
                                     new XC_MethodHook(114514) {
                                         @Override
                                         protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                                            //LoggerLog(lpparam.packageName + "调用android.app.ActivityManager.class getRunningExternalApplications()" + param.getResult());
                                             List<ApplicationInfo> result = (List<ApplicationInfo>) param.getResult();
                                             List<ApplicationInfo> returnValue = new ArrayList<>();
-                                            //LoggerLog(lpparam.packageName + "调用android.app.ActivityManager.class getRunningAppProcesses()" + param.getResult());
-                                            for (ApplicationInfo i : result) {
+                                             for (ApplicationInfo i : result) {
                                                 if (i != null) {
                                                     if (i.packageName.contains(procHead)) {
                                                         returnValue.add(i);
@@ -820,14 +671,12 @@ public class HookAppClass {
                                                 }
                                             }
                                             param.setResult(returnValue);
-//                                param.setResult(new ArrayList<ApplicationInfo>());
                                         }
                                     }
                             );
                         }
-//        android.app.ActivityManager.class getRunningAppProcesses()
                         {
-                            findAndHookMethodIfExists(hookClass,
+                            XposedBridge.hookAllMethods(hookClass,
                                     "getRunningAppProcesses",
                                     new XC_MethodHook(114514) {
                                         @Override
@@ -850,221 +699,66 @@ public class HookAppClass {
                                                 }
                                             }
                                             param.setResult(tempRunningAppProcessInfoReturnValue);
-//                                LoggerLog(returnValue.toString());
                                         }
                                     }
                             );
                         }
-////        android.app.ActivityManager.class getHistoricalProcessExitReasons()
-//        try {
-//            findAndHookMethodIfExists(
-//                    android.app.ActivityManager.class.getName(),
-//                    lpparam.classLoader,
-//                    "getHistoricalProcessExitReasons",
-//                    new XC_MethodHook(114514) {
-//                        @Override
-//                        protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-//                            //LoggerLog(lpparam.packageName + "调用android.app.ActivityManager.class getHistoricalProcessExitReasons()" + param.getResult());
-//                            param.setResult(null);
-//                        }
-//                    }
-//            );
-//        }catch (Exception e){LoggerLog(e);}
-//        android.app.ActivityManager.class getUidProcessState(int)
                         {
-                            findAndHookMethodIfExists(hookClass,
-                                    "getUidProcessState",
-                                    int.class, returnCantSaveState
-                            );
-                        }
-//        android.app.ActivityManager.class getUidProcessCapabilities(int)
-                        {
-                            findAndHookMethodIfExists(hookClass,
-                                    "getUidProcessCapabilities",
-                                    int.class,returnIntegerOne
-                            );
-                        }
-//        android.app.ActivityManager.class getPackageImportance(String)
-                        {
-                            findAndHookMethodIfExists(hookClass,
-                                    "getPackageImportance",
-                                    String.class,returnCantSaveState
-                            );
-                        }
-//        android.app.ActivityManager.class getUidImportance(int)
-                        {
-                            findAndHookMethodIfExists(hookClass,
-                                    "getUidImportance",
-                                    int.class,returnCantSaveState
-                            );
-                        }
-//        android.app.ActivityManager.class killBackgroundProcesses(String)
-                        {
-                            findAndHookMethodIfExists(hookClass,
-                                    "killBackgroundProcesses",
-                                    String.class,
-                                    new XC_MethodReplacement(114514) {
-                                        @Override
-                                        protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                            //LoggerLog(lpparam.packageName + "调用android.app.ActivityManager.class killBackgroundProcesses(String)" + param.args[0]);
-                                            return null;
-                                        }
-                                    }
-                            );
-                        }
-//        android.app.ActivityManager.class killUid(int,String)
-                        {
-                            findAndHookMethodIfExists(hookClass,
-                                    "killUid",
-                                    int.class,
-                                    String.class,
-                                    new XC_MethodReplacement(114514) {
-                                        @Override
-                                        protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                            //LoggerLog(lpparam.packageName + "调用android.app.ActivityManager.class killUid(int, String)" + param.args[0]);
-                                            return null;
-                                        }
-                                    }
-                            );
-                        }
-//        android.app.ActivityManager.class forceStopPackage(String)
-                        {
-                            findAndHookMethodIfExists(hookClass,
-                                    "forceStopPackage",
-                                    String.class,
-                                    new XC_MethodReplacement(114514) {
-                                        @Override
-                                        protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                            //LoggerLog(lpparam.packageName + "调用android.app.ActivityManager.class forceStopPackage(String)" + param.args[0]);
-                                            return null;
-                                        }
-                                    }
-                            );
-                        }
-//        android.app.ActivityManager.class getSupportedLocales()
-                        {
-                            findAndHookMethodIfExists(hookClass,
-                                    "getSupportedLocales",
-                                    new XC_MethodHook(114514) {
-                                        @Override
-                                        public void afterHookedMethod(MethodHookParam param) throws Throwable {
-                                            //LoggerLog(lpparam.packageName + "调用android.app.ActivityManager.class getSupportedLocales()" + param.args[0]);
-                                            param.setResult(new ArrayList<Locale>());
-                                        }
-                                    }
-                            );
-                        }
-//        android.app.ActivityManager.class getDeviceConfigurationInfo()
-                        {
-                            findAndHookMethodIfExists(hookClass,
+                            XposedBridge.hookAllMethods(hookClass,
                                     "getDeviceConfigurationInfo",
                                     new XC_MethodHook(114514) {
                                         @Override
                                         public void afterHookedMethod(MethodHookParam param) throws Throwable {
                                             ConfigurationInfo result = (ConfigurationInfo) param.getResult();
-                                            //LoggerLog(lpparam.packageName + "调用android.app.ActivityManager.class getDeviceConfigurationInfo()" + result);
                                             result.reqGlEsVersion = Math.max(1, result.reqGlEsVersion - 1);
                                             result.reqKeyboardType = random.nextInt(2) + 1;
                                             result.reqInputFeatures = random.nextInt(1) + 1;
                                             result.reqTouchScreen = random.nextInt(2) + 1;
                                             result.reqNavigation = random.nextInt(4);
-                                            //LoggerLog(lpparam.packageName + " android.app.ActivityManager.class getDeviceConfigurationInfo()->" + result);
                                             param.setResult(result);
                                         }
                                     }
                             );
                         }
-//        android.app.ActivityManager.class isUserAMonkey()
                         {
-                            findAndHookMethodIfExists(hookClass,
-                                    "isUserAMonkey",returnFalse
-                            );
-                        }
-//        android.app.ActivityManager.class isRunningInTestHarness()
-                        {
-                            findAndHookMethodIfExists(hookClass,
-                                    "isRunningInTestHarness",returnFalse
-                            );
-                        }
-//        android.app.ActivityManager.class isRunningInUserTestHarness()
-                        {
-                            findAndHookMethodIfExists(hookClass,
-                                    "isRunningInUserTestHarness",returnFalse
-                            );
-                        }
-//        android.app.ActivityManager.class getCurrentUser()
-                        {
-                            findAndHookMethodIfExists(hookClass,
-                                    "getCurrentUser",returnIntegerZero
-                            );
-                        }
-//        android.app.ActivityManager.class getSwitchingFromUserMessage()
-                        {
-                            findAndHookMethodIfExists(hookClass,
-                                    "getSwitchingFromUserMessage",returnRandomStr20
-                            );
-                        }
-//        android.app.ActivityManager.class getSwitchingToUserMessage()
-                        {
-                            findAndHookMethodIfExists(hookClass,
-                                    "getSwitchingToUserMessage",returnRandomStr20
-                            );
-                        }
-//        android.app.ActivityManager.class updateMccMncConfiguration()
-                        {
-                            findAndHookMethodIfExists(hookClass,
-                                    "updateMccMncConfiguration",
-                                    String.class,
-                                    String.class,
-                                    new XC_MethodReplacement(114514) {
+                            XposedBridge.hookAllMethods(hookClass,
+                                    "dumpPackageState", new XC_MethodHook() {
                                         @Override
-                                        protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                            //LoggerLog(lpparam.packageName + "调用android.app.ActivityManager.class updateMccMncConfiguration()" + param.args[0]);
-                                            return true;
-                                        }
-                                    });
-                        }
-//        android.app.ActivityManager.class isVrModePackageEnabled()
-                        {
-                            findAndHookMethodIfExists(hookClass,
-                                    "isVrModePackageEnabled",
-                                    ComponentName.class,returnTrue
-                            );
-                        }
-//        android.app.ActivityManager.class dumpPackageState()
-                        {
-                            Method staticMethod = XposedHelpers.findMethodExact(android.app.ActivityManager.class, "dumpPackageState",
-                                    FileDescriptor.class,
-                                    String.class);
-                            findAndHookMethodIfExists(hookClass,
-                                    "dumpPackageState",
-                                    FileDescriptor.class,
-                                    String.class,
-                                    new XC_MethodReplacement(114514) {
-                                        @Override
-                                        protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                            //LoggerLog(lpparam.packageName + "调用android.app.ActivityManager.class dumpPackageState()" + param.args[0]);
-                                            if (((String) param.args[1]).contains(lpparam.packageName)) {
-                                                staticMethod.invoke(param.args[0], param.args[1]);
+                                        protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                                            super.beforeHookedMethod(param);
+                                            if (!((String) param.args[1]).contains(lpparam.packageName)) {
+                                                param.setResult(null);
                                             }
-                                            return null;
+                                        }
+                                    }
+                            );
+                            XposedBridge.hookAllMethods(hookClass,
+                                    "dumpPackageStateStatic", new XC_MethodHook() {
+                                        @Override
+                                        protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                                            super.beforeHookedMethod(param);
+                                            if (!((String) param.args[1]).contains(lpparam.packageName)) {
+                                                param.setResult(null);
+                                            }
                                         }
                                     }
                             );
 
                         }
-//        android.app.ActivityManager.class getBugreportWhitelistedPackages()
                         {
-                            findAndHookMethodIfExists(hookClass,
-                                    "getBugreportWhitelistedPackages",
-                                    new XC_MethodHook(114514) {
-                                        @Override
-                                        public void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                                            //LoggerLog(lpparam.packageName + "调用android.app.ActivityManager.class getBugreportWhitelistedPackages()");
-                                            param.setResult(new ArrayList<String>());
-                                        }
+                            hookClass = XposedHelpers.findClassIfExists(ActivityManager.MemoryInfo.class.getName(),lpparam.classLoader);
+                            if (hookClass != null){
+                                XposedBridge.hookAllConstructors(hookClass, new XC_MethodHook() {
+                                    @Override
+                                    protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                                        super.afterHookedMethod(param);
+                                        XposedHelpers.setLongField(param.thisObject,"availMem",10240000L + random.nextInt(Integer.MAX_VALUE));
+                                        XposedHelpers.setLongField(param.thisObject,"totalMem",10240000L + random.nextInt(Integer.MAX_VALUE));
+                                        XposedHelpers.setLongField(param.thisObject,"threshold",10240000L + random.nextInt(Integer.MAX_VALUE));
+                                        XposedHelpers.setBooleanField(param.thisObject,"lowMemory",false);
                                     }
-                            );
+                                });
+                            }
                         }
                     } catch (Exception e) {
                         LoggerLog(e);

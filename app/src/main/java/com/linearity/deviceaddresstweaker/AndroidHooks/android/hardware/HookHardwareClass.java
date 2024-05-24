@@ -1,6 +1,10 @@
 package com.linearity.deviceaddresstweaker.AndroidHooks.android.hardware;
 
+import static com.linearity.utils.HookUtils.disableClass;
+import static com.linearity.utils.HookUtils.disableMethod;
 import static com.linearity.utils.HookUtils.findAndHookMethodIfExists;
+import static com.linearity.utils.ReturnReplacements.random;
+import static com.linearity.utils.ReturnReplacements.returnCantUseArrayList;
 import static com.linearity.utils.ReturnReplacements.returnFalse;
 import static com.linearity.utils.ReturnReplacements.returnIntegerOne;
 import static com.linearity.utils.ReturnReplacements.returnIntegerZero;
@@ -21,6 +25,7 @@ import android.hardware.TriggerEventListener;
 import com.linearity.deviceaddresstweaker.AndroidHooks.android.hardware.input.HookInputDeviceBatteryStateClass;
 import com.linearity.deviceaddresstweaker.AndroidHooks.android.hardware.usb.HookUSBClass;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 
 import de.robv.android.xposed.XC_MethodHook;
@@ -433,168 +438,156 @@ public class HookHardwareClass {
                 } 
             }
             if (HookSensorManager) {
-                hookClass = XposedHelpers.findClassIfExists(android.hardware.SensorManager.class.getName(),lpparam.classLoader);
-                if (hookClass != null) {
-                    try {
-//            android.hardware.SensorManager getSensors()
-                        {
-                            findAndHookMethodIfExists(hookClass,
-                                    "getSensors",returnIntegerZero
-                            );
-                        }
-//            android.hardware.SensorManager getSensorList(int)
-                        {
-                            findAndHookMethodIfExists(hookClass,
-                                    "getSensorList",
-                                    int.class,
-                                    new XC_MethodReplacement(114514) {
-                                        @Override
-                                        protected Object replaceHookedMethod(MethodHookParam param){
-                                            return new ArrayList<Sensor>();
-                                        }
-                                    }
-                            );
-                        }
-//            android.hardware.SensorManager getDynamicSensorList(int)
-                        {
-                            findAndHookMethodIfExists(hookClass,
-                                    "getDynamicSensorList",
-                                    int.class,
-                                    new XC_MethodReplacement(114514) {
-                                        @Override
-                                        protected Object replaceHookedMethod(MethodHookParam param){
-                                            return new ArrayList<Sensor>();
-                                        }
-                                    }
-                            );
-                        }
-//            android.hardware.SensorManager getDefaultSensor(int)
-                        {
-                            XposedBridge.hookAllMethods(hookClass,
-                                    "getDefaultSensor",returnNull
-                            );
-                        }
-//            android.hardware.SensorManager registerListener(SensorListener,int)
-                        {
-                            XposedBridge.hookAllMethods(hookClass,
-                                    "registerListener",returnTrue
-                            );
-                        }
-//            android.hardware.SensorManager unregisterListener(SensorListener,int)
-                        {
-                            XposedBridge.hookAllMethods(hookClass,
-                                    "unregisterListener",returnNull
-                            );
-                        }
-//            android.hardware.SensorManager flush(SensorEventListener)
-                        {
-                            findAndHookMethodIfExists(hookClass,
-                                    "flush",
-                                    SensorEventListener.class,returnTrue
-                            );
-                        }
-//            android.hardware.SensorManager createDirectChannel(MemoryFile)
-                        {
-                            XposedBridge.hookAllMethods(hookClass,
-                                    "createDirectChannel",returnNull
-                            );
-                        }
-//            android.hardware.SensorManager registerDynamicSensorCallback(DynamicSensorCallback)
-                        {
-                            XposedBridge.hookAllMethods(hookClass,
-                                    "registerDynamicSensorCallback",returnNull
-                            );
-                        }
-//            android.hardware.SensorManager unregisterDynamicSensorCallback(DynamicSensorCallback)
-                        {
-                            findAndHookMethodIfExists(hookClass,
-                                    "unregisterDynamicSensorCallback",
-                                    SensorManager.DynamicSensorCallback.class,returnNull
-                            );
-                        }
-//            android.hardware.SensorManager isDynamicSensorDiscoverySupported()
-                        {
-                            findAndHookMethodIfExists(hookClass,
-                                    "isDynamicSensorDiscoverySupported",returnFalse
-                            );
-                        }
-//            android.hardware.SensorManager getRotationMatrix(float[]*4)
-                        {
-                            findAndHookMethodIfExists(hookClass,
-                                    "getRotationMatrix",
-                                    float[].class, float[].class, float[].class, float[].class,returnTrue
-                            );
-                        }
-//            android.hardware.SensorManager getInclination(float[])
-                        {
-                            findAndHookMethodIfExists(hookClass,
-                                    "getInclination",
-                                    float[].class,returnFloatZero
-                            );
-                        }
-//            android.hardware.SensorManager remapCoordinateSystem(float[],int,int,float[])
-                        {
-                            findAndHookMethodIfExists(hookClass,
-                                    "remapCoordinateSystem",
-                                    float[].class, int.class, int.class, float[].class,returnTrue
-                            );
-                        }
-//            android.hardware.SensorManager getOrientation(float[],float[])
-                        {
-                            findAndHookMethodIfExists(hookClass,
-                                    "getOrientation",
-                                    float[].class, float[].class,
-                                    new XC_MethodReplacement(114514) {
-                                        @Override
-                                        protected Object replaceHookedMethod(MethodHookParam param){
-                                            return new float[]{0f, 0f, 0f};
-                                        }
-                                    }
-                            );
-                        }
-//            android.hardware.SensorManager getAltitude(float,float)
-                        {
-                            findAndHookMethodIfExists(hookClass,
-                                    "getAltitude",
-                                    float.class, float.class,returnFloatZero
-                            );
-                        }
-//            android.hardware.SensorManager getAngleChange(float[]*3)
-                        {
-                            findAndHookMethodIfExists(hookClass,
-                                    "getAngleChange",
-                                    float[].class, float[].class, float[].class,returnNull
-                            );
-                        }
-//            android.hardware.SensorManager getRotationMatrixFromVector(float[]*2)
-                        {
-                            findAndHookMethodIfExists(hookClass,
-                                    "getRotationMatrixFromVector",
-                                    float[].class, float[].class,returnNull
-                            );
-                        }
-//            android.hardware.SensorManager getQuaternionFromVector(float[]*2)
-                        {
-                            findAndHookMethodIfExists(hookClass,
-                                    "getQuaternionFromVector",
-                                    float[].class, float[].class,returnNull
-                            );
-                        }
-//            android.hardware.SensorManager requestTriggerSensor(TriggerEventListener,Sensor)
-                        {
-                            findAndHookMethodIfExists(hookClass,
-                                    "requestTriggerSensor",
-                                    TriggerEventListener.class, Sensor.class,returnTrue
-                            );
-                        }
-//            android.hardware.SensorManager cancelTriggerSensor(TriggerEventListener,Sensor)
-                        {
-                            findAndHookMethodIfExists(hookClass,
-                                    "cancelTriggerSensor",
-                                    TriggerEventListener.class, Sensor.class,returnTrue
-                            );
-                        }
-                    }catch (Exception e){LoggerLog(e);}
+                Class[] classes = new Class[]{
+                        XposedHelpers.findClassIfExists(android.hardware.SensorManager.class.getName(),lpparam.classLoader),
+                        XposedHelpers.findClassIfExists("android.hardware.SystemSensorManager",lpparam.classLoader),
+                        XposedHelpers.findClassIfExists("android.hardware.input.InputSensorManager",lpparam.classLoader),
+                        XposedHelpers.findClassIfExists("com.android.systemui.util.sensors.AsyncSensorManager",lpparam.classLoader)
+                };
+                for (Class cls:classes){
+
+                    if (cls != null) {
+                        try {
+                            for (Method m:cls.getDeclaredMethods()){
+                                //                        XposedBridge.hookAllMethods(hookClass, "getSensors",returnIntegerZero);
+//                        XposedBridge.hookAllMethods(hookClass, "getSensorList",returnCantUseArrayList);
+//                        XposedBridge.hookAllMethods(hookClass, "getDynamicSensorList",returnCantUseArrayList);
+//                        XposedBridge.hookAllMethods(hookClass, "getDefaultSensor",returnNull);
+//                        XposedBridge.hookAllMethods(hookClass, "registerListener",returnTrue);
+//                        XposedBridge.hookAllMethods(hookClass, "unregisterListener",returnNull);
+////            android.hardware.SensorManager flush(SensorEventListener)
+//                        {
+//                            XposedBridge.hookAllMethods(hookClass,
+//                                    "flush",
+//                                    SensorEventListener.class,returnTrue
+//                            );
+//                        }
+////            android.hardware.SensorManager createDirectChannel(MemoryFile)
+//                        {
+//                            XposedBridge.hookAllMethods(hookClass,
+//                                    "createDirectChannel",returnNull
+//                            );
+//                        }
+////            android.hardware.SensorManager registerDynamicSensorCallback(DynamicSensorCallback)
+//                        {
+//                            XposedBridge.hookAllMethods(hookClass,
+//                                    "registerDynamicSensorCallback",returnNull
+//                            );
+//                        }
+////            android.hardware.SensorManager unregisterDynamicSensorCallback(DynamicSensorCallback)
+//                        {
+//                            findAndHookMethodIfExists(hookClass,
+//                                    "unregisterDynamicSensorCallback",
+//                                    SensorManager.DynamicSensorCallback.class,returnNull
+//                            );
+//                        }
+////            android.hardware.SensorManager isDynamicSensorDiscoverySupported()
+//                        {
+//                            findAndHookMethodIfExists(hookClass,
+//                                    "isDynamicSensorDiscoverySupported",returnFalse
+//                            );
+//                        }
+////            android.hardware.SensorManager getRotationMatrix(float[]*4)
+//                        {
+//                            findAndHookMethodIfExists(hookClass,
+//                                    "getRotationMatrix",
+//                                    float[].class, float[].class, float[].class, float[].class,returnTrue
+//                            );
+//                        }
+////            android.hardware.SensorManager getInclination(float[])
+//                        {
+//                            findAndHookMethodIfExists(hookClass,
+//                                    "getInclination",
+//                                    float[].class,returnFloatZero
+//                            );
+//                        }
+////            android.hardware.SensorManager remapCoordinateSystem(float[],int,int,float[])
+//                        {
+//                            findAndHookMethodIfExists(hookClass,
+//                                    "remapCoordinateSystem",
+//                                    float[].class, int.class, int.class, float[].class,returnTrue
+//                            );
+//                        }
+////            android.hardware.SensorManager getOrientation(float[],float[])
+                                if (m.getName().equals("getOrientation")){
+                                    XposedBridge.hookMethod(m,
+                                            new XC_MethodReplacement(114514) {
+                                                @Override
+                                                protected Object replaceHookedMethod(MethodHookParam param){
+                                                    float[] result = (float[]) param.args[1];
+                                                    LoggerLog("called method:getOrientation");
+                                                    for (int i=0;i<result.length;i++){
+                                                        result[i]=random.nextFloat();
+                                                    }
+                                                    return result;
+                                                }
+                                            }
+                                    );
+                                }
+                                else if (m.getName().equals("getRotationMatrix")){
+                                    XposedBridge.hookMethod(m,
+                                            new XC_MethodReplacement(114514) {
+                                                @Override
+                                                protected Object replaceHookedMethod(MethodHookParam param){
+                                                    float[] result = (float[]) param.args[0];
+                                                    LoggerLog("called method:getRotationMatrix");
+                                                    for (int i=0;i<result.length;i++){
+                                                        result[i]=random.nextFloat();
+                                                    }
+                                                    return true;
+                                                }
+                                            }
+                                    );
+                                }
+                                else {
+                                    disableMethod(m,cls);
+                                }
+                                ////            android.hardware.SensorManager getAltitude(float,float)
+                                //                        {
+                                //                            findAndHookMethodIfExists(hookClass,
+                                //                                    "getAltitude",
+                                //                                    float.class, float.class,returnFloatZero
+                                //                            );
+                                //                        }
+                                ////            android.hardware.SensorManager getAngleChange(float[]*3)
+                                //                        {
+                                //                            findAndHookMethodIfExists(hookClass,
+                                //                                    "getAngleChange",
+                                //                                    float[].class, float[].class, float[].class,returnNull
+                                //                            );
+                                //                        }
+                                ////            android.hardware.SensorManager getRotationMatrixFromVector(float[]*2)
+                                //                        {
+                                //                            findAndHookMethodIfExists(hookClass,
+                                //                                    "getRotationMatrixFromVector",
+                                //                                    float[].class, float[].class,returnNull
+                                //                            );
+                                //                        }
+                                ////            android.hardware.SensorManager getQuaternionFromVector(float[]*2)
+                                //                        {
+                                //                            findAndHookMethodIfExists(hookClass,
+                                //                                    "getQuaternionFromVector",
+                                //                                    float[].class, float[].class,returnNull
+                                //                            );
+                                //                        }
+                                ////            android.hardware.SensorManager requestTriggerSensor(TriggerEventListener,Sensor)
+                                //                        {
+                                //                            findAndHookMethodIfExists(hookClass,
+                                //                                    "requestTriggerSensor",
+                                //                                    TriggerEventListener.class, Sensor.class,returnTrue
+                                //                            );
+                                //                        }
+                                ////            android.hardware.SensorManager cancelTriggerSensor(TriggerEventListener,Sensor)
+                                //                        {
+                                //                            findAndHookMethodIfExists(hookClass,
+                                //                                    "cancelTriggerSensor",
+                                //                                    TriggerEventListener.class, Sensor.class,returnTrue
+                                //                            );
+                                //                        }
+                            }
+
+                        }catch (Exception e){LoggerLog(e);}
+                    }
                 }
             }
             if (HookInput){

@@ -160,6 +160,8 @@ public class DeviceAddressTweaker implements IXposedHookLoadPackage, IXposedHook
             return;
         }
 
+        System.loadLibrary("deviceaddresstweaker");
+        if (lpparam.processName == null){return;}
         LoggerLog("Load app processName:" + lpparam.processName);
         processHead = lpparam.processName.split(":")[0];
         ProcHead2Context.put(processHead, null);
@@ -195,11 +197,11 @@ public class DeviceAddressTweaker implements IXposedHookLoadPackage, IXposedHook
 
 
     public static void startHookMethods(XC_LoadPackage.LoadPackageParam lpparam, String processHead, SharedPreferences sharedPreferences){
+        if (lpparam.packageName.equals("system")){return;}
 //        LoggerLog(sharedPreferences.getAll());
         //        StrangeHookClass.DoHook(lpparam,processHead,sharedPreferences);
-//        if (!lpparam.processName.split(":")[0].contains("com.jingcai.apps")){return;}
 //java
-        HookJavaNetClass.DoHook(lpparam, sharedPreferences);//Working......
+        HookJavaNetClass.DoHook(lpparam, sharedPreferences);//not finished
         HookLang.DoHook(lpparam,processHead,sharedPreferences);//not finished
         HookIO.DoHook(lpparam,processHead,sharedPreferences);//not finished
 //android
