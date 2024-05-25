@@ -3,11 +3,16 @@ package com.linearity.utils.FakeClass.java.util;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.linearity.utils.FakeClass.FakeReturnClasses.FakeReturnClassMap;
+
 import java.util.ListIterator;
 import java.util.function.Consumer;
 
 public class CantUseListIterator<E> implements ListIterator<E> {
     public static final CantUseListIterator<?> INSTANCE = new CantUseListIterator<>();
+    static {
+        FakeReturnClassMap.registerInstance(ListIterator.class,INSTANCE);
+    }
     public CantUseListIterator(){}
 
     @Override

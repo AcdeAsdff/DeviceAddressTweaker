@@ -5,6 +5,7 @@ import static com.linearity.utils.FakeClass.java.util.EmptyArrays.EMPTY_OBJECT_A
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.linearity.utils.FakeClass.FakeReturnClasses.FakeReturnClassMap;
 import com.linearity.utils.FakeClass.java.util.stream.Stream.CantUseStream;
 
 import java.util.Collection;
@@ -21,7 +22,11 @@ import java.util.function.UnaryOperator;
 import java.util.stream.Stream;
 
 public class CantUseVector<E> extends Vector<E> {
+
     public static final CantUseVector<?> INSTANCE = new CantUseVector<>();
+    static {
+        FakeReturnClassMap.registerInstance(Vector.class,INSTANCE);
+    }
     public CantUseVector(int initialCapacity, int capacityIncrement) {
         super(initialCapacity, capacityIncrement);
     }

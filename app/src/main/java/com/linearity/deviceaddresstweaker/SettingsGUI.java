@@ -94,6 +94,9 @@ public class SettingsGUI extends Activity {
         DefaultResult.add(new Pair<>("HookHardwareClass_input_HookInputDeviceBatteryState", true));
         DefaultResult.add(new Pair<>("HookHardwareClass_usb", true));
         DefaultResult.add(new Pair<>("HookHardwareClass_usb_HookUSBClass", true));
+        DefaultResult.add(new Pair<>("HookHardwareClass_HookBiometrics",true));
+        DefaultResult.add(new Pair<>("HookHardwareClass_HookLights",true));
+        DefaultResult.add(new Pair<>("HookHardwareClass_HookFingerprints",true));
         DefaultResult.add(new Pair<>("HookLocationClass_HookLocation", true));
         DefaultResult.add(new Pair<>("HookMTPClass", true));
         DefaultResult.add(new Pair<>("HookNetClass_HookNet", true));
@@ -145,6 +148,7 @@ public class SettingsGUI extends Activity {
         DefaultResult.add(new Pair<>("HookProviderClass_HookProvider", true));
         DefaultResult.add(new Pair<>("HookProviderClass_HookMediaStore", true));
         DefaultResult.add(new Pair<>("HookProviderClass_HookSettings", true));
+        DefaultResult.add(new Pair<>("HookProviderClass_HookSettings_System", true));
         DefaultResult.add(new Pair<>("HookProviderClass_HookSecure", true));
         DefaultResult.add(new Pair<>("HookTelephonyClass_HookTelephony", true));
         DefaultResult.add(new Pair<>("HookTelephonyClass_HookTelephonyManager", true));

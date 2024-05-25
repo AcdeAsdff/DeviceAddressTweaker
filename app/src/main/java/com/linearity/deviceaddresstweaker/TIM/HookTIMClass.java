@@ -67,13 +67,24 @@ public class HookTIMClass {
         if (HookTIM) {
             try {
 
-                if (!lpparam.processName.equals("com.tencent.tim:peak")){
+                if (!lpparam.processName.equals("com.tencent.tim:peak"))
+                {
                     HookerThread hook1 = new HookerThread(lpparam.classLoader,
                             HookerThread.TIMHookedPackagesPart1,
                             HookerThread.TIMHookedPackagesPart3,
                             HookerThread.TIMHookedPackagesPart4
                     );
                     hook1.run();
+                }
+                {
+                    Class<?> hookClass = XposedHelpers.findClassIfExists("com.tencent.smtt.sdk.TbsLogReport",lpparam.classLoader);
+                    if (hookClass != null){
+                        for (Method m:hookClass.getDeclaredMethods()){
+                            if (!m.getName().equals("getInstance")){
+                                disableMethod(m,hookClass);
+                            }
+                        }
+                    }
                 }
                 //tim or st. else(give it a try)
                 {
@@ -285,7 +296,7 @@ public class HookTIMClass {
                 } catch (Exception e) {
                     LoggerLog(e);
                 }
-                try {
+                {
                     if (XposedHelpers.findMethodExactIfExists(
                             "com.tencent.mobileqq.pluginsdk.PluginProxyActivity",
                             lpparam.classLoader,
@@ -293,16 +304,8 @@ public class HookTIMClass {
                         HookUtils.findAndHookMethodIfExists(
                                 "com.tencent.mobileqq.pluginsdk.PluginProxyActivity",
                                 lpparam.classLoader,
-                                "isAppOnForeground",
-                                new XC_MethodReplacement(114514) {
-                                    @Override
-                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                        return true;
-                                    }
-                                });
+                                "isAppOnForeground",returnTrue);
                     }
-                } catch (Exception e) {
-                    LoggerLog(e);
                 }
                 {
                     Class<?> tencentAppInterface = XposedHelpers.findClassIfExists("com.tencent.common.app.AppInterface", lpparam.classLoader);
@@ -1758,6 +1761,12 @@ public class HookTIMClass {
                                                 ));
                                     }
                                 });
+                    }
+                }
+                {
+                    hookClass = XposedHelpers.findClassIfExists("com.tencent.smtt.sdk.TbsDownloader",lpparam.classLoader);
+                    if (hookClass != null){
+                        XposedBridge.hookAllMethods(hookClass,"a",returnFalse);
                     }
                 }
             } catch (Exception e) {

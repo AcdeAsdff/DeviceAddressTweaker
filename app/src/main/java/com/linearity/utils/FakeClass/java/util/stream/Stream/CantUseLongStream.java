@@ -5,6 +5,7 @@ import static com.linearity.utils.FakeClass.java.util.EmptyArrays.EMPTY_LONG_ARR
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.linearity.utils.FakeClass.FakeReturnClasses.FakeReturnClassMap;
 import com.linearity.utils.FakeClass.java.util.CantUseSpliterator;
 import com.linearity.utils.FakeClass.java.util.CantUseLongSummaryStatistics;
 import com.linearity.utils.FakeClass.java.util.CantUsePrimitiveIterator;
@@ -31,7 +32,9 @@ import java.util.stream.Stream;
 
 public class CantUseLongStream implements LongStream {
     public static final CantUseLongStream INSTANCE = new CantUseLongStream();
-
+    static {
+        FakeReturnClassMap.registerInstance(CantUseLongStream.class,INSTANCE);
+    }
     public CantUseLongStream(){};
     @Override
     public LongStream filter(LongPredicate predicate) {

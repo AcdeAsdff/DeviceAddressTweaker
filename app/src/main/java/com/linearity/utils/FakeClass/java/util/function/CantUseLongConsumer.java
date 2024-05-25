@@ -3,10 +3,16 @@ package com.linearity.utils.FakeClass.java.util.function;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.linearity.utils.FakeClass.FakeReturnClasses.FakeReturnClassMap;
+
+import java.util.function.IntConsumer;
 import java.util.function.LongConsumer;
 
 public class CantUseLongConsumer implements LongConsumer {
     public static final CantUseLongConsumer INSTANCE = new CantUseLongConsumer();
+    static {
+        FakeReturnClassMap.registerInstance(CantUseLongConsumer.class,INSTANCE);
+    }
     @Override
     public void accept(long value) {}
 

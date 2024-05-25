@@ -3,6 +3,7 @@ package com.linearity.utils.FakeClass.java.util;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.linearity.utils.FakeClass.FakeReturnClasses.FakeReturnClassMap;
 import com.linearity.utils.FakeClass.java.util.function.CantUseIntConsumer;
 import com.linearity.utils.FakeClass.java.util.function.CantUseLongConsumer;
 
@@ -12,6 +13,9 @@ import java.util.function.LongConsumer;
 
 public class CantUseLongSummaryStatistics extends LongSummaryStatistics {
     public static final CantUseLongSummaryStatistics INSTANCE = new CantUseLongSummaryStatistics();
+    static {
+        FakeReturnClassMap.registerInstance(CantUseLongSummaryStatistics.class,INSTANCE);
+    }
     @Override
     public IntConsumer andThen(IntConsumer after) {
         return CantUseIntConsumer.INSTANCE;

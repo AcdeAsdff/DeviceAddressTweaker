@@ -1,6 +1,7 @@
 package com.linearity.deviceaddresstweaker.AndroidHooks.android.hardware.input;
 
 import static com.linearity.utils.HookUtils.disableMethod;
+import static com.linearity.utils.HookUtils.disableMethod_random;
 
 import android.content.SharedPreferences;
 
@@ -19,7 +20,7 @@ public class HookInputDeviceBatteryStateClass {
             hookClass = XposedHelpers.findClassIfExists("android.hardware.input.InputDeviceBatteryState",lpparam.classLoader);
             if (hookClass != null){
                 for (Method m:hookClass.getDeclaredMethods()){
-                    disableMethod(m,hookClass);
+                    disableMethod_random(m,hookClass);
                 }
             }
         }

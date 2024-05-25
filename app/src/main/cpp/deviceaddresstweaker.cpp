@@ -165,10 +165,10 @@ void on_library_loaded(const char *name, void *handle) {
     if (name == nullptr){ return;}
     LOGD("%s", name);
     if (std::string(name).find("libc.so") != -1) {
-        LOGD("found target");
-        dlclose(handle);
-        void *target = dlsym(handle, "__simple_CallObjectMethod");
-        hook_func(target, (void *) fake__simple_CallObjectMethod, (void **) backup__simple_CallObjectMethod);
+//        LOGD("found target");
+//        dlclose(handle);
+//        void *target = dlsym(handle, "__simple_CallObjectMethod");
+//        hook_func(target, (void *) fake__simple_CallObjectMethod, (void **) backup__simple_CallObjectMethod);
     }
 }
 

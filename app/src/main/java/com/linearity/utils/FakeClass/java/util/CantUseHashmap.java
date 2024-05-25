@@ -3,6 +3,8 @@ package com.linearity.utils.FakeClass.java.util;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.linearity.utils.FakeClass.FakeReturnClasses.FakeReturnClassMap;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -13,6 +15,9 @@ import java.util.function.Function;
 
 public class CantUseHashmap<K,V> extends HashMap<K,V> {
     public static final CantUseHashmap<?,?> INSTANCE = new CantUseHashmap<>();
+    static {
+        FakeReturnClassMap.registerInstance(CantUseHashmap.class,INSTANCE);
+    }
     public CantUseHashmap(){
         super();
     }

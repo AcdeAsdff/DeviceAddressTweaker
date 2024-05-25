@@ -3,6 +3,8 @@ package com.linearity.utils.FakeClass.java.util.stream.Stream;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.linearity.utils.FakeClass.FakeReturnClasses.FakeReturnClassMap;
+import com.linearity.utils.FakeClass.java.util.CantUseHashmap;
 import com.linearity.utils.FakeClass.java.util.CantUseSpliterator;
 import com.linearity.utils.FakeClass.java.util.CantUseDoubleSummaryStatistics;
 import com.linearity.utils.FakeClass.java.util.CantUsePrimitiveIterator;
@@ -28,6 +30,9 @@ import java.util.stream.Stream;
 
 public class CantUseDoubleStream implements DoubleStream {
     public static final CantUseDoubleStream INSTANCE = new CantUseDoubleStream();
+    static {
+        FakeReturnClassMap.registerInstance(CantUseDoubleStream.class,INSTANCE);
+    }
     public CantUseDoubleStream(){}
     @Override
     public DoubleStream filter(DoublePredicate predicate) {

@@ -11,20 +11,18 @@ import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
-import static com.linearity.utils.FakeProcInfoGenerator.infoMap;
-import static com.linearity.utils.FakeProcInfoGenerator.random;
+import static com.linearity.utils.FakeInfo.FakeProcInfoGenerator.infoMap;
+import static com.linearity.utils.FakeInfo.FakeProcInfoGenerator.random;
 import static com.linearity.utils.ReturnReplacements.returnFalse;
 import static com.linearity.utils.ReturnReplacements.returnLongMAX;
 import static com.linearity.utils.ReturnReplacements.returnNull;
-import static com.linearity.utils.ReturnReplacements.returnRandomStr20;
 import static com.linearity.utils.LoggerUtils.LoggerLog;
 
 import com.linearity.utils.HookUtils;
 import com.linearity.utils.ReturnReplacements;
 
 import java.io.File;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
+import java.math.BigInteger;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -645,7 +643,7 @@ public class HookOsClass {
                         protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                             super.beforeHookedMethod(param);
                             if (infoMap.containsKey((String) param.args[0])){
-                                param.setResult(Long.parseLong(infoMap.get((String) param.args[0])));return;
+                                param.setResult(Long.parseLong(new BigInteger(infoMap.get((String) param.args[0])).mod(BigInteger.valueOf(Long.MAX_VALUE)).toString()));return;
                             }
 //                            param.setResult(0L);
                             if (logSysProperties){
@@ -689,7 +687,7 @@ public class HookOsClass {
                         protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                             super.beforeHookedMethod(param);
                             if (infoMap.containsKey((String) param.args[0])){
-                                param.setResult(Integer.parseInt(infoMap.get((String) param.args[0])));return;
+                                param.setResult(Integer.parseInt(new BigInteger(infoMap.get((String) param.args[0])).mod(BigInteger.valueOf(Integer.MAX_VALUE)).toString()));return;
                             }
 //                            param.setResult(0);
                             if (logSysProperties){

@@ -5,6 +5,7 @@ import static com.linearity.utils.FakeClass.java.util.EmptyArrays.EMPTY_INT_ARRA
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.linearity.utils.FakeClass.FakeReturnClasses.FakeReturnClassMap;
 import com.linearity.utils.FakeClass.java.util.CantUseSpliterator;
 import com.linearity.utils.FakeClass.java.util.CantUseIntSummaryStatistics;
 import com.linearity.utils.FakeClass.java.util.CantUsePrimitiveIterator;
@@ -31,6 +32,9 @@ import java.util.stream.Stream;
 
 public class CantUseIntStream implements IntStream {
     public static final CantUseIntStream INSTANCE = new CantUseIntStream();
+    static {
+        FakeReturnClassMap.registerInstance(CantUseIntStream.class,INSTANCE);
+    }
     public CantUseIntStream(){}
     @Override
     public IntStream filter(IntPredicate predicate) {

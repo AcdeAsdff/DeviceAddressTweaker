@@ -1,5 +1,6 @@
 package com.linearity.deviceaddresstweaker.AndroidHooks.android.provider;
 
+import static com.linearity.utils.FakeInfo.FakeProviderSettings.systemSettingsMap;
 import static com.linearity.utils.HookUtils.findAndHookMethodIfExists;
 
 import android.content.ContentResolver;
@@ -10,6 +11,9 @@ import android.provider.MediaStore;
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XC_MethodReplacement;
 import android.content.SharedPreferences;
+import android.provider.Settings;
+import android.util.ArraySet;
+
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
@@ -27,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public class HookProviderClass {
@@ -34,12 +39,14 @@ public class HookProviderClass {
     public static boolean HookMediaStore = true;
     public static boolean HookSettings = true;
     public static boolean HookSecure = true;
-    
+    public static boolean HookSettings_System =true;
+
     public static void DoHook(XC_LoadPackage.LoadPackageParam lpparam, String procHead, SharedPreferences sharedPreferences){
         Class<?> hookClass;
         HookProvider = sharedPreferences.getBoolean("HookProviderClass_HookProvider", true);
         HookMediaStore = sharedPreferences.getBoolean("HookProviderClass_HookMediaStore", true);
         HookSettings = sharedPreferences.getBoolean("HookProviderClass_HookSettings", true);
+        HookSettings_System = sharedPreferences.getBoolean("HookProviderClass_HookSettings_System", true);
         HookSecure = sharedPreferences.getBoolean("HookProviderClass_HookSecure", true);
         if (HookProvider){
             if (HookSettings){
@@ -56,6 +63,22 @@ public class HookProviderClass {
                         }catch (Exception e){LoggerLog(e);}
                     }
                 }//not finished
+                if (HookSettings_System){
+                    hookClass = XposedHelpers.findClassIfExists(Settings.System.class.getName(),lpparam.classLoader);
+                    if (hookClass != null){
+
+                        XposedBridge.hookAllMethods(hookClass, "getStringForUser", new XC_MethodHook() {
+                            @Override
+                            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                                super.beforeHookedMethod(param);
+                                if (param.args[1]==null){return;}
+                                if (systemSettingsMap.containsKey((String)param.args[1])){
+                                    param.setResult(systemSettingsMap.get((String)param.args[1]));return;
+                                }
+                            }
+                        });
+                    }
+                }
             }
             if (HookMediaStore){
                 hookClass = XposedHelpers.findClassIfExists(

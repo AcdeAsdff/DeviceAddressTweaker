@@ -1,10 +1,6 @@
 package com.linearity.deviceaddresstweaker.JavaHooks.java.lang;
 
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.Arrays;
-import java.util.Objects;
-import java.util.Properties;
 
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XC_MethodReplacement;
@@ -13,15 +9,14 @@ import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
-import static com.linearity.utils.FakeProcInfoGenerator.emptyProcess;
-import static com.linearity.utils.FakeSystemProperties.propertiesMap;
+import static com.linearity.utils.FakeInfo.FakeProcInfoGenerator.emptyProcess;
+import static com.linearity.utils.FakeInfo.FakeSystemProperties.propertiesMap;
 import static com.linearity.utils.HookUtils.findAndHookMethodIfExists;
 import static com.linearity.utils.LoggerUtils.LoggerLog;
 import static com.linearity.utils.LoggerUtils.showObjectFields;
-import static com.linearity.utils.ReturnReplacements.getRandomString;
 
 import com.linearity.deviceaddresstweaker.JavaHooks.java.lang.reflect.HookReflect;
-import com.linearity.utils.FakeProcInfoGenerator;
+import com.linearity.utils.FakeInfo.FakeProcInfoGenerator;
 
 public class HookLang {
     public static boolean HookLang = true;

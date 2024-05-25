@@ -1,15 +1,18 @@
 package com.linearity.utils;
 
 import static com.linearity.deviceaddresstweaker.AndroidHooks.android.net.HookNetClass.byteArray114514;
+import static com.linearity.utils.FakeClass.FakeReturnClasses.FakeReturnClassMap.fakeObjects;
 
 import android.accounts.Account;
 import android.os.Bundle;
 
+import com.linearity.utils.FakeClass.FakeReturnClasses.FakeReturnClassMap;
 import com.linearity.utils.FakeClass.java.util.CantUseArrayList;
 import com.linearity.utils.FakeClass.java.util.CantUseEnumeration;
 import com.linearity.utils.FakeClass.java.util.CantUseHashmap;
 import com.linearity.utils.FakeClass.java.util.CantUseVector;
 
+import java.security.SecureRandom;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
@@ -22,6 +25,13 @@ public class ReturnReplacements {
     public static final XC_MethodReplacement returnNull = new XC_MethodReplacement() {
         @Override
         protected Object replaceHookedMethod(MethodHookParam param) {
+            return null;
+        }
+    };
+    public static final XC_MethodReplacement returnNullAndRegisterReturn = new XC_MethodReplacement() {
+        @Override
+        protected Object replaceHookedMethod(MethodHookParam param) {
+            FakeReturnClassMap.registerInstance(param.thisObject.getClass(),param.thisObject);
             return null;
         }
     };
@@ -121,6 +131,12 @@ public class ReturnReplacements {
             return random.nextFloat();
         }
     };
+    public static final XC_MethodReplacement returnByteRandom = new XC_MethodReplacement() {
+        @Override
+        protected Object replaceHookedMethod(MethodHookParam param) {
+            return (byte)(random.nextInt(256)-128);
+        }
+    };
     public static final XC_MethodReplacement returnDoubleZero = new XC_MethodReplacement() {
         @Override
         protected Object replaceHookedMethod(MethodHookParam param) {
@@ -137,6 +153,24 @@ public class ReturnReplacements {
         @Override
         protected Object replaceHookedMethod(MethodHookParam param) {
             return random.nextLong();
+        }
+    };
+    public static final XC_MethodReplacement returnShortRandom = new XC_MethodReplacement() {
+        @Override
+        protected Object replaceHookedMethod(MethodHookParam param) {
+            return (short)(random.nextInt(65537)-32768);
+        }
+    };
+    public static final XC_MethodReplacement returnCharRandom = new XC_MethodReplacement() {
+        @Override
+        protected Object replaceHookedMethod(MethodHookParam param) {
+            return (char)(random.nextInt(Integer.MAX_VALUE));
+        }
+    };
+    public static final XC_MethodReplacement returnDoubleRandom = new XC_MethodReplacement() {
+        @Override
+        protected Object replaceHookedMethod(MethodHookParam param) {
+            return (random.nextDouble());
         }
     };
     public static final XC_MethodReplacement returnLongOne = new XC_MethodReplacement() {
@@ -211,8 +245,14 @@ public class ReturnReplacements {
             return CantUseEnumeration.INSTANCE;
         }
     };
+    public static final XC_MethodReplacement returnRandomBoolean = new XC_MethodReplacement() {
+        @Override
+        protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+            return random.nextBoolean();
+        }
+    };
 
-    public static final Random random = new Random();
+    public static final SecureRandom random = new SecureRandom();
 
     public static String getRandomString(int length){
 //        int minLength = length/2;

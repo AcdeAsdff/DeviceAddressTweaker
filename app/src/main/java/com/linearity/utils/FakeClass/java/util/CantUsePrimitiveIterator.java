@@ -3,17 +3,23 @@ package com.linearity.utils.FakeClass.java.util;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.linearity.utils.FakeClass.FakeReturnClasses.FakeReturnClassMap;
 import com.linearity.utils.FakeClass.java.util.stream.Stream.CantUseIntStream;
 
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.PrimitiveIterator;
+import java.util.Spliterator;
 import java.util.function.Consumer;
 import java.util.function.DoubleConsumer;
 import java.util.function.IntConsumer;
 import java.util.function.LongConsumer;
 
 public class CantUsePrimitiveIterator<T,E> implements PrimitiveIterator<T,E> {
+    public static final CantUsePrimitiveIterator<?,?> INSTANCE = new CantUsePrimitiveIterator<>();
+    static {
+        FakeReturnClassMap.registerInstance(PrimitiveIterator.class,INSTANCE);
+    }
     @Override
     public void forEachRemaining(Object action) {
 
@@ -71,6 +77,9 @@ public class CantUsePrimitiveIterator<T,E> implements PrimitiveIterator<T,E> {
      */
     public static class PrimitiveIteratorOfInt implements PrimitiveIterator.OfInt {
         public static final PrimitiveIteratorOfInt INSTANCE = new PrimitiveIteratorOfInt();
+        static {
+            FakeReturnClassMap.registerInstance(PrimitiveIteratorOfInt.class,INSTANCE);
+        }
 
 
         @Override
@@ -133,7 +142,9 @@ public class CantUsePrimitiveIterator<T,E> implements PrimitiveIterator<T,E> {
      */
     public static class PrimitiveIteratorOfLong implements PrimitiveIterator.OfLong {
         public static final PrimitiveIteratorOfLong INSTANCE = new PrimitiveIteratorOfLong();
-
+        static {
+            FakeReturnClassMap.registerInstance(PrimitiveIteratorOfLong.class,INSTANCE);
+        }
         @Override
         public long nextLong() {
             return 0;
@@ -193,6 +204,9 @@ public class CantUsePrimitiveIterator<T,E> implements PrimitiveIterator<T,E> {
      */
     public static class PrimitiveIteratorOfDouble implements PrimitiveIterator.OfDouble {
         public static final PrimitiveIteratorOfDouble INSTANCE = new PrimitiveIteratorOfDouble();
+        static {
+            FakeReturnClassMap.registerInstance(PrimitiveIteratorOfDouble.class,INSTANCE);
+        }
         @Override
         public double nextDouble() {
             return 0;

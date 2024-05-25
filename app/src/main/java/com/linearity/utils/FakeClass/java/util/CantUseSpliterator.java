@@ -3,8 +3,12 @@ package com.linearity.utils.FakeClass.java.util;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.linearity.utils.FakeClass.FakeReturnClasses.FakeReturnClassMap;
+import com.linearity.utils.FakeClass.java.util.stream.Stream.CantUseStream;
+
 import java.util.Comparator;
 import java.util.Spliterator;
+import java.util.Vector;
 import java.util.function.Consumer;
 import java.util.function.DoubleConsumer;
 import java.util.function.IntConsumer;
@@ -12,6 +16,9 @@ import java.util.function.LongConsumer;
 
 public class CantUseSpliterator<E> implements Spliterator<E> {
     public static final CantUseSpliterator<?> INSTANCE = new CantUseSpliterator<>();
+    static {
+        FakeReturnClassMap.registerInstance(Spliterator.class,INSTANCE);
+    }
     public CantUseSpliterator(){}
     @Override
     public boolean tryAdvance(Consumer action) {
@@ -286,6 +293,9 @@ public class CantUseSpliterator<E> implements Spliterator<E> {
 
     public static class OfIntClass implements OfInt{
         public static final OfIntClass INSTANCE = new OfIntClass();
+        static {
+            FakeReturnClassMap.registerInstance(CantUseSpliterator.OfInt.class,INSTANCE);
+        }
         public OfIntClass(){}
 
         @Override
@@ -326,6 +336,9 @@ public class CantUseSpliterator<E> implements Spliterator<E> {
     }
     public static class OfLongClass implements OfLong{
         public static final OfLongClass INSTANCE = new OfLongClass();
+        static {
+            FakeReturnClassMap.registerInstance(CantUseSpliterator.OfLongClass.class,INSTANCE);
+        }
         public OfLongClass(){}
 
         @Override
@@ -367,6 +380,9 @@ public class CantUseSpliterator<E> implements Spliterator<E> {
     }
     public static class OfDoubleClass implements OfDouble{
         public static final OfDoubleClass INSTANCE = new OfDoubleClass();
+        static {
+            FakeReturnClassMap.registerInstance(CantUseSpliterator.OfDouble.class,INSTANCE);
+        }
         public OfDoubleClass(){}
 
         @Override

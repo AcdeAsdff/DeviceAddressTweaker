@@ -3,13 +3,18 @@ package com.linearity.utils.FakeClass.java.util;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.linearity.utils.FakeClass.FakeReturnClasses.FakeReturnClassMap;
 import com.linearity.utils.FakeClass.java.util.function.CantUseIntConsumer;
 
 import java.util.IntSummaryStatistics;
+import java.util.ListIterator;
 import java.util.function.IntConsumer;
 
 public class CantUseIntSummaryStatistics extends IntSummaryStatistics {
     public static final CantUseIntSummaryStatistics INSTANCE = new CantUseIntSummaryStatistics();
+    static {
+        FakeReturnClassMap.registerInstance(CantUseIntSummaryStatistics.class,INSTANCE);
+    }
     public CantUseIntSummaryStatistics(){}
 
     @Override

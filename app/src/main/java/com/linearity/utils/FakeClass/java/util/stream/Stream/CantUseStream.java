@@ -5,6 +5,7 @@ import static com.linearity.utils.FakeClass.java.util.EmptyArrays.EMPTY_OBJECT_A
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.linearity.utils.FakeClass.FakeReturnClasses.FakeReturnClassMap;
 import com.linearity.utils.FakeClass.java.util.CantUseListIterator;
 import com.linearity.utils.FakeClass.java.util.CantUseSpliterator;
 
@@ -31,6 +32,9 @@ import java.util.stream.Stream;
 
 public class CantUseStream<E> implements Stream<E> {
     public static final CantUseStream<?> INSTANCE = new CantUseStream<>();
+    static {
+        FakeReturnClassMap.registerInstance(CantUseStream.class,INSTANCE);
+    }
     public CantUseStream(){}
     @Override
     public Stream<E> filter(Predicate<? super E> predicate) {

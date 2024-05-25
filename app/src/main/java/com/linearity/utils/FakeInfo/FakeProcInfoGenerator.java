@@ -1,4 +1,4 @@
-package com.linearity.utils;
+package com.linearity.utils.FakeInfo;
 
 import static com.linearity.utils.ReturnReplacements.getRandomHexUpper;
 import static com.linearity.utils.ReturnReplacements.getRandomHexlower;
@@ -8,13 +8,11 @@ import android.text.format.DateFormat;
 
 import com.linearity.utils.ListenerUtils.ListenerByteArrayOutputStream;
 
-import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.security.SecureRandom;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;

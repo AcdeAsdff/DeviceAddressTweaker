@@ -3,11 +3,16 @@ package com.linearity.utils.FakeClass.java.util;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.linearity.utils.FakeClass.FakeReturnClasses.FakeReturnClassMap;
+
 import java.util.DoubleSummaryStatistics;
 import java.util.function.DoubleConsumer;
 
 public class CantUseDoubleSummaryStatistics extends DoubleSummaryStatistics {
     public static final CantUseDoubleSummaryStatistics INSTANCE = new CantUseDoubleSummaryStatistics();
+    static {
+        FakeReturnClassMap.registerInstance(CantUseDoubleSummaryStatistics.class,INSTANCE);
+    }
     public CantUseDoubleSummaryStatistics() {
     }
 

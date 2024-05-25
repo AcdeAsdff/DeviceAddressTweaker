@@ -3,6 +3,8 @@ package com.linearity.utils.FakeClass.java.util;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.linearity.utils.FakeClass.FakeReturnClasses.FakeReturnClassMap;
+
 import java.util.Comparator;
 import java.util.function.Function;
 import java.util.function.ToDoubleFunction;
@@ -11,6 +13,9 @@ import java.util.function.ToLongFunction;
 
 public class CantUseComparator<E> implements Comparator<E> {
     public static final CantUseComparator<?> INSTANCE = new CantUseComparator<>();
+    static {
+        FakeReturnClassMap.registerInstance(CantUseComparator.class,INSTANCE);
+    }
     public CantUseComparator(){};
 
     @Override

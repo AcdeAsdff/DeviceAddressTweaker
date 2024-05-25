@@ -155,7 +155,7 @@ public class DeviceAddressTweaker implements IXposedHookLoadPackage, IXposedHook
     public XC_InitPackageResources.InitPackageResourcesParam resparam;
 
     //a looooooooooong way 2 go
-    public void handleLoadPackage(XC_LoadPackage.LoadPackageParam lpparam){
+    public void handleLoadPackage(XC_LoadPackage.LoadPackageParam lpparam)throws Exception{
         if (lpparam == null) {
             return;
         }
@@ -196,7 +196,7 @@ public class DeviceAddressTweaker implements IXposedHookLoadPackage, IXposedHook
 
 
 
-    public static void startHookMethods(XC_LoadPackage.LoadPackageParam lpparam, String processHead, SharedPreferences sharedPreferences){
+    public static void startHookMethods(XC_LoadPackage.LoadPackageParam lpparam, String processHead, SharedPreferences sharedPreferences) throws Exception{
         if (lpparam.packageName.equals("system")){return;}
 //        LoggerLog(sharedPreferences.getAll());
         //        StrangeHookClass.DoHook(lpparam,processHead,sharedPreferences);
@@ -254,7 +254,6 @@ public class DeviceAddressTweaker implements IXposedHookLoadPackage, IXposedHook
 
         HookTIMClass.DoHook(lpparam,processHead,sharedPreferences);
 
-//        HookBilibiliClass.DoHook(lpparam,processHead,sharedPreferences);
 
     }
 

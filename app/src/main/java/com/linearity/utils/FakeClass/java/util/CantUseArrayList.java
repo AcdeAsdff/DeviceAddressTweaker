@@ -5,6 +5,7 @@ import static com.linearity.utils.FakeClass.java.util.EmptyArrays.EMPTY_OBJECT_A
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.linearity.utils.FakeClass.FakeReturnClasses.FakeReturnClassMap;
 import com.linearity.utils.FakeClass.java.util.stream.Stream.CantUseStream;
 
 import java.util.ArrayList;
@@ -21,6 +22,9 @@ import java.util.stream.Stream;
 
 public class CantUseArrayList<E>  extends ArrayList<E> {
     public static final CantUseArrayList<?> INSTANCE = new CantUseArrayList<>();
+    static {
+        FakeReturnClassMap.registerInstance(CantUseArrayList.class,INSTANCE);
+    }
     public CantUseArrayList(int initialCapacity) {
     }
 

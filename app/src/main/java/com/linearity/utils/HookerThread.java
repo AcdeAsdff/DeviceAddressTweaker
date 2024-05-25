@@ -4,6 +4,7 @@ import static com.linearity.utils.HookUtils.disableClass;
 import static com.linearity.utils.ReturnReplacements.returnNull;
 import static com.linearity.utils.HookUtils.disableMethod;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
@@ -373,7 +374,7 @@ public class HookerThread{
             "com.tencent.bugly.proguard.y", "com.tencent.bugly.proguard.z", "com.tencent.bugly.a", "com.tencent.bugly.b",
             "com.tencent.feedback.eup.CrashReport",
             "com.tencent.ark.ArkDebugger",
-            "com.tencent.smtt.sdk.TbsLogReport$TbsLogInfo","com.tencent.smtt.sdk.TbsLogReport",
+            "com.tencent.smtt.sdk.TbsLogReport$TbsLogInfo",
             "com.tencent.mobileqq.msf.sdk.y",
             "com.tencent.mobileqq.msf.core.c.k",
             "com.tencent.mobileqq.Pandora.util.BackgroundUtil","eipc.EIPCClient",
@@ -396,7 +397,7 @@ public class HookerThread{
         this.classLoader = classLoader;
     }
 
-    public void run() {
+    public void run() throws Exception {
 //        synchronized (this){
             Class<?> hookClass;
             for (String[] sArr : classesToDisable) {

@@ -5,6 +5,8 @@ import static com.linearity.utils.FakeClass.java.util.EmptyArrays.EMPTY_OBJECT_A
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.linearity.utils.FakeClass.FakeReturnClasses.FakeReturnClassMap;
+
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -14,7 +16,9 @@ import java.util.stream.Stream;
 
 public class CantUseHashSet<E> extends HashSet<E> {
     public static final CantUseHashSet<?> INSTANCE = new CantUseHashSet<>();
-
+    static {
+        FakeReturnClassMap.registerInstance(CantUseHashSet.class,INSTANCE);
+    }
     public CantUseHashSet(){}
 
     @NonNull

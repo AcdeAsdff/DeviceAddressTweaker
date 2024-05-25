@@ -3,10 +3,15 @@ package com.linearity.utils.FakeClass.java.util;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.linearity.utils.FakeClass.FakeReturnClasses.FakeReturnClassMap;
+
 import java.util.Enumeration;
 
 public class CantUseEnumeration<E> implements Enumeration<E> {
     public static final CantUseEnumeration<?> INSTANCE = new CantUseEnumeration<>();
+    static {
+        FakeReturnClassMap.registerInstance(CantUseEnumeration.class,INSTANCE);
+    }
     public CantUseEnumeration() {
     }
 

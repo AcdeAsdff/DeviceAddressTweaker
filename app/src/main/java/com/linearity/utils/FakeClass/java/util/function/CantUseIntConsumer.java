@@ -3,10 +3,16 @@ package com.linearity.utils.FakeClass.java.util.function;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.linearity.utils.FakeClass.FakeReturnClasses.FakeReturnClassMap;
+import com.linearity.utils.FakeClass.java.util.CantUseSpliterator;
+
 import java.util.function.IntConsumer;
 
 public class CantUseIntConsumer implements IntConsumer {
     public static final CantUseIntConsumer INSTANCE = new CantUseIntConsumer();
+    static {
+        FakeReturnClassMap.registerInstance(IntConsumer.class,INSTANCE);
+    }
     @Override
     public void accept(int value) {
 
