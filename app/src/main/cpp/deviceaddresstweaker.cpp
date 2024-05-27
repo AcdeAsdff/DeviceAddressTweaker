@@ -141,20 +141,23 @@ void* fake_dlsym(void* __handle, const char* __symbol){
 //    }
     return backup_dlsym(__handle,__symbol);
 }
+bool showCancelled = false;
 FILE *fake_popen(const char *command, const char *mode) {
     if (command== nullptr){return nullptr;}
     std::string str(command);
-    if ((str.find("stat")==0)||(str.find("cat")==0) ||str.find("ip")==0){
+    if ((str.find("stat")==0)){
+        return backup_popen("stat /",mode);
+    }
+    if ((str.find("cat")==0) ||str.find("ip")==0){
         std::string pathstr("ls /proc/");
         pathstr.append(std::to_string(getpid()));
         const char* replace = pathstr.c_str();
-        LOGD("[popen-cancelled]%s -> %s", command,replace);
+        if (showCancelled){LOGD("[popen-cancelled]%s -> %s", command,replace);}
         return backup_popen(replace,mode);
     }
     LOGD("[popen]%s", command);
     return backup_popen(command, mode);
 }
-bool showCancelled = true;
 FILE *fake_fopen(const char *filename, const char *mode) {
     if (filename== nullptr){return nullptr;}
     std::string str(filename);
@@ -190,8 +193,10 @@ FILE *fake_fopen(const char *filename, const char *mode) {
         if(showCancelled){ LOGD("[fopen-cancelled]%s -> %s",filename, result); }
         return backup_fopen(result, mode);
     }
-    if (str.find("/sys/devices") == 0 || str.find("/product/overlay/")==0 ||
-        std::equal(str.begin(), str.end(),"/dev/urandom"))
+    if (str.find("/sys/devices") == 0
+    || str.find("/product/overlay/")==0
+    || str.find("/system/etc")==0
+    || std::equal(str.begin(), str.end(),"/dev/urandom"))
     {
         std::string pathstr("/proc/");
         pathstr.append(std::to_string(getpid()).append("/cmdline").c_str());
@@ -305,6 +310,8 @@ void on_library_loaded(const char *name, void *handle) {
     void* target = nullptr;
     std::string namestr(name);
     LOGD("[libraryLoad]%s", name);
+    //↓for tv.danmaku.bili(7.13.0)
+    // If you want to use,you may need to change relativeAddr(find them with IDA,just search where it has called pthread_create)
     if (namestr.find("libmsaoaidsec.so") != -1) {
         DWORD targAbs;
 //        targAbs = getAbsoluteAddress(name,0x1A2B8);
