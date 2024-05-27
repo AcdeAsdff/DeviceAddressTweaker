@@ -1,6 +1,7 @@
 package com.linearity.utils;
 
 import static com.linearity.utils.HookUtils.disableClass;
+import static com.linearity.utils.HookUtils.disableClass_random;
 import static com.linearity.utils.ReturnReplacements.returnNull;
 import static com.linearity.utils.HookUtils.disableMethod;
 
@@ -57,9 +58,10 @@ public class HookerThread{
 //            "com.tencent.mobileqq.minigame.publicaccount.MiniGamePublicAccountWebViewJsPlugin",
 //            "com.tencent.mobileqq.minigame.report.MiniGameBeaconReport", "com.tencent.mobileqq.minigame.splash.SplashMiniGameData",
 //            "com.tencent.mobileqq.minigame.splash.SplashMiniGameDownloadManager", "com.tencent.mobileqq.minigame.splash.SplashMiniGameStarter",
-//            "com.tencent.mobileqq.minigame.splash.SplashMiniGameUtil", "com.tencent.mobileqq.minigame.task.GameJsPluginEngineTask",
-//            "com.tencent.mobileqq.minigame.task.GpkgLoadAsyncTask", "com.tencent.mobileqq.minigame.task.InitGameRuntimeTask",
-//            "com.tencent.mobileqq.minigame.task.LaunchEngineUISteps", "com.tencent.mobileqq.minigame.task.TritonEngineInitTask",
+//            "com.tencent.mobileqq.minigame.splash.SplashMiniGameUtil",
+            "com.tencent.mobileqq.minigame.task.GameJsPluginEngineTask",
+            "com.tencent.mobileqq.minigame.task.GpkgLoadAsyncTask", "com.tencent.mobileqq.minigame.task.InitGameRuntimeTask",
+            "com.tencent.mobileqq.minigame.task.LaunchEngineUISteps", "com.tencent.mobileqq.minigame.task.TritonEngineInitTask",
 //            "com.tencent.mobileqq.minigame.ui.GameActivity", "com.tencent.mobileqq.minigame.ui.GameActivity1", "com.tencent.mobileqq.minigame.ui.GameActivity2",
 //            "com.tencent.mobileqq.minigame.ui.GameActivity3", "com.tencent.mobileqq.minigame.ui.GameActivity4", "com.tencent.mobileqq.minigame.ui.GameActivity5",
 //            "com.tencent.mobileqq.minigame.ui.GameActivity6", "com.tencent.mobileqq.minigame.ui.GameBannerAdFragment",
@@ -233,9 +235,10 @@ public class HookerThread{
 //            "com.tencent.qqmini.minigame.plugins.UDPJsPlugin",
 //            "com.tencent.qqmini.minigame.plugins.VideoJsPlugin", "com.tencent.qqmini.minigame.plugins.WebAudioPlugin",
 //            "com.tencent.qqmini.minigame.proxy.MiniGameCmdProxyImpl", "com.tencent.qqmini.minigame.report.MiniGameBeaconReport",
-//            "com.tencent.qqmini.minigame.task.GameRuntimeCreateTask", "com.tencent.qqmini.minigame.task.GpkgLoadAsyncTask",
-//            "com.tencent.qqmini.minigame.task.InitGameRuntimeTask", "com.tencent.qqmini.minigame.task.LaunchEngineUISteps",
-//            "com.tencent.qqmini.minigame.task.TritonEngineInitTask", "com.tencent.qqmini.minigame.ui.GameRuntimeStateObserver",
+            "com.tencent.qqmini.minigame.task.GameRuntimeCreateTask", "com.tencent.qqmini.minigame.task.GpkgLoadAsyncTask",
+            "com.tencent.qqmini.minigame.task.InitGameRuntimeTask", "com.tencent.qqmini.minigame.task.TritonEngineInitTask",
+//            "com.tencent.qqmini.minigame.task.LaunchEngineUISteps",
+//            "com.tencent.qqmini.minigame.ui.GameRuntimeStateObserver",
 //            "com.tencent.qqmini.minigame.ui.GameUIProxy", "com.tencent.qqmini.minigame.ui.LoadingStatus",
 //            "com.tencent.qqmini.minigame.ui.LoadingUI", "com.tencent.qqmini.minigame.ui.MiniGameAdBannerPopup",
 //            "com.tencent.qqmini.minigame.ui.VConsoleDragView", "com.tencent.qqmini.minigame.ui.VConsoleView",
@@ -252,7 +255,8 @@ public class HookerThread{
 //            "com.tencent.qqmini.minigame.BuildConfig", "com.tencent.qqmini.minigame.GameConst",
 //            "com.tencent.qqmini.minigame.GameJsPluginEngine", "com.tencent.qqmini.minigame.GameJsService",
 //            "com.tencent.qqmini.minigame.GamePage", "com.tencent.qqmini.minigame.GameRuntime",
-//            "com.tencent.qqmini.minigame.GameRuntimeLoader", "com.tencent.qqmini.minigame.R",
+            "com.tencent.qqmini.minigame.GameRuntimeLoader",
+//            "com.tencent.qqmini.minigame.R",
             "com.tencent.ad.tangram.analysis.AdABTest",
 //            "com.tencent.ad.tangram.analysis.AdAnalysis",
 //            "com.tencent.ad.tangram.analysis.BuildConfig", "com.tencent.ad.tangram.ark.AdArkAdapter",
@@ -260,8 +264,9 @@ public class HookerThread{
 //            "com.tencent.ad.tangram.canvas.download.AdCanvasDownloadListener",
 //            "com.tencent.ad.tangram.canvas.download.AdCanvasDownloadListenerAdapter",
 //            "com.tencent.ad.tangram.canvas.download.AdDownloadConstants", "com.tencent.ad.tangram.canvas.download.AdDownloader",
-//            "com.tencent.ad.tangram.canvas.download.AdDownloaderAdapter", "com.tencent.ad.tangram.canvas.download.AdDownloadTask",
-//            "com.tencent.ad.tangram.canvas.download.AdDownloadTaskAdapter", "com.tencent.ad.tangram.canvas.download.IAdDownloader",
+//            "com.tencent.ad.tangram.canvas.download.AdDownloaderAdapter",
+            "com.tencent.ad.tangram.canvas.download.AdDownloadTask", "com.tencent.ad.tangram.canvas.download.AdDownloadTaskAdapter",
+//            "com.tencent.ad.tangram.canvas.download.IAdDownloader",
 //            "com.tencent.ad.tangram.canvas.report.AdDMPReportUtil", "com.tencent.ad.tangram.canvas.report.AdRefreshCallback",
 //            "com.tencent.ad.tangram.canvas.report.AdReport", "com.tencent.ad.tangram.canvas.report.AdReportAdapter",
 //            "com.tencent.ad.tangram.canvas.resource.AdResource", "com.tencent.ad.tangram.canvas.resource.AdResourceAdapter",
@@ -338,8 +343,7 @@ public class HookerThread{
             "com.wifisdk.ui.view.c", "com.wifisdk.ui.view.d", "com.wifisdk.ui.view.e", "com.wifisdk.ui.view.WifiCommonView",
             "com.wifisdk.ui.WifiSDKUIApi",
 //            "com.xiaomi.channel.commonutils.android.a",
-
-            "ahsd","aeiv",
+            "aeiv",
     };
 
     public static final String[] TIMHookedPackagesPart4 = new String[]{
@@ -377,12 +381,15 @@ public class HookerThread{
             "com.tencent.smtt.sdk.TbsLogReport$TbsLogInfo",
             "com.tencent.mobileqq.msf.sdk.y",
             "com.tencent.mobileqq.msf.core.c.k",
-            "com.tencent.mobileqq.Pandora.util.BackgroundUtil","eipc.EIPCClient",
-            "cooperation.qzone.CrashGuard","cooperation.qzone.QZoneCrashHandler",
+            "com.tencent.mobileqq.Pandora.util.BackgroundUtil",
+//            "eipc.EIPCClient",
+//            "eipc.EIPCModuleManager",
+            "cooperation.qzone.CrashGuard",
+            "cooperation.qzone.QZoneCrashHandler",
             "com.tencent.mobileqq.gamecenter.message.GameMsgManager",
             "com.tencent.mobileqq.gamecenter.message.GameMsgManager$2",
             "com.tencent.qphone.base.util.QLog",
-            "com.tencent.mobileqq.msf.core.MsfCore.statReporter",
+//            "com.tencent.mobileqq.msf.core.MsfCore",
 //            "com.tencent.biz.qqstory.takevideo2.StoryPublishLauncher",
 //            "com.tencent.biz.qqstory.takevideo2.StoryPublishLauncher$2",
             "ahsd",
@@ -392,21 +399,26 @@ public class HookerThread{
     };
     private final String[][] classesToDisable;
     private final ClassLoader classLoader;
-    public HookerThread(ClassLoader classLoader,String[]... classesToDisable){
+    private final boolean useRandom;
+    public HookerThread(ClassLoader classLoader,boolean useRandom,String[]... classesToDisable){
         this.classesToDisable = classesToDisable;
         this.classLoader = classLoader;
+        this.useRandom = useRandom;
     }
 
-    public void run() throws Exception {
-//        synchronized (this){
-            Class<?> hookClass;
-            for (String[] sArr : classesToDisable) {
-                for (String s:sArr){
-                    hookClass = XposedHelpers.findClassIfExists(s, classLoader);
-                    if (hookClass == null){continue;}
+    public void run() {
+        Class<?> hookClass;
+        for (String[] sArr : classesToDisable) {
+            for (String s:sArr){
+                hookClass = XposedHelpers.findClassIfExists(s, classLoader);
+                if (hookClass == null){continue;}
+                if (useRandom){
+                    disableClass_random(hookClass);
+                }
+                else {
                     disableClass(hookClass);
                 }
             }
-//        }
+        }
     }
 }

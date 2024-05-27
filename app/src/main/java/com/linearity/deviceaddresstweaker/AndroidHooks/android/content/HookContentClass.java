@@ -1,6 +1,7 @@
 package com.linearity.deviceaddresstweaker.AndroidHooks.android.content;
 
 import static com.linearity.utils.HookUtils.disableMethod;
+import static com.linearity.utils.HookUtils.disableMethod_random;
 import static com.linearity.utils.LoggerUtils.LoggerLog;
 import static com.linearity.utils.ReturnReplacements.getRandomString;
 
@@ -87,7 +88,7 @@ public class HookContentClass {
                 if (hookClass != null){
                     for (Method m:hookClass.getDeclaredMethods()){
                         if (m.getName().equals("setPrimaryClip")){continue;}
-                        disableMethod(m, hookClass);//now all of U cannot steal my clipboard
+                        disableMethod_random(m, hookClass);//now all of U cannot steal my clipboard
                     }
                 }
             }

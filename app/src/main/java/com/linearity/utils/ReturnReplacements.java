@@ -2,6 +2,7 @@ package com.linearity.utils;
 
 import static com.linearity.deviceaddresstweaker.AndroidHooks.android.net.HookNetClass.byteArray114514;
 import static com.linearity.utils.FakeClass.FakeReturnClasses.FakeReturnClassMap.fakeObjects;
+import static com.linearity.utils.LoggerUtils.LoggerLog;
 
 import android.accounts.Account;
 import android.os.Bundle;
@@ -12,6 +13,8 @@ import com.linearity.utils.FakeClass.java.util.CantUseEnumeration;
 import com.linearity.utils.FakeClass.java.util.CantUseHashmap;
 import com.linearity.utils.FakeClass.java.util.CantUseVector;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.security.SecureRandom;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -20,6 +23,7 @@ import java.util.Random;
 import java.util.UUID;
 
 import de.robv.android.xposed.XC_MethodReplacement;
+import de.robv.android.xposed.XposedHelpers;
 
 public class ReturnReplacements {
     public static final XC_MethodReplacement returnNull = new XC_MethodReplacement() {
@@ -32,6 +36,13 @@ public class ReturnReplacements {
         @Override
         protected Object replaceHookedMethod(MethodHookParam param) {
             FakeReturnClassMap.registerInstance(param.thisObject.getClass(),param.thisObject);
+            Field[] fields = param.thisObject.getClass().getDeclaredFields();
+            for (Field f:fields){
+                if (Modifier.isStatic(f.getModifiers())){continue;}
+                if (fakeObjects.containsKey(f.getType().getName()) && fakeObjects.get(f.getType().getName()) != null){
+                    XposedHelpers.setObjectField(param.thisObject,f.getName(),fakeObjects.get(f.getType().getName()).second);
+                }
+            }
             return null;
         }
     };
@@ -229,6 +240,86 @@ public class ReturnReplacements {
         @Override
         protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
             return UUID.randomUUID();
+        }
+    };
+    public static final XC_MethodReplacement returnRandomByteArray = new XC_MethodReplacement() {
+        @Override
+        protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+            byte[] result = new byte[random.nextInt()];
+            for (int i=0;i<result.length;i++){
+                result[i] = (byte) (random.nextInt(256)-128);
+            }
+            return result;
+        }
+    };
+    public static final XC_MethodReplacement returnRandomIntegerArray = new XC_MethodReplacement() {
+        @Override
+        protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+            int[] result = new int[random.nextInt()];
+            for (int i=0;i<result.length;i++){
+                result[i] = random.nextInt(Integer.MAX_VALUE);
+            }
+            return result;
+        }
+    };
+    public static final XC_MethodReplacement returnRandomLongArray = new XC_MethodReplacement() {
+        @Override
+        protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+            long[] result = new long[random.nextInt()];
+            for (int i=0;i<result.length;i++){
+                result[i] = random.nextLong();
+            }
+            return result;
+        }
+    };
+    public static final XC_MethodReplacement returnRandomShortArray = new XC_MethodReplacement() {
+        @Override
+        protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+            short[] result = new short[random.nextInt()];
+            for (int i=0;i<result.length;i++){
+                result[i] = (short)(random.nextInt(65536)-32768);
+            }
+            return result;
+        }
+    };
+    public static final XC_MethodReplacement returnRandomCharArray = new XC_MethodReplacement() {
+        @Override
+        protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+            char[] result = new char[random.nextInt()];
+            for (int i=0;i<result.length;i++){
+                result[i] = (char)(random.nextInt(Integer.MAX_VALUE));
+            }
+            return result;
+        }
+    };
+    public static final XC_MethodReplacement returnRandomFloatArray = new XC_MethodReplacement() {
+        @Override
+        protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+            float[] result = new float[random.nextInt()];
+            for (int i=0;i<result.length;i++){
+                result[i] = random.nextFloat();
+            }
+            return result;
+        }
+    };
+    public static final XC_MethodReplacement returnRandomDoubleArray = new XC_MethodReplacement() {
+        @Override
+        protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+            double[] result = new double[random.nextInt()];
+            for (int i=0;i<result.length;i++){
+                result[i] = random.nextDouble();
+            }
+            return result;
+        }
+    };
+    public static final XC_MethodReplacement returnRandomBooleanArray = new XC_MethodReplacement() {
+        @Override
+        protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+            boolean[] result = new boolean[random.nextInt()];
+            for (int i=0;i<result.length;i++){
+                result[i] = random.nextBoolean();
+            }
+            return result;
         }
     };
 

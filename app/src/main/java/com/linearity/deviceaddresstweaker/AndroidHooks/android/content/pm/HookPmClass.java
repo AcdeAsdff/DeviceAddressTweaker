@@ -12,6 +12,8 @@ import de.robv.android.xposed.XC_MethodReplacement;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
+
+import static com.linearity.utils.FakeInfo.FakeProcInfoGenerator.random;
 import static com.linearity.utils.LoggerUtils.LoggerLog;
 import static com.linearity.utils.ReturnReplacements.getRandomString;
 import static com.linearity.utils.ReturnReplacements.returnByteArr114514;
@@ -76,7 +78,9 @@ public class HookPmClass {
                                 super.afterHookedMethod(param);
                                 List<ApplicationInfo> result = new ArrayList<>();
                                 for (ApplicationInfo applicationInfo:(List<ApplicationInfo>)param.getResult()){
-                                    if (applicationInfo.packageName.contains("tencent") || applicationInfo.packageName.contains("alipay") || applicationInfo.packageName.equals(lpparam.packageName)){
+                                    if (applicationInfo.packageName.contains("tencent") || applicationInfo.packageName.contains("alipay")){
+//                                        result.add(confuseApplicationInfo(applicationInfo));
+                                    }else if(applicationInfo.packageName.equals(lpparam.packageName)){
                                         result.add(applicationInfo);
                                     }
                                 }
@@ -119,6 +123,16 @@ public class HookPmClass {
                         XposedBridge.hookAllMethods(hookClass, "setInstantAppCookie", returnTrue);//not finished!
 
                     }
+//                    hookClass = XposedHelpers.findClassIfExists("com.android.server.pm.PackageManagerService",lpparam.classLoader);
+//                    if (hookClass != null){
+//                        XposedBridge.hookAllMethods(hookClass, "addForInitLI", new XC_MethodHook() {
+//                            @Override
+//                            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+//                                super.beforeHookedMethod(param);
+//                                LoggerLog(new Exception(param.args[0].toString()));
+//                            }
+//                        });
+//                    }
                 }catch (Exception e){
                     LoggerLog(e);
                 }
@@ -128,7 +142,7 @@ public class HookPmClass {
     }
 
     public static ApplicationInfo confuseApplicationInfo(ApplicationInfo toConfuse){
-        XposedHelpers.setObjectField(toConfuse,"targetActivity",null);
+//        XposedHelpers.setObjectField(toConfuse,"targetActivity",null);
         XposedHelpers.setObjectField(toConfuse,"processName",getRandomString(20));
         XposedHelpers.setObjectField(toConfuse,"permission",getRandomString(20));
         XposedHelpers.setObjectField(toConfuse,"className",getRandomString(20));
@@ -146,49 +160,49 @@ public class HookPmClass {
         XposedHelpers.setObjectField(toConfuse,"maxAspectRatio",Float.MAX_VALUE);
         XposedHelpers.setObjectField(toConfuse,"minAspectRatio",0.f);
         XposedHelpers.setObjectField(toConfuse,"volumeUuid", UUID.randomUUID().toString());
-        XposedHelpers.setObjectField(toConfuse,"storageUuid",UUID.randomUUID().toString());
+        XposedHelpers.setObjectField(toConfuse,"storageUuid",UUID.randomUUID());
         XposedHelpers.setObjectField(toConfuse,"scanSourceDir",getRandomString(50));
         XposedHelpers.setObjectField(toConfuse,"scanPublicSourceDir",getRandomString(50));
-        XposedHelpers.setObjectField(toConfuse,"splitNames",new String[]{getRandomString(10),getRandomString(10)});
-        XposedHelpers.setObjectField(toConfuse,"splitSourceDirs",new String[]{getRandomString(10),getRandomString(10)});
-        XposedHelpers.setObjectField(toConfuse,"splitPublicSourceDirs",new String[]{getRandomString(10),getRandomString(10)});
+        XposedHelpers.setObjectField(toConfuse,"splitNames",new String[]{getRandomString(random.nextInt(10)+5),getRandomString(random.nextInt(10)+5)});
+        XposedHelpers.setObjectField(toConfuse,"splitSourceDirs",new String[]{getRandomString(random.nextInt(10)+5),getRandomString(random.nextInt(10)+5)});
+        XposedHelpers.setObjectField(toConfuse,"splitPublicSourceDirs",new String[]{getRandomString(random.nextInt(10)+5),getRandomString(random.nextInt(10)+5)});
         XposedHelpers.setObjectField(toConfuse,"splitDependencies",new SparseArray<int[]>(0));
-        XposedHelpers.setObjectField(toConfuse,"resourceDirs",new String[]{getRandomString(10),getRandomString(10)});
-        XposedHelpers.setObjectField(toConfuse,"overlayPaths",new String[]{getRandomString(10),getRandomString(10)});
-        XposedHelpers.setObjectField(toConfuse,"seInfo",getRandomString(10));
-        XposedHelpers.setObjectField(toConfuse,"seInfoUser",getRandomString(10));
-        XposedHelpers.setObjectField(toConfuse,"sharedLibraryFiles",new String[]{getRandomString(10),getRandomString(10)});
+        XposedHelpers.setObjectField(toConfuse,"resourceDirs",new String[]{getRandomString(random.nextInt(10)+5),getRandomString(random.nextInt(10)+5)});
+        XposedHelpers.setObjectField(toConfuse,"overlayPaths",new String[]{getRandomString(random.nextInt(10)+5),getRandomString(random.nextInt(10)+5)});
+        XposedHelpers.setObjectField(toConfuse,"seInfo",getRandomString(random.nextInt(10)+5));
+        XposedHelpers.setObjectField(toConfuse,"seInfoUser",getRandomString(random.nextInt(10)+5));
+        XposedHelpers.setObjectField(toConfuse,"sharedLibraryFiles",new String[]{getRandomString(random.nextInt(10)+5),getRandomString(random.nextInt(10)+5)});
         XposedHelpers.setObjectField(toConfuse,"sharedLibraryInfos", CantUseArrayList.INSTANCE);
-        XposedHelpers.setObjectField(toConfuse,"dataDir", getRandomString(10));
-        XposedHelpers.setObjectField(toConfuse,"deviceProtectedDataDir", getRandomString(10));
-        XposedHelpers.setObjectField(toConfuse,"credentialProtectedDataDir", getRandomString(10));
-        XposedHelpers.setObjectField(toConfuse,"nativeLibraryDir", getRandomString(10));
-        XposedHelpers.setObjectField(toConfuse,"secondaryNativeLibraryDir", getRandomString(10));
-        XposedHelpers.setObjectField(toConfuse,"nativeLibraryRootDir", getRandomString(10));
-        XposedHelpers.setObjectField(toConfuse,"secondaryNativeLibraryDir", getRandomString(10));
+        XposedHelpers.setObjectField(toConfuse,"dataDir", getRandomString(random.nextInt(10)+5));
+        XposedHelpers.setObjectField(toConfuse,"deviceProtectedDataDir", getRandomString(random.nextInt(10)+5));
+        XposedHelpers.setObjectField(toConfuse,"credentialProtectedDataDir", getRandomString(random.nextInt(10)+5));
+        XposedHelpers.setObjectField(toConfuse,"nativeLibraryDir", getRandomString(random.nextInt(10)+5));
+        XposedHelpers.setObjectField(toConfuse,"secondaryNativeLibraryDir", getRandomString(random.nextInt(10)+5));
+        XposedHelpers.setObjectField(toConfuse,"nativeLibraryRootDir", getRandomString(random.nextInt(10)+5));
+        XposedHelpers.setObjectField(toConfuse,"secondaryNativeLibraryDir", getRandomString(random.nextInt(10)+5));
         XposedHelpers.setObjectField(toConfuse,"nativeLibraryRootRequiresIsa", false);
-        XposedHelpers.setObjectField(toConfuse,"primaryCpuAbi", getRandomString(10));
-        XposedHelpers.setObjectField(toConfuse,"secondaryCpuAbi", getRandomString(10));
+        XposedHelpers.setObjectField(toConfuse,"primaryCpuAbi", getRandomString(random.nextInt(10)+5));
+        XposedHelpers.setObjectField(toConfuse,"secondaryCpuAbi", getRandomString(random.nextInt(10)+5));
         XposedHelpers.setObjectField(toConfuse,"uid", 0);
         XposedHelpers.setObjectField(toConfuse,"minSdkVersion", 0);
         XposedHelpers.setObjectField(toConfuse,"targetSdkVersion", 28);
         XposedHelpers.setObjectField(toConfuse,"longVersionCode", 114514L);
         XposedHelpers.setObjectField(toConfuse,"versionCode", 114514);
         XposedHelpers.setObjectField(toConfuse,"compileSdkVersion", 0);
-        XposedHelpers.setObjectField(toConfuse,"compileSdkVersionCodename", getRandomString(10));
+        XposedHelpers.setObjectField(toConfuse,"compileSdkVersionCodename", getRandomString(random.nextInt(10)+5));
         XposedHelpers.setObjectField(toConfuse,"enabled", true);
         XposedHelpers.setObjectField(toConfuse,"enabledSetting", 0);
         XposedHelpers.setObjectField(toConfuse,"installLocation", 0);
         XposedHelpers.setObjectField(toConfuse,"networkSecurityConfigRes", 0);
         XposedHelpers.setObjectField(toConfuse,"targetSandboxVersion", 0);
-        XposedHelpers.setObjectField(toConfuse,"appComponentFactory", getRandomString(10));
+        XposedHelpers.setObjectField(toConfuse,"appComponentFactory", getRandomString(random.nextInt(10)+5));
         XposedHelpers.setObjectField(toConfuse,"iconRes", 0);
         XposedHelpers.setObjectField(toConfuse,"roundIconRes", 0);
         XposedHelpers.setObjectField(toConfuse,"category", 0);
-        XposedHelpers.setObjectField(toConfuse,"classLoaderName", getRandomString(10));
-        XposedHelpers.setObjectField(toConfuse,"splitClassLoaderNames", new String[]{getRandomString(10),getRandomString(10)});
+        XposedHelpers.setObjectField(toConfuse,"classLoaderName", getRandomString(random.nextInt(10)+5));
+        XposedHelpers.setObjectField(toConfuse,"splitClassLoaderNames", new String[]{getRandomString(random.nextInt(10)+5),getRandomString(random.nextInt(10)+5)});
         XposedHelpers.setObjectField(toConfuse,"hiddenUntilInstalled", false);
-        XposedHelpers.setObjectField(toConfuse,"zygotePreloadName", getRandomString(10));
+        XposedHelpers.setObjectField(toConfuse,"zygotePreloadName", getRandomString(random.nextInt(10)+5));
         XposedHelpers.setObjectField(toConfuse,"gwpAsanMode", 0);
         XposedHelpers.setObjectField(toConfuse,"mHiddenApiPolicy", 0);
 

@@ -1,6 +1,8 @@
 package com.linearity.deviceaddresstweaker.AndroidHooks.android.net.wifi;
 
 import static com.linearity.deviceaddresstweaker.DeviceAddressTweaker.fakeWifiInfo;
+import static com.linearity.utils.HookUtils.disableClass;
+import static com.linearity.utils.HookUtils.disableClass_random;
 import static com.linearity.utils.HookUtils.findAndHookMethodIfExists;
 import static com.linearity.utils.ReturnReplacements.random;
 import static com.linearity.utils.ReturnReplacements.returnFalse;
@@ -300,69 +302,24 @@ public class HookWifiClass {
                     }
                     hookClass = XposedHelpers.findClassIfExists(WifiManager.AddNetworkResult.class.getName(),lpparam.classLoader);
                     if (hookClass != null){
-                        for (Method i : hookClass.getDeclaredMethods()) {
-                            if (int.class.equals(i.getReturnType())) {
-                                if (i.getName().equals("getWifiState")) {
-                                    XposedBridge.hookMethod(i, new XC_MethodReplacement() {
-                                        @Override
-                                        protected Object replaceHookedMethod(MethodHookParam param){
-                                            return WifiManager.WIFI_STATE_ENABLED;
-                                        }
-                                    });
-                                    continue;
-                                }
-                                XposedBridge.hookMethod(i, returnIntegerMAX);
-                            }
-                            else if (void.class.equals(i.getReturnType())) {
-                                XposedBridge.hookMethod(i, returnNull);
-                            }
-                        }
+                        disableClass_random(hookClass);
                     }
                     hookClass = XposedHelpers.findClassIfExists(WifiManager.LocalOnlyHotspotCallback.class.getName(),lpparam.classLoader);
                     if (hookClass != null){
-                        for (Method i: hookClass.getDeclaredMethods()){
-                            if (void.class.equals(i.getReturnType())){
-                                XposedBridge.hookMethod(i, returnNull);
-                            }
-                        }
+                        disableClass_random(hookClass);
                     }
                     hookClass = XposedHelpers.findClassIfExists(WifiManager.LocalOnlyHotspotReservation.class.getName(),lpparam.classLoader);
                     if (hookClass != null){
-                        for (Method i: hookClass.getDeclaredMethods()){
-                            if (void.class.equals(i.getReturnType())){
-                                XposedBridge.hookMethod(i, returnNull);
-                            }
-                        }
+                        disableClass_random(hookClass);
                     }
                     if (HookWifiLocks){
                         hookClass = XposedHelpers.findClassIfExists(WifiManager.MulticastLock.class.getName(),lpparam.classLoader);
                         if (hookClass != null){
-                            for (Method i : hookClass.getDeclaredMethods()) {
-                                if (void.class.equals(i.getReturnType())) {
-                                    XposedBridge.hookMethod(i, returnNull);
-                                    continue;
-                                }
-                                if (boolean.class.equals(i.getReturnType())) {
-                                    XposedBridge.hookMethod(i, returnTrue);
-                                }
-                                else if (String.class.equals(i.getReturnType())) {
-                                    XposedBridge.hookMethod(i, returnRandomStr20);
-                                }
-                            }
+                            disableClass_random(hookClass);
                         }
                         hookClass = XposedHelpers.findClassIfExists(WifiManager.WifiLock.class.getName(),lpparam.classLoader);
                         if (hookClass != null){
-                            for (Method i : hookClass.getDeclaredMethods()) {
-                                if (void.class.equals(i.getReturnType())) {
-                                    XposedBridge.hookMethod(i, returnNull);
-                                }
-                                else if (boolean.class.equals(i.getReturnType())) {
-                                    XposedBridge.hookMethod(i, returnTrue);
-                                }
-                                if (String.class.equals(i.getReturnType())) {
-                                    XposedBridge.hookMethod(i, returnRandomStr20);
-                                }
-                            }
+                            disableClass_random(hookClass);
                         }
                     }
                 }catch (Exception e){

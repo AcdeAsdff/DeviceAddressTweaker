@@ -1,5 +1,6 @@
 package com.linearity.utils.ListenerUtils;
 
+import static com.linearity.utils.FakeClass.java.util.EmptyArrays.EMPTY_BYTE_ARRAY;
 import static com.linearity.utils.LoggerUtils.LoggerLog;
 
 import androidx.annotation.NonNull;
@@ -57,7 +58,7 @@ public class ListenerByteArrayOutputStream extends ByteArrayOutputStream {
         if (useLogger){
             LoggerLog("[linearity-ListenerByteArrayOutputStream]", "called toByteArray");
         }
-        return new byte[0];
+        return EMPTY_BYTE_ARRAY;
     }
 
     @Override

@@ -63,7 +63,7 @@ public class HookTelephonyClass {
     public static boolean HookGSM = false;
     public static boolean HookSmsManager = false;
     public static boolean HookSmsMessage = false;
-    public static String[] randomStrArray = new String[]{getRandomString(10),getRandomString(10),getRandomString(10),getRandomString(10),getRandomString(10),getRandomString(10),getRandomString(10),getRandomString(10),getRandomString(10)};
+    public static String[] randomStrArray = new String[]{getRandomString(random.nextInt(10)+5),getRandomString(random.nextInt(10)+5),getRandomString(random.nextInt(10)+5),getRandomString(random.nextInt(10)+5),getRandomString(random.nextInt(10)+5),getRandomString(random.nextInt(10)+5),getRandomString(random.nextInt(10)+5),getRandomString(random.nextInt(10)+5),getRandomString(random.nextInt(10)+5)};
 
     public static Map<Integer, List<EmergencyNumber>> emptyEmergencyNumberList = new HashMap();
     public static void DoHook(XC_LoadPackage.LoadPackageParam lpparam, String procHead, SharedPreferences sharedPreferences){
@@ -402,7 +402,7 @@ public class HookTelephonyClass {
                                         new XC_MethodReplacement() {
                                             @Override
                                             protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                                return getRandomString(10);
+                                                return getRandomString(random.nextInt(10)+5);
                                             }
                                         }
                                 );
@@ -414,7 +414,7 @@ public class HookTelephonyClass {
                                         new XC_MethodReplacement() {
                                             @Override
                                             protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                                return getRandomString(10);
+                                                return getRandomString(random.nextInt(10)+5);
                                             }
                                         }
                                 );
@@ -426,7 +426,7 @@ public class HookTelephonyClass {
                                         new XC_MethodReplacement() {
                                             @Override
                                             protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                                return getRandomString(10);
+                                                return getRandomString(random.nextInt(10)+5);
                                             }
                                         }
                                 );
@@ -438,7 +438,7 @@ public class HookTelephonyClass {
                                         new XC_MethodReplacement() {
                                             @Override
                                             protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                                return getRandomString(10);
+                                                return getRandomString(random.nextInt(10)+5);
                                             }
                                         }
                                 );
@@ -462,7 +462,7 @@ public class HookTelephonyClass {
                                         new XC_MethodReplacement() {
                                             @Override
                                             protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                                return getRandomString(10);
+                                                return getRandomString(random.nextInt(10)+5);
                                             }
                                         }
                                 );
@@ -474,7 +474,7 @@ public class HookTelephonyClass {
                                         new XC_MethodReplacement() {
                                             @Override
                                             protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                                return getRandomString(10);
+                                                return getRandomString(random.nextInt(10)+5);
                                             }
                                         }
                                 );
@@ -510,7 +510,7 @@ public class HookTelephonyClass {
                                         new XC_MethodReplacement() {
                                             @Override
                                             protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                                return getRandomString(10);
+                                                return getRandomString(random.nextInt(10)+5);
                                             }
                                         }
                                 );
@@ -522,7 +522,7 @@ public class HookTelephonyClass {
                                         new XC_MethodReplacement() {
                                             @Override
                                             protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                                return getRandomString(10);
+                                                return getRandomString(random.nextInt(10)+5);
                                             }
                                         }
                                 );

@@ -4,10 +4,13 @@ import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 import static android.telephony.TelephonyManager.NETWORK_TYPE_LTE;
 import static com.linearity.deviceaddresstweaker.AndroidHooks.android.net.HookNetClass.byteArray114514;
 import static com.linearity.deviceaddresstweaker.DeviceAddressTweaker.*;
+import static com.linearity.utils.FakeClass.java.util.EmptyArrays.EMPTY_BYTE_ARRAY;
 import static com.linearity.utils.FakeClass.java.util.EmptyArrays.EMPTY_INT_ARRAY;
+import static com.linearity.utils.FakeInfo.FakeProcInfoGenerator.random;
 import static com.linearity.utils.HookUtils.disableClass;
 import static com.linearity.utils.HookUtils.disableMethod;
 import static com.linearity.utils.LoggerUtils.LoggerLog;
+import static com.linearity.utils.LoggerUtils.showStackTraceBefore;
 import static com.linearity.utils.ReturnReplacements.getRandomString;
 import static com.linearity.utils.LoggerUtils.showObjectFields;
 import static com.linearity.utils.ReturnReplacements.returnFalse;
@@ -35,6 +38,8 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
@@ -49,10 +54,14 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.linearity.deviceaddresstweaker.DeviceAddressTweaker;
+import com.linearity.deviceaddresstweaker.TIM.TIMUtils.QQConcurrentHashMap;
 import com.linearity.utils.HookUtils;
 import com.linearity.utils.HookerThread;
 import com.linearity.deviceaddresstweaker.R;
+import com.linearity.utils.ListenerUtils.ListenerHashMap;
 import com.linearity.utils.ReturnReplacements;
+
+import org.json.JSONObject;
 
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
@@ -62,28 +71,33 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage;
 public class HookTIMClass {
     public static boolean HookTIM = true;
 
+    public static final String[] blockMsgHead = new String[]{
+            "谨防兼职刷单、游戏交易、投资荐股、色情招嫖、仿冒公检法及客服人员的网络骗局，如有资金往来请谨慎操作"
+    };
     public static void DoHook(XC_LoadPackage.LoadPackageParam lpparam, String procHead, SharedPreferences sharedPreferences) {
 
         if (HookTIM) {
             try {
 
-                if (!lpparam.processName.equals("com.tencent.tim:peak"))
+//                if (!lpparam.processName.equals("com.tencent.tim:peak"))
                 {
                     HookerThread hook1 = new HookerThread(lpparam.classLoader,
+                            true,
                             HookerThread.TIMHookedPackagesPart1,
-                            HookerThread.TIMHookedPackagesPart3,
-                            HookerThread.TIMHookedPackagesPart4
+                            HookerThread.TIMHookedPackagesPart3
                     );
                     hook1.run();
+                    HookerThread hook2 = new HookerThread(lpparam.classLoader,
+                            false,
+                            HookerThread.TIMHookedPackagesPart4
+                    );
+                    hook2.run();
+
                 }
                 {
                     Class<?> hookClass = XposedHelpers.findClassIfExists("com.tencent.smtt.sdk.TbsLogReport",lpparam.classLoader);
                     if (hookClass != null){
-                        for (Method m:hookClass.getDeclaredMethods()){
-                            if (!m.getName().equals("getInstance")){
-                                disableMethod(m,hookClass);
-                            }
-                        }
+                        disableClass(hookClass);
                     }
                 }
                 //tim or st. else(give it a try)
@@ -844,7 +858,7 @@ public class HookTIMClass {
                                         new XC_MethodReplacement(114514) {
                                             @Override
                                             protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                                return getRandomString(10);
+                                                return getRandomString(random.nextInt(10)+5);
                                             }
                                         }
                                 );
@@ -858,7 +872,7 @@ public class HookTIMClass {
                                         new XC_MethodReplacement(114514) {
                                             @Override
                                             protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                                return getRandomString(10);
+                                                return getRandomString(random.nextInt(10)+5);
                                             }
                                         }
                                 );
@@ -1113,7 +1127,7 @@ public class HookTIMClass {
                                         new XC_MethodReplacement(114514) {
                                             @Override
                                             protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                                return new StringBuilder(getRandomString(10));
+                                                return new StringBuilder(getRandomString(random.nextInt(10)+5));
                                             }
                                         }
                                 );
@@ -1281,17 +1295,17 @@ public class HookTIMClass {
                                 });
                     }
                 }
-                {
-                    Class<?> hookClass = XposedHelpers.findClassIfExists("com.tencent.qphone.base.util.QLog",lpparam.classLoader);
-                    if (hookClass != null){
-                        XposedBridge.hookAllMethods(hookClass,
-                                "writeLogToFile",returnTrue);
-                        XposedBridge.hookAllMethods(hookClass,
-                                "addLogItem",returnNull);
-                        HookUtils.findAndHookMethodIfExists(hookClass,
-                                "isColorLevel",returnTrue);
-                    }
-                }
+//                {
+//                    Class<?> hookClass = XposedHelpers.findClassIfExists("com.tencent.qphone.base.util.QLog",lpparam.classLoader);
+//                    if (hookClass != null){
+//                        XposedBridge.hookAllMethods(hookClass,
+//                                "writeLogToFile",returnTrue);
+//                        XposedBridge.hookAllMethods(hookClass,
+//                                "addLogItem",returnNull);
+//                        HookUtils.findAndHookMethodIfExists(hookClass,
+//                                "isColorLevel",returnTrue);
+//                    }
+//                }
                 {
                     Class<?> hookClass = XposedHelpers.findClassIfExists("ayvc",lpparam.classLoader);
                     if (hookClass != null){
@@ -1769,6 +1783,68 @@ public class HookTIMClass {
                         XposedBridge.hookAllMethods(hookClass,"a",returnFalse);
                     }
                 }
+                {
+                    hookClass = XposedHelpers.findClassIfExists("com.tencent.imcore.message.QQMessageFacade$Message",lpparam.classLoader);
+                    if (hookClass != null){
+                        hookClass = XposedHelpers.findClassIfExists("com.tencent.imcore.message.QQMessageFacade",lpparam.classLoader);
+                        if (hookClass != null){
+                            XposedBridge.hookAllConstructors(hookClass, new XC_MethodHook() {
+                                @Override
+                                protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                                    super.afterHookedMethod(param);
+                                    XposedHelpers.setObjectField(param.thisObject,"gO",new QQConcurrentHashMap<String,Object>(1017, 0, 1200));
+                                }
+                            });
+                            XposedHelpers.findAndHookMethod(hookClass, "a", String.class, int.class, boolean.class, new XC_MethodHook() {
+                                @Override
+                                protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                                    super.afterHookedMethod(param);
+                                    modifyMessage(param.getResult());
+                                }
+                            });
+                        }
+//                        hookClass = XposedHelpers.findClassIfExists("aqhj",lpparam.classLoader);
+//                        if (hookClass != null){
+//
+//                            XposedBridge.hookAllMethods(hookClass, "b", new XC_MethodHook() {
+//                                @Override
+//                                protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+//                                    super.afterHookedMethod(param);
+//                                    if (param.args.length >= 5){
+//                                        showObjectFields(param.args[4],"4    ");
+//                                        showObjectFields(param.args[3],"3    ");
+//                                        showObjectFields(param.args[2],"2    ");
+//                                    }
+////                                    modifyMessage(param.getResult());
+//                                }
+//                            });
+//                        }
+                        hookClass = XposedHelpers.findClassIfExists("com.tencent.mobileqq.data.ChatMessage",lpparam.classLoader);
+                        if (hookClass != null){
+                            XposedBridge.hookAllMethods(hookClass, "parse", new XC_MethodHook() {
+                                @Override
+                                protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                                    super.afterHookedMethod(param);
+                                    modifyMessage(param.thisObject);
+                                }
+                            });
+                        }
+                    }
+//                    hookClass = XposedHelpers.findClassIfExists("com.tencent.mobileqq.activity.recent.RecentBaseData",lpparam.classLoader);
+//                    if (hookClass != null){
+//                        XposedBridge.hookAllMethods(hookClass, "a", new XC_MethodHook() {
+//                            @Override
+//                            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+//                                super.afterHookedMethod(param);
+//                                if (param.args.length >= 4){
+//
+//                                    showObjectFields(param.args[4],"    ");
+//                                }
+//                            }
+//                        });
+//                    }
+                }
+
             } catch (Exception e) {
                 LoggerLog(e);
             }
@@ -1827,8 +1903,6 @@ public class HookTIMClass {
                 xres.setReplacement(0x7f0208e2, modRes.fwd(R.drawable.e0));
                 xres.setReplacement(0x7f0208df, modRes.fwd(R.drawable.e0));
                 xres.setReplacement(0x7f100175, modRes.fwd(R.drawable.e0));
-//                xres.setReplacement(0x7f023650, modRes.fwd(R.drawable.pink_dot));
-                xres.setReplacement(0x7f023656, modRes.fwd(R.drawable.skin_tips_newmessage_ninetynine_tweaked));
                 xres.setReplacement(0x7f07096b, modRes.fwd(R.color.miku));
                 xres.setReplacement(0x7f0235c4, modRes.fwd(R.color.miku_alphaa0));
                 xres.setReplacement(0x7f0235c6, modRes.fwd(R.color.miku_alphaa0));
@@ -1988,6 +2062,7 @@ public class HookTIMClass {
             setReplacementIfExists(xres,pkg,"color", "a_l", Color_Pink_2);
             setReplacementIfExists(xres,pkg,"color", "jg", Color_Pink_2);
             setReplacementIfExists(xres,pkg,"drawable", "skin_tips_newmessage", modRes.fwd(R.drawable.pink_dot));
+            setReplacementIfExists(xres,pkg,"drawable", "skin_tips_newmessage_ninetynine", modRes.fwd(R.drawable.skin_tips_newmessage_ninetynine_tweaked));
             setReplacementIfExists(xres,pkg,"drawable", "common_list_overscoll_top_bg", Color_Miku_a60);
             setReplacementIfExists(xres,pkg,"color", "ahb", Color_Miku);//unknown text color
             setReplacementIfExists(xres,pkg,"color", "skin_unite_search_text_black_000000_6991b8", Color_Miku);//unknown text color
@@ -1999,6 +2074,8 @@ public class HookTIMClass {
             setReplacementIfExists(xres,pkg,"color", "black_trans_50", Color_Miku_a80);
             setReplacementIfExists(xres,pkg,"drawable", "a97", Color_Miku_a80);
             setReplacementIfExists(xres,pkg,"drawable", "a98", Color_Miku_a80);
+            setReplacementIfExists(xres,pkg,"drawable", "b42", Color_Miku_a80);
+            setReplacementIfExists(xres,pkg,"drawable", "b47", Color_Miku_a80);
             setReplacementIfExists(xres,pkg,"color", "aj3", Color_Miku_a80);
             setReplacementIfExists(xres,pkg,"color", "x0", Color_Miku_a80);
             setReplacementIfExists(xres,pkg,"color", "el", Color_Miku_aa0);
@@ -2247,17 +2324,94 @@ public class HookTIMClass {
         }
     }
     
-    
+
+    public static final boolean logResourceNotFound = false;
     public static void setReplacementIfExists(XResources xres,String pkg,String type,String name,Object replacement){
         if (xres.getIdentifier(name,type,pkg) != 0){
             xres.setReplacement(pkg,type,name,replacement);
-        }else {
+        }else if (logResourceNotFound){
             LoggerLog("[linearity-ResourceNotFound]",pkg + "|" + type + "|" + name);
         }
     }
     public static void hookLayoutIfExists(XResources xres,String pkg,String type,String name,XC_LayoutInflated hooker){
         if (xres.getIdentifier(name,type,pkg) != 0){
             xres.hookLayout(pkg, type, name,hooker);
+        }
+    }
+
+    public static void modifyMessage(Object message){
+        if (XposedHelpers.findFieldIfExists(message.getClass(),"msg") != null){
+            String msg = (String) XposedHelpers.getObjectField(message, "msg");
+            if (msg != null) {
+                for (String s : blockMsgHead) {
+                    if (msg.startsWith(s)) {
+                        XposedHelpers.setObjectField(message, "msg", "");
+                        break;
+                    }
+                }
+            }
+        }
+        if (XposedHelpers.findFieldIfExists(message.getClass(),"emoRecentMsg") != null){
+            CharSequence emoRecentMsgCharSeq = (CharSequence) XposedHelpers.getObjectField(message, "emoRecentMsg");
+            if (emoRecentMsgCharSeq != null) {
+                String emoRecentMsg = emoRecentMsgCharSeq.toString();
+                for (String s : blockMsgHead) {
+                    if (emoRecentMsg.startsWith(s)) {
+                        XposedHelpers.setObjectField(message, "emoRecentMsg", "");
+                        XposedHelpers.setObjectField(message, "msgData", EMPTY_BYTE_ARRAY);
+                        break;
+                    }
+                }
+            }
+        }
+        if (XposedHelpers.findFieldIfExists(message.getClass(),"extStr") != null){
+            String extStr = (String) XposedHelpers.getObjectField(message, "extStr");
+            if (extStr != null) {
+                for (String s:blockMsgHead){
+                    if(extStr.contains(s)){
+                        XposedHelpers.setObjectField(message, "extStr", "{\"unite_gray_tips_align\":\"center\",\"uint64_busi_type\":\"1\",\"uint64_busi_id\":\"1\",\"bytes_content\":\"<gtip/>\"}");
+                    }
+                }
+            }
+        }
+        if (XposedHelpers.findFieldIfExists(message.getClass(), "lastMsg") != null) {
+            Object lastMsg = XposedHelpers.getObjectField(message, "lastMsg");
+            if (lastMsg != null) {
+                if (XposedHelpers.findFieldIfExists(lastMsg.getClass(), "tipParam") != null) {
+                    Object tipParam = XposedHelpers.getObjectField(lastMsg, "tipParam");
+                    if (tipParam != null) {
+                        if (XposedHelpers.findFieldIfExists(tipParam.getClass(), "wording") != null) {
+                            String wording = (String) XposedHelpers.getObjectField(tipParam, "wording");
+                            if (wording != null) {
+                                for (String s:blockMsgHead){
+                                    if (wording.contains(s)) {
+                                        XposedHelpers.setObjectField(tipParam, "wording", "");
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        if (XposedHelpers.findFieldIfExists(message.getClass(),"mExJsonObject") != null){
+            JSONObject mExJsonObject = (JSONObject) XposedHelpers.getObjectField(message, "mExJsonObject");
+            if (mExJsonObject != null) {
+                String toStr = mExJsonObject.toString();
+                for (String s : blockMsgHead) {
+                    if (toStr.contains(s)) {
+                        List<String> strs = new LinkedList<>();
+                        for (Iterator<String> it = mExJsonObject.keys(); it.hasNext(); ) {
+                            String toRemove = it.next();
+                            strs.add(toRemove);
+                        }
+                        for (String toRemove : strs) {
+                            mExJsonObject.remove(toRemove);
+                        }
+                        break;
+                    }
+                }
+            }
         }
     }
 }

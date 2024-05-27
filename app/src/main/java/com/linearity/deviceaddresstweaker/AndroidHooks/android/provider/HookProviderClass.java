@@ -1,5 +1,7 @@
 package com.linearity.deviceaddresstweaker.AndroidHooks.android.provider;
 
+import static com.linearity.utils.FakeInfo.FakeProviderSettings.globalSettingsMap;
+import static com.linearity.utils.FakeInfo.FakeProviderSettings.secureSettingsMap;
 import static com.linearity.utils.FakeInfo.FakeProviderSettings.systemSettingsMap;
 import static com.linearity.utils.HookUtils.findAndHookMethodIfExists;
 
@@ -12,7 +14,6 @@ import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XC_MethodReplacement;
 import android.content.SharedPreferences;
 import android.provider.Settings;
-import android.util.ArraySet;
 
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
@@ -27,19 +28,24 @@ import static com.linearity.deviceaddresstweaker.JavaHooks.java.io.HookIO.checkB
 import static com.linearity.deviceaddresstweaker.JavaHooks.java.io.HookIO.checkFileUri;
 import static com.linearity.deviceaddresstweaker.JavaHooks.java.io.HookIO.checkReplaceFile;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 public class HookProviderClass {
     public static boolean HookProvider = true;
     public static boolean HookMediaStore = true;
     public static boolean HookSettings = true;
-    public static boolean HookSecure = true;
+    public static boolean HookSettings_Secure = true;
     public static boolean HookSettings_System =true;
+    public static boolean HookSettings_Global =true;
+
+
 
     public static void DoHook(XC_LoadPackage.LoadPackageParam lpparam, String procHead, SharedPreferences sharedPreferences){
         Class<?> hookClass;
@@ -47,30 +53,67 @@ public class HookProviderClass {
         HookMediaStore = sharedPreferences.getBoolean("HookProviderClass_HookMediaStore", true);
         HookSettings = sharedPreferences.getBoolean("HookProviderClass_HookSettings", true);
         HookSettings_System = sharedPreferences.getBoolean("HookProviderClass_HookSettings_System", true);
-        HookSecure = sharedPreferences.getBoolean("HookProviderClass_HookSecure", true);
+        HookSettings_Secure = sharedPreferences.getBoolean("HookProviderClass_HookSettings_Secure", true);
+        HookSettings_Global = sharedPreferences.getBoolean("HookProviderClass_HookSettings_Global", true);
         if (HookProvider){
             if (HookSettings){
-                if (HookSecure) {//      android.provider.Settings.Secure.class getString()
+                Context systemContext = (Context) XposedHelpers.callMethod( XposedHelpers.callStaticMethod( XposedHelpers.findClass("android.app.ActivityThread", lpparam.classLoader), "currentActivityThread"), "getSystemContext" );
+                ContentResolver sysContentResolver = systemContext.getContentResolver();
+
+                if (HookSettings_Secure) {//      android.provider.Settings.Secure.class getString()
                     hookClass = XposedHelpers.findClassIfExists(
                             android.provider.Settings.Secure.class.getName()
                             , lpparam.classLoader);
                     if (hookClass != null){
                         try {
-                            findAndHookMethodIfExists(hookClass
-                                    , "getString"
-                                    , ContentResolver.class,
-                                    String.class, returnRandomStr20);
+                            Map<String,String> toPut = (Map<String, String>) XposedHelpers.getObjectField(XposedHelpers.getStaticObjectField(hookClass,"sNameValueCache"),"mValues");
+                            toPut.putAll(secureSettingsMap);
+                            XposedBridge.hookAllMethods(hookClass, "getStringForUser", new XC_MethodHook() {
+                                @Override
+                                protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                                    super.beforeHookedMethod(param);
+                                    if (param.args[1]==null){return;}
+                                    if (secureSettingsMap.containsKey((String)param.args[1])){
+                                        param.setResult(secureSettingsMap.get((String)param.args[1]));return;
+                                    }
+                                }
+                            });
                         }catch (Exception e){LoggerLog(e);}
                     }
-                }//not finished
+
+                }
                 if (HookSettings_System){
                     hookClass = XposedHelpers.findClassIfExists(Settings.System.class.getName(),lpparam.classLoader);
                     if (hookClass != null){
+                        Map<String,String> toPut = (Map<String, String>) XposedHelpers.getObjectField(XposedHelpers.getStaticObjectField(hookClass,"sNameValueCache"),"mValues");
+                        toPut.putAll(systemSettingsMap);
 
                         XposedBridge.hookAllMethods(hookClass, "getStringForUser", new XC_MethodHook() {
                             @Override
                             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                                 super.beforeHookedMethod(param);
+
+//                                Class<?> hookClass = XposedHelpers.findClassIfExists(
+//                                        Settings.Config.class.getName()
+//                                        , lpparam.classLoader);
+//                                ArraySet<String> cache = (ArraySet<String>) XposedHelpers.getObjectField(XposedHelpers.getStaticObjectField(hookClass,"sNameValueCache"),"mAllFields");
+//                                for (String s:cache){
+//                                    LoggerLog(s);
+//                                }
+//                                String[] keys = new String[]{
+//                                };
+//                                for (String s:keys){
+//                                    try {
+//                                        String res = (String) XposedHelpers.callStaticMethod(hookClass,"getString",param.args[0],s);
+//                                        if (res != null){
+//                                            LoggerLog("globalSettingsMap.put(\""+s+"\",\""+res+"\");");
+//                                        }else {
+//                                            LoggerLog("globalSettingsMap.put(\""+s+"\",null);");
+//                                        }
+//                                    }catch (Exception ignore){
+//
+//                                    }
+//                                }
                                 if (param.args[1]==null){return;}
                                 if (systemSettingsMap.containsKey((String)param.args[1])){
                                     param.setResult(systemSettingsMap.get((String)param.args[1]));return;
@@ -78,6 +121,28 @@ public class HookProviderClass {
                             }
                         });
                     }
+                }//not finished
+                if (HookSettings_Global){//      android.provider.Settings.Secure.class getString()
+                    hookClass = XposedHelpers.findClassIfExists(
+                            Settings.Global.class.getName()
+                            , lpparam.classLoader);
+                    if (hookClass != null){
+                        try {
+                            Map<String,String> toPut = (Map<String, String>) XposedHelpers.getObjectField(XposedHelpers.getStaticObjectField(hookClass,"sNameValueCache"),"mValues");
+                            toPut.putAll(globalSettingsMap);
+                            XposedBridge.hookAllMethods(hookClass, "getStringForUser", new XC_MethodHook() {
+                                @Override
+                                protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                                    super.beforeHookedMethod(param);
+                                    if (param.args[1]==null){return;}
+                                    if (globalSettingsMap.containsKey((String)param.args[1])){
+                                        param.setResult(globalSettingsMap.get((String)param.args[1]));return;
+                                    }
+                                }
+                            });
+                        }catch (Exception e){LoggerLog(e);}
+                    }
+
                 }
             }
             if (HookMediaStore){

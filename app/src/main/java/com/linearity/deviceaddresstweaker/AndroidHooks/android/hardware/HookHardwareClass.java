@@ -8,17 +8,23 @@ import static com.linearity.utils.HookUtils.findAndHookMethodIfExists;
 import static com.linearity.utils.ReturnReplacements.random;
 import static com.linearity.utils.ReturnReplacements.returnCantUseArrayList;
 import static com.linearity.utils.ReturnReplacements.returnFalse;
+import static com.linearity.utils.ReturnReplacements.returnFloatRandom;
 import static com.linearity.utils.ReturnReplacements.returnIntegerOne;
+import static com.linearity.utils.ReturnReplacements.returnIntegerRandom;
 import static com.linearity.utils.ReturnReplacements.returnIntegerZero;
 import static com.linearity.utils.ReturnReplacements.returnNull;
+import static com.linearity.utils.ReturnReplacements.returnRandomBoolean;
 import static com.linearity.utils.ReturnReplacements.returnRandomStr20;
+import static com.linearity.utils.ReturnReplacements.returnRandomUUID;
 import static com.linearity.utils.ReturnReplacements.returnTrue;
 import static com.linearity.deviceaddresstweaker.DeviceAddressTweaker.uuid;
 import static com.linearity.utils.LoggerUtils.LoggerLog;
 
 import android.content.SharedPreferences;
+import android.hardware.ConsumerIrManager;
 import android.hardware.GeomagneticField;
 import android.hardware.Sensor;
+import android.hardware.SensorAdditionalInfo;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
@@ -50,6 +56,7 @@ public class HookHardwareClass {
     public static boolean HookBiometrics = true;
     public static boolean HookLights = true;
     public static boolean HookFingerprints = true;
+    public static boolean HookConsumerIrManager = true;
 
     
     public static XC_MethodReplacement returnFloatZero = new XC_MethodReplacement() {
@@ -110,6 +117,7 @@ public class HookHardwareClass {
         HookBiometrics = sharedPreferences.getBoolean("HookHardwareClass_HookBiometrics",true);
         HookLights = sharedPreferences.getBoolean("HookHardwareClass_HookLights",true);
         HookFingerprints = sharedPreferences.getBoolean("HookHardwareClass_HookFingerprints",true);
+        HookConsumerIrManager = sharedPreferences.getBoolean("HookHardwareClass_ConsumerIrManager",true);
         if (HookHardware){
             if (HookGeomagneticField) {
                 hookClass = XposedHelpers.findClassIfExists(GeomagneticField.class.getName(),lpparam.classLoader);
@@ -208,254 +216,57 @@ public class HookHardwareClass {
                 hookClass = XposedHelpers.findClassIfExists(android.hardware.Sensor.class.getName(),lpparam.classLoader);
                 if (hookClass != null){
                     try {
-                        //                android.hardware.Sensor getReportingMode()
                         {
-                            findAndHookMethodIfExists(
-                                    hookClass,
-                                    "getReportingMode",returnIntegerOne
+                            XposedBridge.hookAllMethods(hookClass, "getReportingMode",returnIntegerRandom);
+                            XposedBridge.hookAllMethods(hookClass, "getHighestDirectReportRateLevel",returnIntegerRandom);
+                            XposedBridge.hookAllMethods(hookClass, "isDirectChannelTypeSupported",returnRandomBoolean);
+                            XposedBridge.hookAllMethods(hookClass, "getMaxLengthValuesArray",returnIntegerRandom);
+                            XposedBridge.hookAllMethods(hookClass, "getName",returnRandomStr20);
+                            XposedBridge.hookAllMethods(hookClass, "getVendor",returnRandomStr20);
+                            XposedBridge.hookAllMethods(hookClass, "getType",returnIntegerRandom);
+                            XposedBridge.hookAllMethods(hookClass, "getVersion",returnFloatRandom);
+                            XposedBridge.hookAllMethods(hookClass, "getMaximumRange",returnFloatRandom);
+                            XposedBridge.hookAllMethods(hookClass, "getResolution",returnFloatRandom);
+                            XposedBridge.hookAllMethods(hookClass, "getPower",returnFloatRandom);
+                            XposedBridge.hookAllMethods(hookClass, "getMinDelay",returnIntegerRandom);
+                            XposedBridge.hookAllMethods(hookClass, "getFifoReservedEventCount",returnIntegerRandom);
+                            XposedBridge.hookAllMethods(hookClass, "getFifoMaxEventCount",returnIntegerRandom);
+                            XposedBridge.hookAllMethods(hookClass, "getStringType",returnRandomStr20);
+                            XposedBridge.hookAllMethods(hookClass, "getUuid",returnRandomUUID);
+                            XposedBridge.hookAllMethods(hookClass, "getId",returnIntegerRandom);
+                            XposedBridge.hookAllMethods(hookClass, "getRequiredPermission",returnRandomStr20);
+                            XposedBridge.hookAllMethods(hookClass, "getMaxDelay",returnIntegerRandom);
+                            XposedBridge.hookAllMethods(hookClass, "isWakeUpSensor",returnRandomBoolean);
+                            XposedBridge.hookAllMethods(hookClass, "isDynamicSensor",returnRandomBoolean);
+                            XposedBridge.hookAllMethods(hookClass, "isAdditionalInfoSupported",returnRandomBoolean);
+                            XposedBridge.hookAllMethods(hookClass, "isDataInjectionSupported",returnRandomBoolean);
+                            XposedBridge.hookAllMethods(hookClass, "setRange",returnNull);
+                            XposedBridge.hookAllMethods(hookClass, "toString", new XC_MethodReplacement(114514) {
 
-                            );
+                                @Override
+                                protected Object replaceHookedMethod(MethodHookParam param){
+                                    return "{Sensor name=\""+ random.nextInt(Integer.MAX_VALUE) 
+                                            +"\", vendor=\""+ random.nextInt(Integer.MAX_VALUE) 
+                                            +"\", version="+random.nextInt(Integer.MAX_VALUE)
+                                            +", type="
+                                            +random.nextInt(Integer.MAX_VALUE)
+                                            +", maxRange=" 
+                                            + random.nextFloat() + ", resolution= " 
+                                            + random.nextFloat() + ", power=" 
+                                            + random.nextFloat() + ", minDelay="+random.nextInt(Integer.MAX_VALUE)+"}";
+                                }
+                            });
+                            XposedBridge.hookAllMethods(hookClass, "setUuid",returnNull);
+                            XposedBridge.hookAllMethods(hookClass, "setType",returnRandomBoolean);
+                            XposedBridge.hookAllMethods(hookClass, "setId",returnNull);
                         }
-//                android.hardware.Sensor getHighestDirectReportRateLevel()
-                        {
-                            findAndHookMethodIfExists(
-                                    hookClass,
-                                    "getHighestDirectReportRateLevel",returnIntegerZero
-
-                            );
-                        }
-//                android.hardware.Sensor isDirectChannelTypeSupported()
-                        {
-                            findAndHookMethodIfExists(
-                                    hookClass,
-                                    "isDirectChannelTypeSupported",
-                                    int.class,returnTrue
-
-                            );
-                        }
-//                android.hardware.Sensor getMaxLengthValuesArray()
-                        {
-                            findAndHookMethodIfExists(
-                                    hookClass,
-                                    "getMaxLengthValuesArray",
-                                    Sensor.class,
-                                    int.class,returnIntegerZero
-
-                            );
-                        }
-//                android.hardware.Sensor getName()
-                        {
-                            findAndHookMethodIfExists(
-                                    hookClass,
-                                    "getName",returnRandomStr20
-
-                            );
-                        }
-//                android.hardware.Sensor getVendor()
-                        {
-                            findAndHookMethodIfExists(
-                                    hookClass,
-                                    "getVendor",returnRandomStr20
-
-                            );
-                        }
-//                android.hardware.Sensor getType()
-                        {
-                            findAndHookMethodIfExists(
-                                    hookClass,
-                                    "getType",returnIntegerZero
-
-                            );
-                        }
-//                android.hardware.Sensor getVersion()
-                        {
-                            findAndHookMethodIfExists(
-                                    hookClass,
-                                    "getVersion",returnFloatZero
-
-                            );
-                        }
-//                android.hardware.Sensor getMaximumRange()
-                        {
-                            findAndHookMethodIfExists(
-                                    hookClass,
-                                    "getMaximumRange",returnFloatZero
-
-                            );
-                        }
-//                android.hardware.Sensor getResolution()
-                        {
-                            findAndHookMethodIfExists(
-                                    hookClass,
-                                    "getResolution",returnFloatZero
-
-                            );
-                        }
-//                android.hardware.Sensor getPower()
-                        {
-                            findAndHookMethodIfExists(
-                                    hookClass,
-                                    "getPower",returnFloatZero
-
-                            );
-                        }
-//                android.hardware.Sensor getMinDelay()
-                        {
-                            findAndHookMethodIfExists(
-                                    hookClass,
-                                    "getMinDelay",returnIntegerZero
-
-                            );
-                        }
-//                android.hardware.Sensor getFifoReservedEventCount()
-                        {
-                            findAndHookMethodIfExists(
-                                    hookClass,
-                                    "getFifoReservedEventCount",returnIntegerZero
-
-                            );
-                        }
-//                android.hardware.Sensor getFifoMaxEventCount()
-                        {
-                            findAndHookMethodIfExists(
-                                    hookClass,
-                                    "getFifoMaxEventCount",returnIntegerZero
-
-                            );
-                        }
-//                android.hardware.Sensor getStringType()
-                        {
-                            findAndHookMethodIfExists(
-                                    hookClass,
-                                    "getStringType",returnRandomStr20
-
-                            );
-                        }
-//                android.hardware.Sensor getUuid()
-                        {
-                            findAndHookMethodIfExists(
-                                    hookClass,
-                                    "getUuid",
-                                    new XC_MethodReplacement(114514) {
-
-                                        @Override
-                                        protected Object replaceHookedMethod(MethodHookParam param) {
-                                            return uuid;
-                                        }
-                                    }
-
-                            );
-                        }
-//                android.hardware.Sensor getId()
-                        {
-                            findAndHookMethodIfExists(
-                                    hookClass,
-                                    "getId",returnIntegerZero
-
-                            );
-                        }
-//                android.hardware.Sensor getRequiredPermission()
-                        {
-                            findAndHookMethodIfExists(
-                                    hookClass,
-                                    "getRequiredPermission",returnRandomStr20
-
-                            );
-                        }
-//                android.hardware.Sensor getMaxDelay()
-                        {
-                            findAndHookMethodIfExists(
-                                    hookClass,
-                                    "getMaxDelay",returnIntegerZero
-
-                            );
-                        }
-//                android.hardware.Sensor isWakeUpSensor()
-                        {
-                            findAndHookMethodIfExists(
-                                    hookClass,
-                                    "isWakeUpSensor",returnTrue
-
-                            );
-                        }
-//                android.hardware.Sensor isDynamicSensor()
-                        {
-                            findAndHookMethodIfExists(
-                                    hookClass,
-                                    "isDynamicSensor",returnTrue
-
-                            );
-                        }
-//                android.hardware.Sensor isAdditionalInfoSupported()
-                        {
-                            findAndHookMethodIfExists(
-                                    hookClass,
-                                    "isAdditionalInfoSupported",returnTrue
-
-                            );
-                        }
-//                android.hardware.Sensor isDataInjectionSupported()
-                        {
-                            findAndHookMethodIfExists(
-                                    hookClass,
-                                    "isDataInjectionSupported",returnTrue
-
-                            );
-                        }
-//                android.hardware.Sensor setRange()
-                        {
-                            findAndHookMethodIfExists(
-                                    hookClass,
-                                    "setRange",
-                                    float.class, float.class,returnNull
-
-                            );
-                        }
-//                android.hardware.Sensor toString()
-                        {
-                            findAndHookMethodIfExists(
-                                    hookClass,
-                                    "toString",
-                                    new XC_MethodReplacement(114514) {
-
-                                        @Override
-                                        protected Object replaceHookedMethod(MethodHookParam param){
-                                            return "{Sensor name=\"114514\", vendor=\"114514\", version=0, type=0, maxRange=" + 0f + ", resolution= " + 0f + ", power=" + 0f + ", minDelay=0}";
-                                        }
-                                    }
-
-                            );
-                        }
-//                android.hardware.Sensor setType()
-                        {
-                            findAndHookMethodIfExists(
-                                    hookClass,
-                                    "setType",
-                                    int.class,returnTrue
-
-                            );
-                        }
-//                android.hardware.Sensor setUuid()
-                        {
-                            findAndHookMethodIfExists(
-                                    hookClass,
-                                    "setUuid",
-                                    long.class, long.class,returnNull
-
-                            );
-                        }
-////                android.hardware.Sensor setId()
-//            try{
-                findAndHookMethodIfExists(
-                        hookClass,
-                        "setId",
-                        int.class,returnNull
-
-                );
-//            }catch (Exception e){LoggerLog(e);}
                     }catch (Exception e){
                         LoggerLog(e);
                     }
+                }
+                hookClass = XposedHelpers.findClassIfExists(SensorAdditionalInfo.class.getName(),lpparam.classLoader);
+                if (hookClass != null){
+                    disableClass_random(hookClass);
                 }
             }
             if (HookSensorEvent) {
@@ -472,16 +283,26 @@ public class HookHardwareClass {
                                     @Override
                                     protected void beforeHookedMethod(MethodHookParam param){
 //                                super.beforeHookedMethod(param);
-                                        param.args[1] = 1;
-                                        param.args[2] = 1L;
-                                        param.args[3] = new float[]{1f, 1f, 4f, 5f, 1f, 4f, 1f, 1f, 4f, 5f, 1f, 4f, 1f, 1f, 4f, 5f, 1f, 4f, 1f, 1f, 4f, 5f, 1f, 4f, 1f, 1f, 4f, 5f, 1f, 4f, 1f, 1f, 4f, 5f, 1f, 4f, 1f, 1f, 4f, 5f, 1f, 4f, 1f, 1f, 4f, 5f, 1f, 4f, 1f, 1f, 4f, 5f, 1f, 4f, 1f, 1f, 4f, 5f, 1f, 4f,};
+                                        param.args[1] = random.nextInt(Integer.MAX_VALUE);
+                                        param.args[2] = random.nextLong();
+                                        param.args[3] = new float[]{
+                                                random.nextFloat(), random.nextFloat(), random.nextFloat(), random.nextFloat(), random.nextFloat(), random.nextFloat(),
+                                                random.nextFloat(), random.nextFloat(), random.nextFloat(), random.nextFloat(), random.nextFloat(), random.nextFloat(),
+                                                random.nextFloat(), random.nextFloat(), random.nextFloat(), random.nextFloat(), random.nextFloat(), random.nextFloat(),
+                                                random.nextFloat(), random.nextFloat(), random.nextFloat(), random.nextFloat(), random.nextFloat(), random.nextFloat(),
+                                                random.nextFloat(), random.nextFloat(), random.nextFloat(), random.nextFloat(), random.nextFloat(), random.nextFloat(),
+                                                random.nextFloat(), random.nextFloat(), random.nextFloat(), random.nextFloat(), random.nextFloat(), random.nextFloat(),
+                                                random.nextFloat(), random.nextFloat(), random.nextFloat(), random.nextFloat(), random.nextFloat(), random.nextFloat(),
+                                                random.nextFloat(), random.nextFloat(), random.nextFloat(), random.nextFloat(), random.nextFloat(), random.nextFloat(),
+                                                random.nextFloat(), random.nextFloat(), random.nextFloat(), random.nextFloat(), random.nextFloat(), random.nextFloat(),
+                                                random.nextFloat(), random.nextFloat(), random.nextFloat(), random.nextFloat(), random.nextFloat(), random.nextFloat(),};
                                     }
                                 });
                     }
                 } 
             }
             if (HookSensorManager) {
-                Class[] classes = new Class[]{
+                Class<?>[] classes = new Class[]{
                         XposedHelpers.findClassIfExists(android.hardware.SensorManager.class.getName(),lpparam.classLoader),
                         XposedHelpers.findClassIfExists("android.hardware.SystemSensorManager",lpparam.classLoader),
                         XposedHelpers.findClassIfExists("android.hardware.input.InputSensorManager",lpparam.classLoader),
@@ -601,6 +422,14 @@ public class HookHardwareClass {
                     if (hookClass != null){
                         disableClass_random(hookClass);
                     }
+                }
+            }
+            if (HookConsumerIrManager){
+                hookClass = XposedHelpers.findClassIfExists(ConsumerIrManager.class.getName(),lpparam.classLoader);
+                if (hookClass != null){
+                    disableClass_random(hookClass);
+                    hookClass = XposedHelpers.findClassIfExists(ConsumerIrManager.CarrierFrequencyRange.class.getName(),lpparam.classLoader);
+                    disableClass_random(hookClass);
                 }
             }
         }

@@ -1,48 +1,19 @@
 package com.linearity.utils;
 
 import static com.linearity.utils.FakeClass.FakeReturnClasses.FakeReturnClassMap.fakeObjects;
-import static com.linearity.utils.FakeClass.FakeReturnClasses.FakeReturnClassMap.nullPair;
 import static com.linearity.utils.LoggerUtils.LoggerLog;
-import static com.linearity.utils.ReturnReplacements.random;
-import static com.linearity.utils.ReturnReplacements.returnByteRandom;
-import static com.linearity.utils.ReturnReplacements.returnByteZero;
-import static com.linearity.utils.ReturnReplacements.returnCantUseArrayList;
-import static com.linearity.utils.ReturnReplacements.returnCantUseEnumeration;
-import static com.linearity.utils.ReturnReplacements.returnCantUseHashMap;
-import static com.linearity.utils.ReturnReplacements.returnCantUseVector;
-import static com.linearity.utils.ReturnReplacements.returnCharRandom;
-import static com.linearity.utils.ReturnReplacements.returnCharZero;
-import static com.linearity.utils.ReturnReplacements.returnDoubleRandom;
-import static com.linearity.utils.ReturnReplacements.returnDoubleZero;
-import static com.linearity.utils.ReturnReplacements.returnFalse;
-import static com.linearity.utils.ReturnReplacements.returnFloatRandom;
-import static com.linearity.utils.ReturnReplacements.returnFloatZero;
-import static com.linearity.utils.ReturnReplacements.returnIntegerRandom;
-import static com.linearity.utils.ReturnReplacements.returnIntegerZero;
-import static com.linearity.utils.ReturnReplacements.returnLongRandom;
-import static com.linearity.utils.ReturnReplacements.returnLongZero;
-import static com.linearity.utils.ReturnReplacements.returnNull;
-import static com.linearity.utils.ReturnReplacements.returnNullAndRegisterReturn;
-import static com.linearity.utils.ReturnReplacements.returnRandomBoolean;
-import static com.linearity.utils.ReturnReplacements.returnRandomUUID;
-import static com.linearity.utils.ReturnReplacements.returnSelf;
-import static com.linearity.utils.ReturnReplacements.returnShortRandom;
-import static com.linearity.utils.ReturnReplacements.returnShortZero;
-import static com.linearity.utils.ReturnReplacements.returnStringOne;
+import static com.linearity.utils.ReturnReplacements.*;
 
 import com.linearity.utils.FakeClass.FakeReturnClasses.FakeReturnClassMap;
 
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Array;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.AbstractList;
 import java.util.AbstractMap;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
@@ -70,7 +41,6 @@ public class HookUtils {
         Method m = XposedHelpers.findMethodExactIfExists(clazz, methodName, parameterTypesAndCallback);
         if (m == null){
             LoggerLog("cannot find method : " + methodName + "(for class : " + clazz.getName() + ")");
-//            LoggerLog(new Exception("cannot find method : " + methodName + "(for class : " + clazz.getName() + ")"));
             return null;
         }
         return XposedBridge.hookMethod(m, callback);
@@ -95,7 +65,32 @@ public class HookUtils {
             XposedBridge.hookMethod(m,returnByteRandom);
         }else if (t.equals(char.class) || t.equals(Character.class)){
             XposedBridge.hookMethod(m,returnCharRandom);
-        }else {
+        }
+        else if(t.equals(byte[].class) || t.equals(Byte[].class)){
+            XposedBridge.hookMethod(m,returnRandomByteArray);
+        }
+        else if(t.equals(int[].class) || t.equals(Integer[].class)){
+            XposedBridge.hookMethod(m,returnRandomIntegerArray);
+        }
+        else if(t.equals(boolean[].class) || t.equals(Boolean[].class)){
+            XposedBridge.hookMethod(m,returnRandomBooleanArray);
+        }
+        else if(t.equals(double[].class) || t.equals(Double[].class)){
+            XposedBridge.hookMethod(m,returnRandomDoubleArray);
+        }
+        else if(t.equals(float[].class) || t.equals(Float[].class)){
+            XposedBridge.hookMethod(m,returnRandomFloatArray);
+        }
+        else if(t.equals(long[].class) || t.equals(Long[].class)){
+            XposedBridge.hookMethod(m,returnRandomLongArray);
+        }
+        else if(t.equals(short[].class) || t.equals(Short[].class)){
+            XposedBridge.hookMethod(m,returnRandomShortArray);
+        }
+        else if(t.equals(char[].class) || t.equals(Character[].class)){
+            XposedBridge.hookMethod(m,returnRandomCharArray);
+        }
+        else {
             disableMethod(m,selfClass);
         }
     }
@@ -141,32 +136,8 @@ public class HookUtils {
                     return Array.newInstance(t.getComponentType(),0);
                 }
             });
-        }
-        else if((t.isAssignableFrom(selfClass) || t.equals(selfClass))){
-            if (!Modifier.isStatic(m.getModifiers())){
-                XposedBridge.hookMethod(m, returnSelf);
-            }else{
-                Constructor<?> constructor = XposedHelpers.findConstructorExactIfExists(selfClass);
-
-                if (constructor != null){
-                    XposedBridge.hookMethod(m, new XC_MethodReplacement() {
-                        @Override
-                        protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                            return constructor.newInstance();
-                        }
-                    });
-                }else {
-                    Constructor<?> constructor1 = selfClass.getDeclaredConstructors()[0];
-                    Object[] args = new Object[constructor1.getParameterCount()];
-                    Arrays.fill(args,null);
-                    XposedBridge.hookMethod(m, new XC_MethodReplacement() {
-                        @Override
-                        protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                            return constructor1.newInstance(args);
-                        }
-                    });
-                }
-            }
+        }else if(t.equals(selfClass) || t.isAssignableFrom(selfClass)){
+            return;
         }else if (fakeObjects.containsKey(t.getName()) && fakeObjects.get(t.getName()) != null){
             XposedBridge.hookMethod(m,fakeObjects.get(t.getName()).first);
         }else {
@@ -174,7 +145,7 @@ public class HookUtils {
         };
     }
 
-    public static void disableClass(@NotNull Class<?> selfClass) throws InvocationTargetException, IllegalAccessException, InstantiationException {
+    public static void disableClass(@NotNull Class<?> selfClass){
         if (Modifier.isAbstract(selfClass.getModifiers()) || Modifier.isInterface(selfClass.getModifiers())){return;}
         XposedBridge.hookAllConstructors(selfClass,returnNullAndRegisterReturn);
         for (Method m:selfClass.getDeclaredMethods()){
@@ -182,7 +153,7 @@ public class HookUtils {
         }
     }
 
-    public static void disableClass_random(@NotNull Class<?> selfClass) throws InvocationTargetException, IllegalAccessException, InstantiationException {
+    public static void disableClass_random(@NotNull Class<?> selfClass){
         if (Modifier.isAbstract(selfClass.getModifiers()) || Modifier.isInterface(selfClass.getModifiers())){return;}
         XposedBridge.hookAllConstructors(selfClass,returnNullAndRegisterReturn);
         for (Method m:selfClass.getDeclaredMethods()){

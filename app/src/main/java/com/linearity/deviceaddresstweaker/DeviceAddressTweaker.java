@@ -1,6 +1,7 @@
 package com.linearity.deviceaddresstweaker;
 
 import static com.linearity.deviceaddresstweaker.AndroidHooks.android.net.HookNetClass.byteArray114514;
+import static com.linearity.utils.FakeInfo.FakeProcInfoGenerator.random;
 import static com.linearity.utils.LoggerUtils.LoggerLog;
 
 import android.accounts.Account;
@@ -16,23 +17,28 @@ import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiInfo;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.provider.Settings;
 
+import com.linearity.deviceaddresstweaker.AndroidHooks.android.accessibilityservice.HookAccessibilityClass;
 import com.linearity.deviceaddresstweaker.AndroidHooks.android.accounts.HookAccountClass;
 import com.linearity.deviceaddresstweaker.AndroidHooks.android.app.HookAppClass;
 import com.linearity.deviceaddresstweaker.AndroidHooks.android.bluetooth.HookBluetoothClass;
 import com.linearity.deviceaddresstweaker.AndroidHooks.android.content.HookContentClass;
+import com.linearity.deviceaddresstweaker.AndroidHooks.android.drm.HookDrmClass;
 import com.linearity.deviceaddresstweaker.AndroidHooks.android.hardware.HookHardwareClass;
 import com.linearity.deviceaddresstweaker.AndroidHooks.android.location.HookLocationClass;
 import com.linearity.deviceaddresstweaker.AndroidHooks.android.mtp.HookMTPClass;
 import com.linearity.deviceaddresstweaker.AndroidHooks.android.net.HookNetClass;
 import com.linearity.deviceaddresstweaker.AndroidHooks.android.os.HookOsClass;
 import com.linearity.deviceaddresstweaker.AndroidHooks.android.provider.HookProviderClass;
+import com.linearity.deviceaddresstweaker.AndroidHooks.android.telecom.HookTelecomClass;
 import com.linearity.deviceaddresstweaker.AndroidHooks.android.telephony.HookTelephonyClass;
 import com.linearity.deviceaddresstweaker.JavaHooks.java.io.HookIO;
 import com.linearity.deviceaddresstweaker.JavaHooks.java.lang.HookLang;
 import com.linearity.deviceaddresstweaker.JavaHooks.java.net.HookJavaNetClass;
 import com.linearity.deviceaddresstweaker.TIM.HookTIMClass;
 import com.linearity.deviceaddresstweaker.Wechat.HookWechatClass;
+import com.linearity.utils.FakeClass.FakeReturnClasses.FakeReturnClassMap;
 import com.linearity.utils.ReturnReplacements;
 
 import java.io.File;
@@ -69,7 +75,7 @@ public class DeviceAddressTweaker implements IXposedHookLoadPackage, IXposedHook
             new WifiInfo.Builder()
                     .setBssid(ReturnReplacements.getRandomString(20))
                     .setSsid(byteArray114514)
-                    .setCurrentSecurityType(WifiConfiguration.SECURITY_TYPE_OPEN)
+                    .setCurrentSecurityType(random.nextInt())
                     .build();
     public static Location fakeLocation = new Location("jerk");
     public static AccountAuthenticatorResponse[] EmptyAccountAuthenticatorResponse = new AccountAuthenticatorResponse[0];
@@ -103,29 +109,32 @@ public class DeviceAddressTweaker implements IXposedHookLoadPackage, IXposedHook
     public static Future2Task<Boolean> EmptyFuture2TaskOBoolean = new Future2Task<>() {
         @Override
         public boolean cancel(boolean mayInterruptIfRunning) {
-            return true;
+            return random.nextBoolean();
         }
 
         @Override
         public boolean isCancelled() {
-            return true;
+            return random.nextBoolean();
         }
 
         @Override
         public boolean isDone() {
-            return true;
+            return random.nextBoolean();
         }
 
         @Override
         public Boolean getResult() {
-            return true;
+            return random.nextBoolean();
         }
 
         @Override
         public Boolean getResult(long timeout, TimeUnit unit) {
-            return true;
+            return random.nextBoolean();
         }
     };
+    static {
+        FakeReturnClassMap.registerInstance(AccountManagerFuture.class,EmptyFuture2TaskOBoolean);
+    }
     public static UUID uuid = UUID.randomUUID();
     SharedPreferences sharedPreferences;
 
@@ -198,16 +207,14 @@ public class DeviceAddressTweaker implements IXposedHookLoadPackage, IXposedHook
 
     public static void startHookMethods(XC_LoadPackage.LoadPackageParam lpparam, String processHead, SharedPreferences sharedPreferences) throws Exception{
         if (lpparam.packageName.equals("system")){return;}
-//        LoggerLog(sharedPreferences.getAll());
-        //        StrangeHookClass.DoHook(lpparam,processHead,sharedPreferences);
-//java
+
         HookJavaNetClass.DoHook(lpparam, sharedPreferences);//not finished
         HookLang.DoHook(lpparam,processHead,sharedPreferences);//not finished
         HookIO.DoHook(lpparam,processHead,sharedPreferences);//not finished
 //android
-        //accessibilityservice
+        HookAccessibilityClass.DoHook(lpparam,processHead,sharedPreferences);
         HookAccountClass.DoHook(lpparam,processHead,sharedPreferences);//DONE(API:32)
-        //adservices(Not yet)
+        //adservices(on and above android 13,not 10)
         //animation
         //annotation(NO)
         HookAppClass.DoHook(lpparam,processHead,sharedPreferences);//not finished
@@ -216,7 +223,7 @@ public class DeviceAddressTweaker implements IXposedHookLoadPackage, IXposedHook
         //companion
         HookContentClass.DoHook(lpparam,processHead,sharedPreferences);//not finished
         //database
-        //drm
+        HookDrmClass.DoHook(lpparam,processHead,sharedPreferences);//finished in a lazy way(disabled all classes)
         //gesture
         //graphics
         HookHardwareClass.DoHook(lpparam,processHead,sharedPreferences);//not finished
@@ -224,7 +231,7 @@ public class DeviceAddressTweaker implements IXposedHookLoadPackage, IXposedHook
         //inputmethodservice
         HookLocationClass.DoHook(lpparam,processHead,sharedPreferences);//not finished
         //media
-        HookMTPClass.DoHook(lpparam,processHead,sharedPreferences);
+        HookMTPClass.DoHook(lpparam,processHead,sharedPreferences);//(disabled all classes)
         HookNetClass.DoHook(lpparam,processHead,sharedPreferences);//not finished
         //nfc
         //opengl
@@ -240,7 +247,7 @@ public class DeviceAddressTweaker implements IXposedHookLoadPackage, IXposedHook
         //service
         //speech
         //system
-        //telecom
+        HookTelecomClass.DoHook(lpparam,processHead,sharedPreferences);//(disabled all classes)
         HookTelephonyClass.DoHook(lpparam,processHead,sharedPreferences);//not finished
         //text
         //transition
@@ -253,7 +260,6 @@ public class DeviceAddressTweaker implements IXposedHookLoadPackage, IXposedHook
         HookWechatClass.DoHook(lpparam,processHead,sharedPreferences);
 
         HookTIMClass.DoHook(lpparam,processHead,sharedPreferences);
-
 
     }
 

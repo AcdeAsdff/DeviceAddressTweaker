@@ -26,14 +26,29 @@ project("deviceaddresstweaker")
 # for GameActivity/NativeActivity derived applications, the same library name must be
 # used in the AndroidManifest.xml file.
 add_library(${CMAKE_PROJECT_NAME} SHARED
-    # List C/C++ source files with relative paths to this CMakeLists.txt.
-    deviceaddresstweaker.cpp datutils.cpp
+    deviceaddresstweaker.cpp deviceaddresstweaker.h
+        datutils.cpp datutils.h
+        android/sysPropSet.cpp android/sysPropSet.cpp
+        android/nativehelper/JNIHelp.h android/nativehelper/JNIHelp.cpp
+        android/nativehelper/JniInvocation.h android/nativehelper/JniInvocation.cpp
+        android/nativehelper/ScopedLocalRef.h android/nativehelper/ScopedUtfChars.h
+        android/nativehelper/ScopedPrimitiveArray.h
+        android/nativehelper/JniConstants.cpp android/nativehelper/JniConstants.h
+        android/nativehelper/ALog-priv.h
+        dobby/dobby.h
 )
-
+add_library(DobbyLib STATIC IMPORTED)
 # Specifies libraries CMake should link to your target library. You
 # can link libraries from various origins, such as libraries defined in this
 # build script, prebuilt third-party libraries, or Android system libraries.
+set_target_properties(
+        DobbyLib
+        PROPERTIES IMPORTED_LOCATION
+        ${CMAKE_CURRENT_SOURCE_DIR}/dobby/${CMAKE_ANDROID_ARCH_ABI}/libdobby.a
+)
 target_link_libraries(${CMAKE_PROJECT_NAME}
     # List libraries link to the target library
     android
-    log)
+    DobbyLib
+    log
+)

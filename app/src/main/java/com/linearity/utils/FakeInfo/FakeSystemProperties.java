@@ -8,7 +8,7 @@ import com.linearity.utils.ListenerUtils.ListenerHashMap;
 import java.util.HashMap;
 
 public class FakeSystemProperties {
-    public static final  HashMap<String,String> propertiesMap = new ListenerHashMap<>();
+    public static final  HashMap<String,String> propertiesMap = new HashMap<>();
     static {
 
         propertiesMap.put("line.separator","\n");
@@ -44,7 +44,7 @@ public class FakeSystemProperties {
         propertiesMap.put("user.dir","/");
         propertiesMap.put("user.variant","");
         propertiesMap.put("user.home","");
-        propertiesMap.put("user.name",getRandomString(10));//"root"
+        propertiesMap.put("user.name",getRandomString(random.nextInt(10)+5));//"root"
         propertiesMap.put("user.language","zh");
         propertiesMap.put("user.region","CN");
         propertiesMap.put("user.locale","zh-CN");

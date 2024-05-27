@@ -1,5 +1,6 @@
 package com.linearity.utils;
 
+import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XposedBridge;
 
 import android.view.View;
@@ -20,6 +21,13 @@ public class LoggerUtils {
         public static final boolean showDeepFields = true;
 
         public static final boolean useLogger = true;
+        public static final XC_MethodHook showStackTraceBefore = new XC_MethodHook() {
+            @Override
+            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                super.beforeHookedMethod(param);
+                LoggerLog(new Exception("not an exception"));
+            }
+        };
 
         public static void LoggerLog(Object log){
             if (log != null){
@@ -131,6 +139,7 @@ public class LoggerUtils {
                         typeName = f.getType().getTypeName();
                         typeNameLower = typeName.toLowerCase();
                         Object fobj = XposedHelpers.getObjectField(obj,f.getName());//Object fobj = f.get(obj);
+                        if (Modifier.isStatic(f.getModifiers())){continue;}
                         if (!typeNameLower.startsWith("java")
                                 && !typeNameLower.contains("integer")
                                 && !typeNameLower.contains("long")
@@ -211,6 +220,7 @@ public class LoggerUtils {
                             typeName = f.getType().getTypeName();
                             typeNameLower = typeName.toLowerCase();
                             Object fobj = XposedHelpers.getObjectField(obj,f.getName());//Object fobj = f.get(obj);
+                            if (Modifier.isStatic(f.getModifiers())){return;}
                             if (!typeNameLower.startsWith("java")
                                     && !typeNameLower.contains("integer")
                                     && !typeNameLower.contains("long")

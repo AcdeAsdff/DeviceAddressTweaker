@@ -55,4 +55,11 @@ namespace datutils {
         env->SetByteArrayRegion (ret, 0, size, a);
         return ret;
     }
+    jboolean* jtrue = static_cast<jboolean *>(calloc(1, sizeof(jboolean)));
+    jboolean* jfalse = static_cast<jboolean *>(calloc(1, sizeof(jboolean)));
+    jboolean* toJavaBoolean(bool value){
+        *jtrue = 1;
+        *jfalse = 0;
+        return (value?jtrue:jfalse);
+    };
 } // datutils

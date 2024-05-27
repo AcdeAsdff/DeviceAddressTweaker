@@ -1,68 +1,366 @@
 package com.linearity.utils.FakeInfo;
 
 import static com.linearity.utils.FakeInfo.FakeProcInfoGenerator.random;
+import static com.linearity.utils.ReturnReplacements.getRandomHexUpper;
 import static com.linearity.utils.ReturnReplacements.getRandomHexlower;
 import static com.linearity.utils.ReturnReplacements.getRandomString;
 import static com.linearity.utils.ReturnReplacements.randomSmallDouble;
 
+import com.linearity.utils.ListenerUtils.ListenerHashMap;
+
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
 public class FakeProviderSettings {
-    public static final Map<String,String> systemSettingsMap = new HashMap<>();
-    //String[] keys = {
-    ////                                "lock_pattern_tactile_feedback_enabled",
-    //                                "car_undock_sound","media_button_receiver",
-    //                                "ring_vibration_intensity","network_preference","window_animation_scale","wifi_mobile_data_transition_wakelock_timeout_ms",
-    //                                "wifi_static_dns1","wifi_static_dns2","bluetooth_discoverability_timeout","alarm_alert_cache",
-    //                                "mode_ringer","notification_light_pulse","when_to_make_wifi_calls","wifi_networks_available_notification_on",
-    //                                "location_providers_allowed","notification_sound","advanced_settings","wifi_static_netmask",
-    //                                "notification_sound_cache","bluetooth_on","next_alarm_formatted","volume_alarm",
-    //                                "volume_music","volume_voice","show_password","wifi_watchdog_on",
-    //                                "wifi_watchdog_ping_timeout_ms","SHOW_GTALK_SERVICE_STATUS","ringtone","adaptive_sleep",
-    //                                "haptic_feedback_intensity","show_web_suggestions","wallpaper_activity","wifi_watchdog_background_check_timeout_ms",
-    //                                "parental_control_last_update","auto_replace","hearing_aid","ringtone_cache",
-    //                                "wifi_watchdog_max_ap_checks","debug.enable_enhanced_calling","lock_to_app_enabled","sip_call_options",
-    //                                "adb_enabled","unlock_sound","multi_audio_focus_enabled","parental_control_enabled",
-    //                                "airplane_mode_radios","volume_a11y","volume_ring","wifi_max_dhcp_retry_count",
-    //                                "vibrate_in_silent","settings_classname","screen_auto_brightness_adj","always_finish_activities",
-    //                                "notifications_use_ring_volume","airplane_mode_toggleable_radios","screen_brightness_mode","mute_streams_affected",
-    //                                "lockscreen.disabled","tty_mode","screen_brightness_for_vr","font_scale",
-    //                                "wifi_watchdog_ping_delay_ms","dim_screen","end_button_behavior","wifi_watchdog_ping_count",
-    //                                "desk_undock_sound","debug_app","wifi_sleep_policy","dock_sounds_enabled",
-    //                                "egg_mode","SIP_ASK_ME_EACH_TIME","volume_bluetooth_sco","screen_brightness_for_vr_float",
-    //                                "screen_brightness_float","lockscreen_sounds_enabled","nfc","cell",
-    //                                "wifi","user_rotation","accelerometer_rotation","SIP_ALWAYS",
-    //                                "wimax",
-    ////                                "display_color_mode_vendor_hint",
-    //                                "wifi_watchdog_background_check_delay_ms","auto_punctuate",
-    //                                "car_dock_sound","screen_off_timeout","show_touches","vibrate_when_ringing",
-    //                                "power_sounds_enabled","stay_on_while_plugged_in","hide_rotation_lock_toggle_for_accessibility","alarm_alert",
-    //                                "wifi_watchdog_initial_ignored_ping_count","pointer_speed","wifi_networks_available_repeat_delay","wifi_static_ip",
-    //                                "transition_animation_scale","wifi_watchdog_background_check_enabled","vibrate_input_devices","logging_id",
-    //                                "mode_ringer_streams_affected","data_roaming","android_id","volume_notification",
-    ////                                "accelerometer_rotation_angles",
-    //                                "wifi_static_gateway",
-    ////                                "lock_pattern_autolock",
-    //                                "dtmf_tone_type",
-    //                                "dtmf_tone","airplane_mode_on","low_battery_sound","date_format",
-    //                                "volume_master","wait_for_debugger","volume_assistant","peak_refresh_rate",
-    //                                "wifi_watchdog_ap_count","time_12_24","pointer_location","system_locales",
-    //                                "bluetooth_discoverability","volume_system","master_mono","lock_sound",
-    //                                "status_bar_show_battery_percent","auto_time_zone","http_proxy","parental_control_redirect_url",
-    //                                "show_processes","sip_receive_calls","wifi_on","device_provisioned",
-    //                                "sound_effects_enabled","master_balance",
-    ////                                "lock_pattern_visible_pattern",
-    //                                "display_color_mode",
-    //                                "volume_key_cursor_control","wifi_use_static_ip","auto_caps","auto_time",
-    //                                "install_non_market_apps","usb_mass_storage_enabled","wifi_num_open_networks_kept","screen_brightness",
-    //                                "use_google_mail","vibrate_on","wifi_watchdog_acceptable_packet_loss_percentage","min_refresh_rate",
-    //                                "bluetooth","SIP_ADDRESS_ONLY","notification_vibration_intensity","haptic_feedback_enabled",
-    //                                "desk_dock_sound","setup_wizard_has_run","window_orientation_listener_log","_last_audible",
-    //                                "animator_duration_scale",
-    //                        };
+    public static final Map<String,String> secureSettingsMap = new HashMap<>();
     static {
-        systemSettingsMap.put("car_undock_sound",getRandomString(10));//"/product/media/audio/ui/Undock.ogg"
+        secureSettingsMap.put("lock_screen_show_notifications",random.nextBoolean()?"0":"1");
+        secureSettingsMap.put("tv_app_uses_non_system_inputs",null);
+        secureSettingsMap.put("aware_lock_enabled",random.nextBoolean()?"0":"1");
+        secureSettingsMap.put("unknown_sources_default_reversed",random.nextBoolean()?"0":"1");
+        secureSettingsMap.put("packages_to_clear_data_before_full_restore",null);
+        secureSettingsMap.put("lock_screen_custom_clock_face",null);
+        secureSettingsMap.put("accessibility_captioning_background_color",null);
+        secureSettingsMap.put("dialer_default_application",null);
+        secureSettingsMap.put("assist_structure_enabled",null);
+        secureSettingsMap.put("low_power_warning_acknowledged",random.nextBoolean()?"0":"1");
+        secureSettingsMap.put("preferred_tty_mode",null);
+        secureSettingsMap.put("backup_manager_constants",null);
+        secureSettingsMap.put("night_display_auto_mode",null);
+        secureSettingsMap.put("camera_double_tap_power_gesture_disabled",null);
+        secureSettingsMap.put("display_density_forced",null);
+        secureSettingsMap.put("doze_wake_display_gesture",null);
+        secureSettingsMap.put("network_preference",null);
+        StringBuilder sb = new StringBuilder();
+        int links = random.nextInt(4)+2;
+        for (int i=0;i<links;i++){
+            sb.append("http://").append(randomPackageName(".")).append(" ");
+        }
+        secureSettingsMap.put("allowed_geolocation_origins",sb.toString());
+        secureSettingsMap.put("search_thread_keepalive_seconds",null);
+        secureSettingsMap.put("automatic_storage_manager_bytes_cleared",null);
+        secureSettingsMap.put("development_settings_enabled","0");
+        secureSettingsMap.put("incall_power_button_behavior",null);
+        secureSettingsMap.put("wifi_mobile_data_transition_wakelock_timeout_ms",null);
+        secureSettingsMap.put("num_rotation_suggestions_accepted",String.valueOf(random.nextInt()));
+        secureSettingsMap.put("biometric_debug_enabled",null);
+        secureSettingsMap.put("immersive_mode_confirmations","confirmed");
+        secureSettingsMap.put("dark_mode_dialog_seen",null);
+        secureSettingsMap.put("accessibility_captioning_typeface",null);
+        secureSettingsMap.put("accessibility_shortcut_target_service",null);
+        secureSettingsMap.put("autofill_user_data_max_category_count",String.valueOf(random.nextInt()));
+        secureSettingsMap.put("search_web_results_override_limit",null);
+        secureSettingsMap.put("lock_screen_sticky_appwidget",null);
+        secureSettingsMap.put("accessibility_magnification_capability",String.valueOf(random.nextInt()));
+        secureSettingsMap.put("tts_enabled_plugins",null);
+        secureSettingsMap.put("tv_input_hidden_inputs",null);
+        secureSettingsMap.put("search_max_stat_age_millis",null);
+        secureSettingsMap.put("location_mode",String.valueOf(random.nextInt()));
+        secureSettingsMap.put("default_input_method", randomPackageName(".")+"/"+randomPackageName("."));
+        secureSettingsMap.put("global_actions_panel_debug_enabled",null);
+        secureSettingsMap.put("night_display_custom_end_time",null);
+        secureSettingsMap.put("camera_double_twist_to_flip_enabled",null);
+        secureSettingsMap.put("accessibility_captioning_foreground_color",null);
+        secureSettingsMap.put("show_zen_settings_suggestion",random.nextBoolean()?"0":"1");
+        secureSettingsMap.put("bluetooth_on_while_driving",null);
+        secureSettingsMap.put("qs_media_resumption",null);
+        secureSettingsMap.put("silence_call_gesture_count",null);
+        secureSettingsMap.put("auto_revoke_disabled",null);
+        secureSettingsMap.put("backup_provisioned",null);
+        secureSettingsMap.put("game_dashboard_always_on",null);
+        secureSettingsMap.put("camera_lift_trigger_enabled",null);
+        secureSettingsMap.put("sleep_timeout","-1");
+        secureSettingsMap.put("silence_alarms_gesture_count",null);
+        secureSettingsMap.put("silence_timer_gesture_count",null);
+        secureSettingsMap.put("wifi_watchdog_watch_list",null);
+        secureSettingsMap.put("wifi_networks_available_notification_on",random.nextBoolean()?"0":"1");
+        secureSettingsMap.put("secure_frp_mode",null);
+        secureSettingsMap.put("zen_settings_updated",random.nextBoolean()?"0":"1");
+        secureSettingsMap.put("location_providers_allowed",null);
+        secureSettingsMap.put("silence_alarms_touch_count",null);
+        secureSettingsMap.put("doze_enabled",null);
+        secureSettingsMap.put("lock_screen_allow_private_notifications",random.nextBoolean()?"0":"1");
+        secureSettingsMap.put("notified_non_accessibility_category_services",null);
+        secureSettingsMap.put("accessibility_interactive_ui_timeout_ms",null);
+        secureSettingsMap.put("double_tap_to_wake",null);
+        secureSettingsMap.put("speak_password",random.nextBoolean()?"0":"1");
+        secureSettingsMap.put("back_gesture_inset_scale_left",null);
+        secureSettingsMap.put("connectivity_release_pending_intent_delay_ms",null);
+        secureSettingsMap.put("bluetooth_on",random.nextBoolean()?"0":"1");
+        secureSettingsMap.put("tv_input_custom_labels",null);
+        secureSettingsMap.put("managed_provisioning_dpc_downloaded",null);
+        secureSettingsMap.put("bugreport_in_power_menu",random.nextBoolean()?"0":"1");
+        secureSettingsMap.put("wake_gesture_enabled",random.nextBoolean()?"0":"1");
+        secureSettingsMap.put("enabled_vr_listeners",null);
+        secureSettingsMap.put("search_global_search_activity",null);
+        secureSettingsMap.put("wifi_watchdog_on",null);
+        secureSettingsMap.put("wifi_watchdog_ping_timeout_ms",null);
+        secureSettingsMap.put("screensaver_activate_on_sleep",random.nextBoolean()?"0":"1");
+        secureSettingsMap.put("lock_screen_fallback_appwidget_id",null);
+        secureSettingsMap.put("volume_hush_gesture",random.nextBoolean()?"0":"1");
+        secureSettingsMap.put("face_unlock_diversity_required",null);
+        secureSettingsMap.put("disabled_print_services",null);
+        secureSettingsMap.put("adaptive_sleep",null);
+        secureSettingsMap.put("wifi_idle_ms",null);
+        secureSettingsMap.put("wifi_watchdog_background_check_timeout_ms",null);
+        secureSettingsMap.put("backup_enabled",random.nextBoolean()?"0":"1");
+        secureSettingsMap.put("assist_gesture_setup_complete",null);
+        secureSettingsMap.put("dark_theme_custom_end_time",String.valueOf(random.nextInt(Integer.MAX_VALUE)));
+        secureSettingsMap.put("parental_control_last_update",null);
+        secureSettingsMap.put("tts_default_lang",null);
+        secureSettingsMap.put("tts_default_rate",null);
+        secureSettingsMap.put("device_paired",null);
+        secureSettingsMap.put("location_changer","1");
+        secureSettingsMap.put("tts_default_locale",null);
+        secureSettingsMap.put("lock_biometric_weak_flags",null);
+        secureSettingsMap.put("wifi_watchdog_max_ap_checks",null);
+        secureSettingsMap.put("incall_back_button_behavior",null);
+        secureSettingsMap.put("show_notification_snooze",null);
+        secureSettingsMap.put("user_setup_complete",random.nextBoolean()?"0":"1");
+        secureSettingsMap.put("adb_enabled","0");
+        secureSettingsMap.put("night_display_color_temperature",null);
+        secureSettingsMap.put("global_actions_panel_enabled",null);
+        secureSettingsMap.put("parental_control_enabled",null);
+        secureSettingsMap.put("search_shortcut_refresh_max_pool_size",null);
+        secureSettingsMap.put("skip_gesture_count",null);
+        secureSettingsMap.put("locationCoarseAccuracy",null);
+        secureSettingsMap.put("location_access_check_interval_millis",null);
+        secureSettingsMap.put("accessibility_captioning_edge_color",null);
+        secureSettingsMap.put("assist_gesture_silence_alerts_enabled",null);
+        secureSettingsMap.put("wifi_max_dhcp_retry_count","9");
+        secureSettingsMap.put("lock_screen_lock_after_timeout",null);
+        secureSettingsMap.put("lock_screen_appwidget_ids",null);
+        secureSettingsMap.put("settings_classname",null);
+        secureSettingsMap.put("show_media_when_bypassing",null);
+        secureSettingsMap.put("biometric_app_enabled",null);
+        secureSettingsMap.put("manual_ringer_toggle_count",String.valueOf(random.nextInt(100)));
+        secureSettingsMap.put("autofill_service_search_uri","https://"+randomPackageName(".")+"/"+randomPackageName("/"));
+        secureSettingsMap.put("enabled_accessibility_services",null);
+        secureSettingsMap.put("call_screening_default_component",null);
+        secureSettingsMap.put("aware_enabled",random.nextBoolean()?"0":"1");
+        secureSettingsMap.put("trust_agents_initialized",random.nextBoolean()?"0":"1");
+        secureSettingsMap.put("skip_first_use_hints",null);
+        secureSettingsMap.put("notification_dismiss_rtl",null);
+        secureSettingsMap.put("backup_auto_restore",null);
+        secureSettingsMap.put("ui_night_mode_override_off",null);
+        secureSettingsMap.put("nearby_sharing_component",randomPackageName(".")+"/"+randomPackageName("."));
+        secureSettingsMap.put("disabled_system_input_methods",null);
+        secureSettingsMap.put("search_max_results_to_display",null);
+        secureSettingsMap.put("accessibility_display_daltonizer_enabled",null);
+        secureSettingsMap.put("accessibility_display_magnification_auto_update",null);
+        secureSettingsMap.put("enabled_notification_assistant",null);
+        secureSettingsMap.put("show_first_crash_dialog_dev_option","1");
+        secureSettingsMap.put("tts_use_defaults",null);
+        secureSettingsMap.put("lock_screen_owner_info_enabled",random.nextBoolean()?"0":"1");
+        secureSettingsMap.put("accessibility_shortcut_dialog_shown",null);
+        secureSettingsMap.put("theme_customization_overlay_packages","{\"android.theme.customization.color_both\":\""+random.nextInt()+"\",\"android.theme.customization.color_source\":\""+getRandomString(random.nextInt(10)+1)+"\",\"_applied_timestamp\":"+random.nextLong()+"}");
+        secureSettingsMap.put("charging_vibration_enabled","1");
+        secureSettingsMap.put("accessibility_display_inversion_enabled",null);
+        secureSettingsMap.put("back_gesture_inset_scale_right",null);
+        secureSettingsMap.put("instant_apps_enabled",null);
+        secureSettingsMap.put("search_per_source_concurrent_query_limit",null);
+        secureSettingsMap.put("vr_display_mode",null);
+        secureSettingsMap.put("wifi_watchdog_ping_delay_ms",null);
+        secureSettingsMap.put("selected_spell_checker_subtype",random.nextBoolean()?"0":"1");
+        secureSettingsMap.put("search_promoted_source_deadline_millis",null);
+        secureSettingsMap.put("long_press_timeout",String.valueOf(random.nextInt()));
+        secureSettingsMap.put("dark_theme_custom_start_time",String.valueOf(random.nextLong()));
+        secureSettingsMap.put("unsafe_volume_music_active_ms",String.valueOf(random.nextInt(Integer.MAX_VALUE)));
+        secureSettingsMap.put("aware_tap_pause_gesture_count",null);
+        secureSettingsMap.put("content_capture_enabled",null);
+        secureSettingsMap.put("wifi_watchdog_ping_count",null);
+        secureSettingsMap.put("search_max_source_event_age_millis",null);
+        secureSettingsMap.put("zen_duration",String.valueOf(random.nextInt(Integer.MAX_VALUE)));
+        secureSettingsMap.put("assist_gesture_wake_enabled",null);
+        secureSettingsMap.put("com.android.server.accessibility.MagnificationController",null);
+        secureSettingsMap.put("lock_screen_allow_remote_input",null);
+        secureSettingsMap.put("voice_recognition_service",randomPackageName(".")+"/"+randomPackageName("."));
+        secureSettingsMap.put("power_menu_locked_show_content",random.nextBoolean()?"0":"1");
+        secureSettingsMap.put("assist_screenshot_enabled",null);
+        secureSettingsMap.put("lock_screen_show_silent_notifications",null);
+        secureSettingsMap.put("search_shortcut_refresh_core_pool_size",null);
+        secureSettingsMap.put("nfc_payment_foreground",null);
+        secureSettingsMap.put("face_unlock_app_enabled",null);
+        secureSettingsMap.put("odi_captions_enabled",null);
+        secureSettingsMap.put("accessibility_magnification_mode",null);
+        secureSettingsMap.put("notification_badging",random.nextBoolean()?"0":"1");
+        secureSettingsMap.put("accessibility_button_targets",null);
+        secureSettingsMap.put("screensaver_components",randomPackageName(".")+"/"+randomPackageName("."));
+        secureSettingsMap.put("lock_to_app_exit_locked",null);
+        secureSettingsMap.put("search_max_results_per_source",null);
+        secureSettingsMap.put("voice_interaction_service",getRandomString(random.nextInt(10)+5));
+        secureSettingsMap.put("doze_always_on",null);
+        secureSettingsMap.put("accessibility_display_magnification_scale","2.0");
+        secureSettingsMap.put("charging_sounds_enabled",random.nextBoolean()?"0":"1");
+        secureSettingsMap.put("qs_auto_tiles",randomPackageName(","));
+        secureSettingsMap.put("hush_gesture_used",random.nextBoolean()?"0":"1");
+        secureSettingsMap.put("attentive_timeout",null);
+        secureSettingsMap.put("screensaver_activate_on_dock",random.nextBoolean()?"0":"1");
+        secureSettingsMap.put("backup_transport",randomPackageName("."));
+        secureSettingsMap.put("doze_pulse_on_long_press",null);
+        secureSettingsMap.put("emergency_assistance_application",null);
+        secureSettingsMap.put("assist_gesture_enabled",null);
+        secureSettingsMap.put("flashlight_available",random.nextBoolean()?"0":"1");
+        secureSettingsMap.put("face_unlock_dismisses_keyguard",null);
+        secureSettingsMap.put("autofill_field_classification",random.nextBoolean()?"0":"1");
+        secureSettingsMap.put("search_prefill_millis",null);
+        secureSettingsMap.put("wifi_watchdog_background_check_delay_ms",null);
+        secureSettingsMap.put("input_methods_subtype_history",randomPackageName(".")+"/"+randomPackageName(".")+";"+random.nextInt()+":"+randomPackageName(".")+"/."+getRandomString(random.nextInt(10)+3)+";"+random.nextInt());
+        secureSettingsMap.put("minimal_post_processing_allowed",null);
+        secureSettingsMap.put("mock_location","0");
+        secureSettingsMap.put("font_weight_adjustment",null);
+        secureSettingsMap.put("autofill_service",randomPackageName(".")+"/"+randomPackageName("."));
+        secureSettingsMap.put("backup_local_transport_parameters",null);
+        secureSettingsMap.put("accessibility_captioning_font_scale",null);
+        secureSettingsMap.put("rtt_calling_mode",random.nextBoolean()?"0":"1");
+        secureSettingsMap.put("automatic_storage_manager_enabled",null);
+        secureSettingsMap.put("sync_parent_sounds",random.nextBoolean()?"0":"1");
+        secureSettingsMap.put("anr_show_background",random.nextBoolean()?"0":"1");
+        secureSettingsMap.put("search_query_thread_core_pool_size",null);
+        secureSettingsMap.put("lock_screen_owner_info",null);
+        secureSettingsMap.put("show_rotation_suggestions",null);
+        secureSettingsMap.put("docked_clock_face",null);
+        secureSettingsMap.put("accessibility_soft_keyboard_mode",null);
+        secureSettingsMap.put("in_call_notification_enabled",null);
+        secureSettingsMap.put("automatic_storage_manager_turned_off_by_policy",null);
+        secureSettingsMap.put("screensaver_enabled",random.nextBoolean()?"0":"1");
+        secureSettingsMap.put("mount_play_not_snd",random.nextBoolean()?"0":"1");
+        secureSettingsMap.put("doze_tap_gesture",null);
+        secureSettingsMap.put("notification_bubbles",random.nextBoolean()?"0":"1");
+        secureSettingsMap.put("search_min_impressions_for_source_ranking",null);
+        secureSettingsMap.put("accessibility_captioning_enabled",null);
+        secureSettingsMap.put("wifi_watchdog_initial_ignored_ping_count",null);
+        secureSettingsMap.put("wifi_networks_available_repeat_delay",null);
+        secureSettingsMap.put("accessibility_display_daltonizer",null);
+        secureSettingsMap.put("mount_ums_notify_enabled",random.nextBoolean()?"0":"1");
+        secureSettingsMap.put("face_unlock_attention_required",null);
+        secureSettingsMap.put("suggested.completed_category.",null);
+        secureSettingsMap.put("accessibility_shortcut_on_lock_screen",null);
+        secureSettingsMap.put("tty_mode_enabled",null);
+        secureSettingsMap.put("wifi_watchdog_background_check_enabled",null);
+        secureSettingsMap.put("automatic_storage_manager_days_to_retain",null);
+        secureSettingsMap.put("silence_gesture",random.nextBoolean()?"0":"1");
+        secureSettingsMap.put("controls_enabled",null);
+        secureSettingsMap.put("search_min_clicks_for_source_ranking",null);
+        secureSettingsMap.put("logging_id",null);
+        secureSettingsMap.put("accessibility_large_pointer_icon",null);
+        secureSettingsMap.put("print_service_search_uri","https://"+randomPackageName(".")+"/"+randomPackageName("/"));
+        secureSettingsMap.put("data_roaming",random.nextBoolean()?"0":"1");
+        secureSettingsMap.put("android_id",getRandomHexlower(16));
+        secureSettingsMap.put("silence_timer_touch_count",null);
+        secureSettingsMap.put("location_access_check_delay_millis",null);
+        secureSettingsMap.put("show_zen_upgrade_notification",null);
+        secureSettingsMap.put("touch_exploration_enabled",random.nextBoolean()?"0":"1");
+        secureSettingsMap.put("night_display_activated",null);
+        secureSettingsMap.put("global_actions_panel_available",null);
+        secureSettingsMap.put("face_unlock_always_require_confirmation",null);
+        secureSettingsMap.put("high_text_contrast_enabled",null);
+        secureSettingsMap.put("aware_tap_pause_touch_count",null);
+        secureSettingsMap.put("sysui_qs_tiles",randomPackageName(",")+","+randomPackageName(","));
+        secureSettingsMap.put("system_navigation_keys_enabled",null);
+        secureSettingsMap.put("spell_checker_enabled",random.nextBoolean()?"0":"1");
+        secureSettingsMap.put("skip_touch_count",null);
+        secureSettingsMap.put("ui_translation_enabled",null);
+        secureSettingsMap.put("zen_settings_suggestion_viewed",random.nextBoolean()?"0":"1");
+        secureSettingsMap.put("flashlight_enabled",random.nextBoolean()?"0":"1");
+        secureSettingsMap.put("enabled_notification_listeners",getRandomString(random.nextInt(10)+1));
+        secureSettingsMap.put("trust_agents_extend_unlock",null);
+        secureSettingsMap.put("search_max_shortcuts_returned",null);
+        secureSettingsMap.put("suppress_doze",null);
+        secureSettingsMap.put("navigation_mode",String.valueOf(random.nextInt()));
+        secureSettingsMap.put("wifi_watchdog_ap_count",null);
+        secureSettingsMap.put("doze_pulse_on_double_tap",null);
+        secureSettingsMap.put("people_strip",null);
+        secureSettingsMap.put("tts_default_pitch",null);
+        secureSettingsMap.put("tts_default_synth",null);
+        secureSettingsMap.put("accessibility_non_interactive_ui_timeout_ms",null);
+        secureSettingsMap.put("display_white_balance_enabled",null);
+        secureSettingsMap.put("tts_default_variant",null);
+        secureSettingsMap.put("carrier_apps_handled",null);
+        secureSettingsMap.put("enabled_notification_policy_access_packages",null);
+        secureSettingsMap.put("low_power_manual_activation_count",String.valueOf(random.nextInt()));
+        secureSettingsMap.put("doze_wake_screen_gesture",null);
+        secureSettingsMap.put("search_query_thread_max_pool_size",null);
+        secureSettingsMap.put("ui_night_mode",String.valueOf(random.nextInt()));
+        secureSettingsMap.put("selected_input_method_subtype",String.valueOf(random.nextInt()));
+        secureSettingsMap.put("biometric_keyguard_enabled",null);
+        secureSettingsMap.put("skip_gesture",random.nextBoolean()?"0":"1");
+        secureSettingsMap.put("http_proxy",null);
+        secureSettingsMap.put("assist_gesture_sensitivity",null);
+        secureSettingsMap.put("parental_control_redirect_url",null);
+        secureSettingsMap.put("mount_ums_prompt",String.valueOf(random.nextInt()));
+        secureSettingsMap.put("notification_history_enabled",null);
+        secureSettingsMap.put("background_data",null);
+        secureSettingsMap.put("always_on_vpn_lockdown_whitelist",null);
+        secureSettingsMap.put("wifi_on",random.nextBoolean()?"0":"1");
+        secureSettingsMap.put("device_provisioned",random.nextBoolean()?"0":"1");
+        secureSettingsMap.put("search_num_promoted_sources",null);
+        secureSettingsMap.put("selected_spell_checker",getRandomString(random.nextInt(10)+8));
+        secureSettingsMap.put("last_setup_shown",null);
+        secureSettingsMap.put("assistant",getRandomString(random.nextInt(10)+3));
+        secureSettingsMap.put("screensaver_default_component",randomPackageName(".")+"/"+randomPackageName("."));
+        secureSettingsMap.put("mount_ums_autostart",random.nextBoolean()?"0":"1");
+        secureSettingsMap.put("assist_disclosure_enabled",null);
+        secureSettingsMap.put("autofill_user_data_max_field_classification_size",null);
+        secureSettingsMap.put("search_source_timeout_millis",null);
+        secureSettingsMap.put("payment_service_search_uri",null);
+        secureSettingsMap.put("enhanced_voice_privacy_enabled",null);
+        secureSettingsMap.put("show_note_about_notification_hiding",null);
+        secureSettingsMap.put("night_display_custom_start_time",null);
+        secureSettingsMap.put("sms_default_application",null);
+        secureSettingsMap.put("doze_pulse_on_pick_up",null);
+        secureSettingsMap.put("automatic_storage_manager_last_run",null);
+        secureSettingsMap.put("accessibility_autoclick_enabled",null);
+        secureSettingsMap.put("always_on_vpn_lockdown",null);
+        secureSettingsMap.put("autofill_user_data_min_value_length",null);
+        secureSettingsMap.put("skip_gesture_direction",null);
+        secureSettingsMap.put("enabled_print_services",null);
+        secureSettingsMap.put("bubble_important_conversations",null);
+        secureSettingsMap.put("install_non_market_apps",random.nextBoolean()?"0":"1");
+        secureSettingsMap.put("suppress_auto_battery_saver_suggestion",random.nextBoolean()?"0":"1");
+        secureSettingsMap.put("autofill_user_data_max_value_length",null);
+        secureSettingsMap.put("usb_mass_storage_enabled",random.nextBoolean()?"0":"1");
+        secureSettingsMap.put("wifi_num_open_networks_kept",null);
+        secureSettingsMap.put("face_unlock_keyguard_enabled",null);
+        secureSettingsMap.put("keyguard_slice_uri",null);
+        secureSettingsMap.put("managed_profile_contact_remote_search",null);
+        secureSettingsMap.put("show_ime_with_hard_keyboard",random.nextBoolean()?"0":"1");
+        secureSettingsMap.put("use_google_mail",null);
+        secureSettingsMap.put("autofill_user_data_max_user_data_size",null);
+        secureSettingsMap.put("accessibility_enabled",random.nextBoolean()?"0":"1");
+        secureSettingsMap.put("accessibility_captioning_edge_type",null);
+        secureSettingsMap.put("ui_night_mode_override_on",null);
+        secureSettingsMap.put("face_unlock_re_enroll",null);
+        secureSettingsMap.put("accessibility_autoclick_delay",null);
+        secureSettingsMap.put("nas_settings_updated",random.nextBoolean()?"0":"1");
+        secureSettingsMap.put("lock_screen_when_trust_lost",null);
+        secureSettingsMap.put("silence_call_touch_count",null);
+        secureSettingsMap.put("touch_exploration_granted_accessibility_services",null);
+        secureSettingsMap.put("multi_press_timeout",String.valueOf(random.nextInt(900)));
+        secureSettingsMap.put("wifi_watchdog_acceptable_packet_loss_percentage",null);
+        secureSettingsMap.put("tap_gesture",null);
+        secureSettingsMap.put("tts_default_country",null);
+        secureSettingsMap.put("accessibility_captioning_window_color",null);
+        secureSettingsMap.put("accessibility_display_magnification_enabled",random.nextBoolean()?"0":"1");
+        secureSettingsMap.put("accessibility_captioning_locale",null);
+        secureSettingsMap.put("location_permissions_upgrade_to_q_mode",null);
+        secureSettingsMap.put("camera_gesture_disabled",null);
+        secureSettingsMap.put("user_setup_personalization_state",null);
+        secureSettingsMap.put("accessibility_captioning_preset",null);
+        secureSettingsMap.put("accessibility_button_target_component",null);
+        secureSettingsMap.put("cmas_additional_broadcast_pkg",null);
+        secureSettingsMap.put("usb_audio_automatic_routing_disabled",random.nextBoolean()?"0":"1");
+        secureSettingsMap.put("night_display_last_activated_time",null);
+        secureSettingsMap.put("tv_user_setup_complete",null);
+        secureSettingsMap.put("enabled_input_methods",randomPackageName(".")+"/"+randomPackageName("."));
+        secureSettingsMap.put("input_method_selector_visibility",null);
+        secureSettingsMap.put("cross_profile_calendar_enabled",null);
+        secureSettingsMap.put("accessibility_display_magnification_navbar_enabled",null);
+    }
+    public static final Map<String,String> systemSettingsMap = new HashMap<>();
+    static {
+        systemSettingsMap.put("car_undock_sound",getRandomString(random.nextInt(10)+1));//"/product/media/audio/ui/Undock.ogg"
         systemSettingsMap.put("media_button_receiver",null);
         systemSettingsMap.put("ring_vibration_intensity",null);
         systemSettingsMap.put("network_preference",null);
@@ -72,17 +370,17 @@ public class FakeProviderSettings {
         systemSettingsMap.put("wifi_static_dns2",null);
         systemSettingsMap.put("bluetooth_discoverability_timeout",null);
         systemSettingsMap.put("alarm_alert_cache",null);
-        systemSettingsMap.put("mode_ringer","0");
+        systemSettingsMap.put("mode_ringer",random.nextBoolean()?"0":"1");
         systemSettingsMap.put("notification_light_pulse","1");
         systemSettingsMap.put("when_to_make_wifi_calls",null);
         systemSettingsMap.put("wifi_networks_available_notification_on",String.valueOf(random.nextBoolean()?0:1));
         systemSettingsMap.put("location_providers_allowed",null);
-        systemSettingsMap.put("notification_sound",getRandomString(10));//"content://media/internal/audio/media/183?title=Argon&canonical=1"
-        systemSettingsMap.put("advanced_settings",getRandomString(10));//null
-        systemSettingsMap.put("wifi_static_netmask",getRandomString(10));//null
-        systemSettingsMap.put("notification_sound_cache",getRandomString(10));//null
+        systemSettingsMap.put("notification_sound",getRandomString(random.nextInt(10)+1));//"content://media/internal/audio/media/183?title=Argon&canonical=1"
+        systemSettingsMap.put("advanced_settings",getRandomString(random.nextInt(10)+1));//null
+        systemSettingsMap.put("wifi_static_netmask",getRandomString(random.nextInt(10)+1));//null
+        systemSettingsMap.put("notification_sound_cache",getRandomString(random.nextInt(10)+1));//null
         systemSettingsMap.put("bluetooth_on",String.valueOf(random.nextBoolean()?0:1));
-        systemSettingsMap.put("next_alarm_formatted",getRandomString(10));//"周五13:30"
+        systemSettingsMap.put("next_alarm_formatted",getRandomString(random.nextInt(10)+1));//"周五13:30"
         systemSettingsMap.put("volume_alarm",String.valueOf(1+random.nextInt(10)));//"6"
         systemSettingsMap.put("volume_music",String.valueOf(1+random.nextInt(10)));//5
         systemSettingsMap.put("volume_voice",String.valueOf(1+random.nextInt(10)));//4
@@ -90,7 +388,7 @@ public class FakeProviderSettings {
         systemSettingsMap.put("wifi_watchdog_on",null);
         systemSettingsMap.put("wifi_watchdog_ping_timeout_ms",null);
         systemSettingsMap.put("SHOW_GTALK_SERVICE_STATUS",null);
-        systemSettingsMap.put("ringtone",getRandomString(10));//"content://0@media/external/audio/media/565?title=%E6%83%91%E6%98%9FFloating&canonical=1"
+        systemSettingsMap.put("ringtone",getRandomString(random.nextInt(10)+1));//"content://0@media/external/audio/media/565?title=%E6%83%91%E6%98%9FFloating&canonical=1"
         systemSettingsMap.put("adaptive_sleep",null);
         systemSettingsMap.put("haptic_feedback_intensity",null);
         systemSettingsMap.put("show_web_suggestions",null);
@@ -105,10 +403,10 @@ public class FakeProviderSettings {
         systemSettingsMap.put("lock_to_app_enabled",null);
         systemSettingsMap.put("sip_call_options",null);
         systemSettingsMap.put("adb_enabled","0");
-        systemSettingsMap.put("unlock_sound",getRandomString(10));//"/product/media/audio/ui/Unlock.ogg"
+        systemSettingsMap.put("unlock_sound",getRandomString(random.nextInt(10)+1));//"/product/media/audio/ui/Unlock.ogg"
         systemSettingsMap.put("multi_audio_focus_enabled",null);
         systemSettingsMap.put("parental_control_enabled",null);
-        systemSettingsMap.put("airplane_mode_radios",getRandomString(10));//"cell,bluetooth,wifi,nfc,wimax"
+        systemSettingsMap.put("airplane_mode_radios",getRandomString(random.nextInt(10)+1));//"cell,bluetooth,wifi,nfc,wimax"
         systemSettingsMap.put("volume_a11y",null);
         systemSettingsMap.put("volume_ring",String.valueOf(1+random.nextInt(10)));//5
         systemSettingsMap.put("wifi_max_dhcp_retry_count",String.valueOf(1+random.nextInt(10)));//9
@@ -117,7 +415,7 @@ public class FakeProviderSettings {
         systemSettingsMap.put("screen_auto_brightness_adj","0.0");
         systemSettingsMap.put("always_finish_activities","0");
         systemSettingsMap.put("notifications_use_ring_volume",null);
-        systemSettingsMap.put("airplane_mode_toggleable_radios",getRandomString(10));//"bluetooth,wifi,nfc"
+        systemSettingsMap.put("airplane_mode_toggleable_radios",getRandomString(random.nextInt(10)+1));//"bluetooth,wifi,nfc"
         systemSettingsMap.put("screen_brightness_mode",String.valueOf(random.nextBoolean()?0:1));
         systemSettingsMap.put("mute_streams_affected",String.valueOf(30+random.nextInt(100)));//111
         systemSettingsMap.put("lockscreen.disabled",null);
@@ -128,7 +426,7 @@ public class FakeProviderSettings {
         systemSettingsMap.put("dim_screen","1");
         systemSettingsMap.put("end_button_behavior","2");
         systemSettingsMap.put("wifi_watchdog_ping_count",null);
-        systemSettingsMap.put("desk_undock_sound",getRandomString(10));//"/product/media/audio/ui/Undock.ogg"
+        systemSettingsMap.put("desk_undock_sound",getRandomString(random.nextInt(10)+1));//"/product/media/audio/ui/Undock.ogg"
         systemSettingsMap.put("debug_app",null);
         systemSettingsMap.put("wifi_sleep_policy",String.valueOf(1+random.nextInt(10)));//2
         systemSettingsMap.put("dock_sounds_enabled",String.valueOf(random.nextBoolean()?0:1));
@@ -140,21 +438,21 @@ public class FakeProviderSettings {
         systemSettingsMap.put("lockscreen_sounds_enabled",String.valueOf(random.nextBoolean()?0:1));//1
         systemSettingsMap.put("nfc",null);
         systemSettingsMap.put("cell",null);
-        systemSettingsMap.put("wifi",getRandomString(20));
+        systemSettingsMap.put("wifi",getRandomString(random.nextInt(20)+1));
         systemSettingsMap.put("user_rotation","0");
         systemSettingsMap.put("accelerometer_rotation","0");
         systemSettingsMap.put("SIP_ALWAYS",null);
         systemSettingsMap.put("wimax",null);
         systemSettingsMap.put("wifi_watchdog_background_check_delay_ms",null);
         systemSettingsMap.put("auto_punctuate",null);
-        systemSettingsMap.put("car_dock_sound",getRandomString(10));//"/product/media/audio/ui/Dock.ogg");
+        systemSettingsMap.put("car_dock_sound",getRandomString(random.nextInt(10)+1));//"/product/media/audio/ui/Dock.ogg");
         systemSettingsMap.put("screen_off_timeout",String.valueOf(Math.abs(random.nextLong())));//"1800000"
         systemSettingsMap.put("show_touches",String.valueOf(random.nextBoolean()?0:1));
         systemSettingsMap.put("vibrate_when_ringing",String.valueOf(random.nextBoolean()?0:1));
         systemSettingsMap.put("power_sounds_enabled",String.valueOf(random.nextBoolean()?0:1));
         systemSettingsMap.put("stay_on_while_plugged_in",String.valueOf(random.nextBoolean()?0:1));
         systemSettingsMap.put("hide_rotation_lock_toggle_for_accessibility","0");
-        systemSettingsMap.put("alarm_alert",getRandomString(10));//"content://media/internal/audio/media/235?title=Hassium&canonical=1"
+        systemSettingsMap.put("alarm_alert",getRandomString(random.nextInt(10)+1));//"content://media/internal/audio/media/235?title=Hassium&canonical=1"
         systemSettingsMap.put("wifi_watchdog_initial_ignored_ping_count",null);
         systemSettingsMap.put("pointer_speed",String.valueOf(random.nextBoolean()?0:1));
         systemSettingsMap.put("wifi_networks_available_repeat_delay",null);
@@ -170,8 +468,8 @@ public class FakeProviderSettings {
         systemSettingsMap.put("wifi_static_gateway",null);
         systemSettingsMap.put("dtmf_tone_type","0");
         systemSettingsMap.put("dtmf_tone","0");
-        systemSettingsMap.put("airplane_mode_on","0");
-        systemSettingsMap.put("low_battery_sound",getRandomString(10));//"/product/media/audio/ui/LowBattery.ogg"
+        systemSettingsMap.put("airplane_mode_on",random.nextBoolean()?"0":"1");
+        systemSettingsMap.put("low_battery_sound",getRandomString(random.nextInt(10)+1));//"/product/media/audio/ui/LowBattery.ogg"
         systemSettingsMap.put("date_format",null);
         systemSettingsMap.put("volume_master",null);
         systemSettingsMap.put("wait_for_debugger","0");
@@ -184,7 +482,7 @@ public class FakeProviderSettings {
         systemSettingsMap.put("bluetooth_discoverability",null);
         systemSettingsMap.put("volume_system",String.valueOf(1+random.nextInt(10)));
         systemSettingsMap.put("master_mono",null);
-        systemSettingsMap.put("lock_sound",getRandomString(10));//"/product/media/audio/ui/Lock.ogg"
+        systemSettingsMap.put("lock_sound",getRandomString(random.nextInt(10)+1));//"/product/media/audio/ui/Lock.ogg"
         systemSettingsMap.put("status_bar_show_battery_percent",null);
         systemSettingsMap.put("auto_time_zone","1");
         systemSettingsMap.put("http_proxy",null);
@@ -212,10 +510,511 @@ public class FakeProviderSettings {
         systemSettingsMap.put("SIP_ADDRESS_ONLY",null);
         systemSettingsMap.put("notification_vibration_intensity",null);
         systemSettingsMap.put("haptic_feedback_enabled",String.valueOf(random.nextBoolean()?0:1));//0
-        systemSettingsMap.put("desk_dock_sound",getRandomString(10));//"/product/media/audio/ui/Dock.ogg");
+        systemSettingsMap.put("desk_dock_sound",getRandomString(random.nextInt(10)+1));//"/product/media/audio/ui/Dock.ogg");
         systemSettingsMap.put("setup_wizard_has_run",null);
         systemSettingsMap.put("window_orientation_listener_log",null);
         systemSettingsMap.put("_last_audible",null);
         systemSettingsMap.put("animator_duration_scale",String.valueOf(1.0 + randomSmallDouble(1.0)));
+    }
+    public static final Map<String,String> globalSettingsMap = new HashMap<>();
+    static {
+        globalSettingsMap.put("show_usb_temperature_alarm",null);
+        globalSettingsMap.put("are_user_disabled_hdr_formats_allowed",null);
+        globalSettingsMap.put("wifi_ephemeral_out_of_range_timeout_ms",null);
+        globalSettingsMap.put("battery_discharge_duration_threshold",null);
+        globalSettingsMap.put("carrier_app_names",randomPackageName(".")+":"+getRandomString(random.nextInt(10)+5));
+        globalSettingsMap.put("adb_wifi_enabled","0");
+        globalSettingsMap.put("show_new_app_installed_notification_enabled",null);
+        globalSettingsMap.put("nitz_update_diff",null);
+        globalSettingsMap.put("low_battery_sound_timeout",random.nextBoolean()?"0":"1");
+        globalSettingsMap.put("sys_storage_cache_percentage",null);
+        globalSettingsMap.put("car_undock_sound",randomPackageName("/")+"."+getRandomString(random.nextInt(5)+2));
+        globalSettingsMap.put("enable_cellular_on_boot",random.nextBoolean()?"0":"1");
+        globalSettingsMap.put("gpu_debug_layer_app",null);
+        globalSettingsMap.put("netpolicy_quota_limited",null);
+        globalSettingsMap.put("enable_freeform_support",random.nextBoolean()?"0":"1");
+        globalSettingsMap.put("show_notification_channel_warnings",random.nextBoolean()?"0":"1");
+        globalSettingsMap.put("hdmi_control_enabled",null);
+        globalSettingsMap.put("app_time_limit_usage_source",null);
+        globalSettingsMap.put("shortcut_manager_constants",null);
+        globalSettingsMap.put("bluetooth_input_device_priority_",null);
+        globalSettingsMap.put("power_button_very_long_press",null);
+        globalSettingsMap.put("time_remaining_estimate_based_on_usage",random.nextBoolean()?"0":"1");
+        globalSettingsMap.put("bcast_bg_constants",null);
+        globalSettingsMap.put("network_preference",null);
+        globalSettingsMap.put("connectivity_metrics_buffer_size",null);
+        globalSettingsMap.put("volte_vt_enabled",null);
+        globalSettingsMap.put("global_proxy_pac_url",null);
+        globalSettingsMap.put("development_settings_enabled","0");
+        globalSettingsMap.put("enable_restricted_bucket",null);
+        globalSettingsMap.put("window_animation_scale","1.0");
+        globalSettingsMap.put("device_policy_constants",null);
+        globalSettingsMap.put("wifi_mobile_data_transition_wakelock_timeout_ms",null);
+        globalSettingsMap.put("battery_stats_constants",null);
+        globalSettingsMap.put("network_switch_notification_daily_limit",null);
+        globalSettingsMap.put("netstats_uid_tag_rotate_age",null);
+        globalSettingsMap.put("autofill_max_visible_datasets",null);
+        globalSettingsMap.put("blocking_helper_streak_limit",null);
+        globalSettingsMap.put("netpolicy_quota_frac_multipath",null);
+        globalSettingsMap.put("app_integrity_verification_timeout",null);
+        globalSettingsMap.put("instant_app_dexopt_enabled",null);
+        globalSettingsMap.put("force_allow_on_external","0");
+        globalSettingsMap.put("lang_id_content_url",null);
+        globalSettingsMap.put("settings_use_psd_api",null);
+        globalSettingsMap.put("power_button_suppression_delay_after_gesture_wake",null);
+        globalSettingsMap.put("activity_manager_constants",null);
+        globalSettingsMap.put("show_zen_settings_suggestion",random.nextBoolean()?"0":"1");
+        globalSettingsMap.put("tether_offload_disabled",random.nextBoolean()?"0":"1");
+        globalSettingsMap.put("euicc_supported_countries",null);
+        globalSettingsMap.put("netstats_sample_enabled",null);
+        globalSettingsMap.put("blocked_slices",null);
+        globalSettingsMap.put("wifi_bounce_delay_override_ms",null);
+        globalSettingsMap.put("app_ops_constants",null);
+        globalSettingsMap.put("ble_scan_balanced_interval_ms",null);
+        globalSettingsMap.put("network_switch_notification_rate_limit_millis",null);
+        globalSettingsMap.put("encoded_surround_output",null);
+        globalSettingsMap.put("low_power_sticky_auto_disable_enabled",random.nextBoolean()?"0":"1");
+        globalSettingsMap.put("battery_estimates_last_update_time",String.valueOf(random.nextLong()));
+        globalSettingsMap.put("contact_metadata_sync",null);
+        globalSettingsMap.put("sys_free_storage_log_interval",null);
+        globalSettingsMap.put("verifier_timeout",String.valueOf(random.nextInt(Integer.MAX_VALUE)));
+        globalSettingsMap.put("storage_settings_clobber_threshold",null);
+        globalSettingsMap.put("angle_gl_driver_selection_pkgs",null);
+        globalSettingsMap.put("mode_ringer",random.nextBoolean()?"0":"1");
+        globalSettingsMap.put("bluetooth_a2dp_sink_priority_",null);
+        globalSettingsMap.put("hdmi_cec_switch_enabled",null);
+        globalSettingsMap.put("default_install_location",random.nextBoolean()?"0":"1");
+        globalSettingsMap.put("wifi_display_on",random.nextBoolean()?"0":"1");
+        globalSettingsMap.put("max_error_bytes_for_",null);
+        globalSettingsMap.put("device_name",getRandomString(random.nextInt(20)+5));
+        globalSettingsMap.put("read_external_storage_enforced_default",null);
+        globalSettingsMap.put("wifi_networks_available_notification_on",random.nextBoolean()?"0":"1");
+        globalSettingsMap.put("wifi_watchdog_poor_network_test_enabled",null);
+        globalSettingsMap.put("pac_change_delay",null);
+        globalSettingsMap.put("dns_resolver_success_threshold_percent",null);
+        globalSettingsMap.put("zen_settings_updated",random.nextBoolean()?"0":"1");
+        globalSettingsMap.put("ble_scan_low_power_window_ms",null);
+        globalSettingsMap.put("dock_sounds_enabled_when_accessbility",random.nextBoolean()?"0":"1");
+        globalSettingsMap.put("hdmi_system_audio_control_enabled",null);
+        globalSettingsMap.put("netstats_augment_enabled",null);
+        globalSettingsMap.put("radio_bug_wakelock_timeout_count_threshold",null);
+        globalSettingsMap.put("pdp_watchdog_trigger_packet_count",null);
+        globalSettingsMap.put("nitz_update_spacing",null);
+        globalSettingsMap.put("bcast_fg_constants",null);
+        globalSettingsMap.put("modem_stack_enabled_for_slot",null);
+        globalSettingsMap.put("uninstalled_instant_app_min_cache_period",null);
+        globalSettingsMap.put("activity_starts_logging_enabled",null);
+        globalSettingsMap.put("bluetooth_sap_priority_",null);
+        globalSettingsMap.put("bluetooth_on",random.nextBoolean()?"0":"1");
+        globalSettingsMap.put("enable_diskstats_logging",null);
+        globalSettingsMap.put("apn_db_metadata_url",null);
+        globalSettingsMap.put("uninstalled_instant_app_max_cache_period",null);
+        globalSettingsMap.put("battery_discharge_threshold",null);
+        globalSettingsMap.put("low_power_trigger_level",String.valueOf(random.nextInt()));
+        globalSettingsMap.put("sync_max_retry_delay_in_seconds",null);
+        globalSettingsMap.put("dynamic_power_savings_disable_threshold",null);
+        globalSettingsMap.put("show_hidden_icon_apps_enabled",random.nextBoolean()?"0":"1");
+        globalSettingsMap.put("bugreport_in_power_menu",random.nextBoolean()?"0":"1");
+        globalSettingsMap.put("text_classifier_constants",null);
+        globalSettingsMap.put("mdc_initial_max_retry",null);
+        globalSettingsMap.put("mobile_data","1");
+        globalSettingsMap.put("network_watchlist_last_report_time",String.valueOf(random.nextLong()));
+        globalSettingsMap.put("wifi_watchdog_on",null);
+        globalSettingsMap.put("speed_label_cache_eviction_age_millis",null);
+        globalSettingsMap.put("autofill_logging_level",random.nextBoolean()?"0":"1");
+        globalSettingsMap.put("database_creation_buildid",randomPackageName("."));
+        globalSettingsMap.put("captive_portal_fallback_probe_specs",null);
+        globalSettingsMap.put("block_untrusted_touches",null);
+        globalSettingsMap.put("native_flags_health_check_enabled",null);
+        globalSettingsMap.put("mhl_input_switching_enabled",null);
+        globalSettingsMap.put("art_verifier_verify_debuggable","0");
+        globalSettingsMap.put("emergency_tone",random.nextBoolean()?"0":"1");
+        globalSettingsMap.put("fstrim_mandatory_interval",null);
+        globalSettingsMap.put("bluetooth_pan_priority_",null);
+        globalSettingsMap.put("cert_pin_content_url","https://"+randomPackageName(".")+"/"+randomPackageName("/")+"."+getRandomString(random.nextInt(3)+2));
+        globalSettingsMap.put("show_angle_in_use_dialog_box",null);
+        globalSettingsMap.put("hidden_api_policy",random.nextBoolean()?"0":"1");
+        globalSettingsMap.put("wfc_ims_enabled",null);
+        globalSettingsMap.put("adb_allowed_connection_time",null);
+        globalSettingsMap.put("verifier_setting_visible",null);
+        globalSettingsMap.put("intent_firewall_content_url",null);
+        globalSettingsMap.put("multi_sim_sms_prompt",null);
+        globalSettingsMap.put("max_sound_trigger_detection_service_ops_per_day",String.valueOf(random.nextInt()));
+        globalSettingsMap.put("selinux_status",null);
+        globalSettingsMap.put("netstats_dev_rotate_age",null);
+        globalSettingsMap.put("add_users_when_locked",null);
+        globalSettingsMap.put("use_open_wifi_package",null);
+        globalSettingsMap.put("wifi_idle_ms",null);
+        globalSettingsMap.put("dock_audio_media_enabled",random.nextBoolean()?"0":"1");
+        globalSettingsMap.put("warning_temperature",null);
+        globalSettingsMap.put("dropbox_age_seconds",null);
+        globalSettingsMap.put("anomaly_config_version",null);
+        globalSettingsMap.put("verifier_verify_adb_installs",null);
+        globalSettingsMap.put("show_mute_in_crash_dialog",null);
+        globalSettingsMap.put("fps_divisor",null);
+        globalSettingsMap.put("emulate_display_cutout",null);
+        globalSettingsMap.put("autofill_max_partitions_size",null);
+        globalSettingsMap.put("netstats_dev_persist_bytes",null);
+        globalSettingsMap.put("nsd_on",null);
+        globalSettingsMap.put("ble_scan_always_enabled",null);
+        globalSettingsMap.put("netpolicy_override_enabled",null);
+        globalSettingsMap.put("dropbox_max_files",null);
+        globalSettingsMap.put("euicc_removing_invisible_profiles_timeout_millis",null);
+        globalSettingsMap.put("conversation_actions_content_url",null);
+        globalSettingsMap.put("enable_gpu_debug_layers",null);
+        globalSettingsMap.put("adb_enabled","0");
+        globalSettingsMap.put("network_access_timeout_ms",null);
+        globalSettingsMap.put("trusted_sound",randomPackageName("/")+"."+getRandomString(random.nextInt(4)+2));
+        globalSettingsMap.put("setup_prepaid_detection_target_url",null);
+        globalSettingsMap.put("ntp_timeout",null);
+        globalSettingsMap.put("unlock_sound",randomPackageName("/")+"."+getRandomString(random.nextInt(4)+2));
+        globalSettingsMap.put("setup_prepaid_data_service_url",null);
+        globalSettingsMap.put("enable_automatic_system_server_heap_dumps",null);
+        globalSettingsMap.put("force_resizable_activities",random.nextBoolean()?"0":"1");
+        globalSettingsMap.put("wifi_framework_scan_interval_ms",null);
+        globalSettingsMap.put("looper_stats",null);
+        globalSettingsMap.put("euicc_provisioned",null);
+        globalSettingsMap.put("mhl_power_charge_enabled",null);
+        globalSettingsMap.put("app_auto_restriction_enabled",random.nextBoolean()?"0":"1");
+        globalSettingsMap.put("airplane_mode_radios",randomPackageName(","));
+        globalSettingsMap.put("wifi_scan_throttle_enabled",null);
+        globalSettingsMap.put("updatable_driver_prerelease_opt_in_apps",null);
+        globalSettingsMap.put("wifi_max_dhcp_retry_count",String.valueOf(random.nextInt()));
+        globalSettingsMap.put("low_power_trigger_level_max",null);
+        globalSettingsMap.put("bluetooth_a2dp_supports_optional_codecs_",null);
+        globalSettingsMap.put("allow_user_switching_when_system_user_locked",null);
+        globalSettingsMap.put("tzinfo_content_url",null);
+        globalSettingsMap.put("netstats_time_cache_max_age",null);
+        globalSettingsMap.put("always_finish_activities","0");
+        globalSettingsMap.put("carrier_app_whitelist",getRandomHexUpper(64)+":"+randomPackageName("."));
+        globalSettingsMap.put("webview_multiprocess",null);
+        globalSettingsMap.put("captive_portal_user_agent",null);
+        globalSettingsMap.put("airplane_mode_toggleable_radios",randomPackageName(","));
+        globalSettingsMap.put("adaptive_battery_management_enabled",null);
+        globalSettingsMap.put("data_stall_alarm_aggressive_delay_in_ms",null);
+        globalSettingsMap.put("sys_storage_full_threshold_bytes",null);
+        globalSettingsMap.put("network_scoring_provisioned",null);
+        globalSettingsMap.put("zram_enabled",null);
+        globalSettingsMap.put("kernel_cpu_thread_reader",null);
+        globalSettingsMap.put("heads_up_notifications_enabled",random.nextBoolean()?"0":"1");
+        globalSettingsMap.put("low_power",random.nextBoolean()?"0":"1");
+        globalSettingsMap.put("tether_dun_apn",null);
+        globalSettingsMap.put("gnss_hal_location_request_duration_millis",null);
+        globalSettingsMap.put("wifi_scan_interval_p2p_connected_ms",null);
+        globalSettingsMap.put("sms_short_code_rule",null);
+        globalSettingsMap.put("netstats_poll_interval",null);
+        globalSettingsMap.put("app_binding_constants",null);
+        globalSettingsMap.put("policy_control",null);
+        globalSettingsMap.put("charging_vibration_enabled",random.nextBoolean()?"0":"1");
+        globalSettingsMap.put("sms_short_codes_metadata_url","https://"+randomPackageName(".")+"/"+randomPackageName("/")+"."+getRandomString(random.nextInt(3)+2));
+        globalSettingsMap.put("location_settings_link_to_permissions_enabled",null);
+        globalSettingsMap.put("charging_started_sound","content://"+randomPackageName("/"));
+        globalSettingsMap.put("tether_supported",null);
+        globalSettingsMap.put("selinux_metadata_url",null);
+        globalSettingsMap.put("zen_mode_ringer_level",random.nextBoolean()?"0":"1");
+        globalSettingsMap.put("selinux_content_url",null);
+        globalSettingsMap.put("user_disabled_hdr_formats",String.valueOf(random.nextInt(32)));
+        globalSettingsMap.put("dropbox:",null);
+        globalSettingsMap.put("vt_ims_enabled",null);
+        globalSettingsMap.put("preferred_network_mode",String.valueOf(random.nextInt(32)));
+        globalSettingsMap.put("sys_storage_threshold_percentage",null);
+        globalSettingsMap.put("text_classifier_action_model_params",null);
+        globalSettingsMap.put("bluetooth_disabled_profiles",random.nextBoolean()?"0":"1");
+        globalSettingsMap.put("netstats_uid_rotate_age",null);
+        globalSettingsMap.put("sys_traced",null);
+        globalSettingsMap.put("night_display_forced_auto_mode_available",null);
+        globalSettingsMap.put("webview_data_reduction_proxy_key",null);
+        globalSettingsMap.put("enable_radio_bug_detection",null);
+        globalSettingsMap.put("netstats_combine_subtype_enabled",null);
+        globalSettingsMap.put("send_action_app_error",random.nextBoolean()?"0":"1");
+        globalSettingsMap.put("updatable_driver_production_opt_out_apps",null);
+        globalSettingsMap.put("pdp_watchdog_error_poll_count",null);
+        globalSettingsMap.put("updatable_driver_production_allowlist",null);
+        globalSettingsMap.put("desk_undock_sound",randomPackageName("/")+"."+getRandomString(random.nextInt(4)+2));
+        globalSettingsMap.put("updatable_driver_production_opt_in_apps",null);
+        globalSettingsMap.put("debug_view_attributes_application_package",null);
+        globalSettingsMap.put("zen_duration",String.valueOf(random.nextInt(Integer.MAX_VALUE)));
+        globalSettingsMap.put("global_http_proxy_host",null);
+        globalSettingsMap.put("global_http_proxy_port",null);
+        globalSettingsMap.put("wifi_network_show_rssi",null);
+        globalSettingsMap.put("soft_ap_timeout_enabled",null);
+        globalSettingsMap.put("mobile_data_always_on",random.nextBoolean()?"0":"1");
+        globalSettingsMap.put("debug_app",null);
+        globalSettingsMap.put("webview_provider",null);
+        globalSettingsMap.put("intervalMultiplier",null);
+        globalSettingsMap.put("user_absent_radios_off_for_small_battery_enabled",null);
+        globalSettingsMap.put("data_activity_timeout_wifi",null);
+        globalSettingsMap.put("wifi_sleep_policy",String.valueOf(random.nextInt(32)));
+        globalSettingsMap.put("device_provisioning_mobile_data",null);
+        globalSettingsMap.put("dock_sounds_enabled","0");
+        globalSettingsMap.put("default_sm_dp_plus",null);
+        globalSettingsMap.put("nr_nsa_tracking_screen_off_mode",null);
+        globalSettingsMap.put("charging_sounds_enabled",random.nextBoolean()?"0":"1");
+        globalSettingsMap.put("download_manager_max_bytes_over_mobile",null);
+        globalSettingsMap.put("wifi_scan_always_enabled",random.nextBoolean()?"0":"1");
+        globalSettingsMap.put("smart_suggestions_in_notifications_flags",null);
+        globalSettingsMap.put("network_avoid_bad_wifi",null);
+        globalSettingsMap.put("cached_apps_freezer",getRandomString(random.nextInt(15)+3));
+        globalSettingsMap.put("aware_allowed",null);
+        globalSettingsMap.put("gpu_debug_app",null);
+        globalSettingsMap.put("advanced_battery_usage_amount",null);
+        globalSettingsMap.put("enable_accessibility_global_gesture_enabled",null);
+        globalSettingsMap.put("overlay_display_devices",null);
+        globalSettingsMap.put("netstats_uid_tag_delete_age",null);
+        globalSettingsMap.put("pdp_watchdog_error_poll_interval_ms",null);
+        globalSettingsMap.put("sys_storage_cache_max_bytes",null);
+        globalSettingsMap.put("nfc",null);
+        globalSettingsMap.put("cell",null);
+        globalSettingsMap.put("mode",null);
+        globalSettingsMap.put("wifi",null);
+        globalSettingsMap.put("gpu_debug_layers",null);
+        globalSettingsMap.put("setup_prepaid_detection_redir_host",null);
+        globalSettingsMap.put("data_stall_alarm_non_aggressive_delay_in_ms",null);
+        globalSettingsMap.put("database_downgrade_reason",null);
+        globalSettingsMap.put("network_recommendations_enabled",random.nextBoolean()?"0":"1");
+        globalSettingsMap.put("netpolicy_quota_frac_jobs",null);
+        globalSettingsMap.put("enable_non_resizable_multi_window",random.nextBoolean()?"0":"1");
+        globalSettingsMap.put("safe_boot_disallowed",null);
+        globalSettingsMap.put("ntp_server",null);
+        globalSettingsMap.put("euicc_unsupported_countries",null);
+        globalSettingsMap.put("captive_portal_detection_enabled",random.nextBoolean()?"0":"1");
+        globalSettingsMap.put("display_size_forced",null);
+        globalSettingsMap.put("captive_portal_fallback_url",null);
+        globalSettingsMap.put("wimax",null);
+        globalSettingsMap.put("location_background_throttle_proximity_alert_interval_ms",null);
+        globalSettingsMap.put("always_on_display_constants",null);
+        globalSettingsMap.put("netstats_dev_bucket_duration",null);
+        globalSettingsMap.put("hide_error_dialogs",null);
+        globalSettingsMap.put("signed_config_version",null);
+        globalSettingsMap.put("dns_resolver_min_samples",null);
+        globalSettingsMap.put("captive_portal_http_url",null);
+        globalSettingsMap.put("wfc_ims_roaming_mode",null);
+        globalSettingsMap.put("pdp_watchdog_long_poll_interval_ms",null);
+        globalSettingsMap.put("sqlite_compatibility_wal_flags",null);
+        globalSettingsMap.put("enabled_subscription_for_slot",null);
+        globalSettingsMap.put("override_settings_provider_restore_any_version",null);
+        globalSettingsMap.put("smart_selection_metadata_url",null);
+        globalSettingsMap.put("car_dock_sound",randomPackageName("/")+"."+getRandomString(random.nextInt(4)+2));
+        globalSettingsMap.put("appop_history_parameters",null);
+        globalSettingsMap.put("bluetooth_a2dp_src_priority_",null);
+        globalSettingsMap.put("location_ignore_settings_package_whitelist",null);
+        globalSettingsMap.put("baseIntervalMillis",null);
+        globalSettingsMap.put("global_http_proxy_exclusion_list",null);
+        globalSettingsMap.put("conversation_actions_metadata_url",null);
+        globalSettingsMap.put("device_demo_mode",null);
+        globalSettingsMap.put("sms_outgoing_check_interval_ms",null);
+        globalSettingsMap.put("captive_portal_use_https",null);
+        globalSettingsMap.put("show_restart_in_crash_dialog",null);
+        globalSettingsMap.put("sound_trigger_detection_service_op_timeout",String.valueOf(random.nextInt(Integer.MAX_VALUE)));
+        globalSettingsMap.put("pdp_watchdog_max_pdp_reset_fail_count",null);
+        globalSettingsMap.put("updatable_driver_production_denylist",null);
+        globalSettingsMap.put("netstats_uid_tag_bucket_duration",null);
+        globalSettingsMap.put("qs_media_controls",null);
+        globalSettingsMap.put("connectivity_sampling_interval_in_seconds",null);
+        globalSettingsMap.put("bluetooth_map_priority_",null);
+        globalSettingsMap.put("gpu_debug_layers_gles",null);
+        globalSettingsMap.put("power_button_long_press_duration_ms",null);
+        globalSettingsMap.put("power_sounds_enabled",random.nextBoolean()?"0":"1");
+        globalSettingsMap.put("stay_on_while_plugged_in",random.nextBoolean()?"0":"1");
+        globalSettingsMap.put("display_scaling_force",null);
+        globalSettingsMap.put("location_background_throttle_interval_ms",null);
+        globalSettingsMap.put("netstats_uid_bucket_duration",null);
+        globalSettingsMap.put("ephemeral_cookie_max_size_bytes",null);
+        globalSettingsMap.put("wimax_networks_available_notification_on",null);
+        globalSettingsMap.put("average_time_to_discharge",String.valueOf(random.nextInt(Integer.MAX_VALUE)));
+        globalSettingsMap.put("notification_bubbles",random.nextBoolean()?"0":"1");
+        globalSettingsMap.put("verifier_default_response",null);
+        globalSettingsMap.put("wifi_networks_available_repeat_delay",null);
+        globalSettingsMap.put("low_power_sticky_auto_disable_level",null);
+        globalSettingsMap.put("bluetooth_map_client_priority_",null);
+        globalSettingsMap.put("inet_condition_debounce_up_delay",null);
+        globalSettingsMap.put("netpolicy_quota_enabled",null);
+        globalSettingsMap.put("lid_behavior",random.nextBoolean()?"0":"1");
+        globalSettingsMap.put("ble_scan_low_power_interval_ms",null);
+        globalSettingsMap.put("download_manager_recommended_max_bytes_over_mobile",null);
+        globalSettingsMap.put("zen_mode_config_etag",String.valueOf(random.nextInt(Integer.MAX_VALUE)));
+        globalSettingsMap.put("set_install_location",random.nextBoolean()?"0":"1");
+        globalSettingsMap.put("captive_portal_server",null);
+        globalSettingsMap.put("debug_view_attributes",random.nextBoolean()?"0":"1");
+        globalSettingsMap.put("network_scoring_ui_enabled",random.nextBoolean()?"0":"1");
+        globalSettingsMap.put("require_password_to_decrypt",random.nextBoolean()?"0":"1");
+        globalSettingsMap.put("radio_bug_system_error_count_threshold",null);
+        globalSettingsMap.put("zen_mode",random.nextBoolean()?"0":"1");
+        globalSettingsMap.put("anomaly_detection_constants",null);
+        globalSettingsMap.put("transition_animation_scale",String.valueOf(random.nextFloat()));
+        globalSettingsMap.put("custom_bugreport_handler_app",null);
+        globalSettingsMap.put("angle_debug_package",null);
+        globalSettingsMap.put("notification_snooze_options",null);
+        globalSettingsMap.put("cell_on",random.nextBoolean()?"0":"1");
+        globalSettingsMap.put("captive_portal_https_url",null);
+        globalSettingsMap.put("netstats_dev_delete_age",null);
+        globalSettingsMap.put("captive_portal_other_fallback_urls",null);
+        globalSettingsMap.put("private_dns_mode",null);
+        globalSettingsMap.put("disk_free_change_reporting_threshold",null);
+        globalSettingsMap.put("data_roaming",random.nextBoolean()?"0":"1");
+        globalSettingsMap.put("auto_revoke_parameters",null);
+        globalSettingsMap.put("forced_app_standby_enabled",null);
+        globalSettingsMap.put("bluetooth_class_of_device",null);
+        globalSettingsMap.put("hdmi_control_auto_wakeup_enabled",null);
+        globalSettingsMap.put("connectivity_change_delay",null);
+        globalSettingsMap.put("lang_id_metadata_url",null);
+        globalSettingsMap.put("network_metered_multipath_preference",null);
+        globalSettingsMap.put("enable_adb_incremental_install_default",null);
+        globalSettingsMap.put("key_chord_power_volume_up",null);
+        globalSettingsMap.put("show_zen_upgrade_notification",null);
+        globalSettingsMap.put("angle_gl_driver_all_angle",null);
+        globalSettingsMap.put("debug.force_rtl",null);
+        globalSettingsMap.put("smart_selection_content_url",null);
+        globalSettingsMap.put("network_recommendations_package",null);
+        globalSettingsMap.put("dns_resolver_max_samples",null);
+        globalSettingsMap.put("theater_mode_on",random.nextBoolean()?"0":"1");
+        globalSettingsMap.put("angle_gl_driver_selection_values",null);
+        globalSettingsMap.put("cdma_cell_broadcast_sms",random.nextBoolean()?"0":"1");
+        globalSettingsMap.put("gprs_register_check_period_ms",null);
+        globalSettingsMap.put("wifi_supplicant_scan_interval_ms",null);
+        globalSettingsMap.put("blocking_helper_dismiss_to_view_ratio",null);
+        globalSettingsMap.put("ungaze_sleep_enabled",null);
+        globalSettingsMap.put("automatic_power_save_mode",random.nextBoolean()?"0":"1");
+        globalSettingsMap.put("install_carrier_app_notification_persistent",null);
+        globalSettingsMap.put("airplane_mode_on",random.nextBoolean()?"0":"1");
+        globalSettingsMap.put("force_desktop_mode_on_external_displays",random.nextBoolean()?"0":"1");
+        globalSettingsMap.put("zen_settings_suggestion_viewed",random.nextBoolean()?"0":"1");
+        globalSettingsMap.put("default_restrict_background_data",random.nextBoolean()?"0":"1");
+        globalSettingsMap.put("low_battery_sound",randomPackageName("/")+"."+getRandomString(random.nextInt(4)+2));
+        globalSettingsMap.put("hidden_api_blacklist_exemptions",null);
+        globalSettingsMap.put("apply_ramping_ringer",random.nextBoolean()?"0":"1");
+        globalSettingsMap.put("new_contact_aggregator",null);
+        globalSettingsMap.put("custom_bugreport_handler_user",null);
+        globalSettingsMap.put("network_watchlist_enabled",null);
+        globalSettingsMap.put("wait_for_debugger","0");
+        globalSettingsMap.put("netstats_enabled",random.nextBoolean()?"0":"1");
+        globalSettingsMap.put("dropbox_quota_kb",null);
+        globalSettingsMap.put("dns_resolver_sample_validity_seconds",null);
+        globalSettingsMap.put("use_blast_adapter_sv",null);
+        globalSettingsMap.put("use_blast_adapter_vr",null);
+        globalSettingsMap.put("wifi_wakeup_enabled",random.nextBoolean()?"0":"1");
+        globalSettingsMap.put("ota_disable_automatic_update",random.nextBoolean()?"0":"1");
+        globalSettingsMap.put("app_standby_enabled",null);
+        globalSettingsMap.put("wifi_verbose_logging_enabled",null);
+        globalSettingsMap.put("wifi_migration_completed",random.nextBoolean()?"0":"1");
+        globalSettingsMap.put("location_background_throttle_package_whitelist",null);
+        globalSettingsMap.put("network_scorer_app",null);
+        globalSettingsMap.put("wifi_frequency_band",null);
+        globalSettingsMap.put("pdp_watchdog_poll_interval_ms",null);
+        globalSettingsMap.put("cert_pin_metadata_url","https://"+randomPackageName(".")+"/"+randomPackageName("/")+"."+getRandomString(random.nextInt(3)+2));
+        globalSettingsMap.put("sync_manager_constants",null);
+        globalSettingsMap.put("wifi_connected_mac_randomization_enabled",null);
+        globalSettingsMap.put("ble_scan_background_mode",null);
+        globalSettingsMap.put("ble_scan_low_latency_interval_ms",null);
+        globalSettingsMap.put("time_remaining_estimate_millis",String.valueOf(random.nextInt(Integer.MAX_VALUE)));
+        globalSettingsMap.put("private_dns_default_mode",null);
+        globalSettingsMap.put("dropbox_reserve_percent",null);
+        globalSettingsMap.put("ble_scan_low_latency_window_ms",null);
+        globalSettingsMap.put("user_switcher_enabled",random.nextBoolean()?"0":"1");
+        globalSettingsMap.put("subscription_mode",random.nextBoolean()?"0":"1");
+        globalSettingsMap.put("install_carrier_app_notification_sleep_millis",null);
+        globalSettingsMap.put("sms_short_codes_content_url","https://"+randomPackageName(".")+"/"+randomPackageName("/")+"."+getRandomString(random.nextInt(3)+2));
+        globalSettingsMap.put("private_dns_specifier",null);
+        globalSettingsMap.put("low_power_sticky",random.nextBoolean()?"0":"1");
+        globalSettingsMap.put("assisted_gps_enabled",random.nextBoolean()?"0":"1");
+        globalSettingsMap.put("smart_replies_in_notifications_flags",null);
+        globalSettingsMap.put("data_stall_recovery_on_bad_network",null);
+        globalSettingsMap.put("lock_sound",randomPackageName("/")+"."+getRandomString(random.nextInt(4)+2));
+        globalSettingsMap.put("lte_service_forced",null);
+        globalSettingsMap.put("unused_static_shared_lib_min_cache_period",null);
+        globalSettingsMap.put("maximum_obscuring_opacity_for_touch",null);
+        globalSettingsMap.put("auto_time_zone",random.nextBoolean()?"0":"1");
+        globalSettingsMap.put("http_proxy",null);
+        globalSettingsMap.put("show_temperature_warning",null);
+        globalSettingsMap.put("wifi_p2p_pending_factory_reset",null);
+        globalSettingsMap.put("provisioning_apn_alarm_delay_in_ms",null);
+        globalSettingsMap.put("enable_gnss_raw_meas_full_tracking",random.nextBoolean()?"0":"1");
+        globalSettingsMap.put("updatable_driver_production_denylists",null);
+        globalSettingsMap.put("show_processes",null);
+        globalSettingsMap.put("updatable_driver_all_apps",null);
+        globalSettingsMap.put("wfc_ims_mode",null);
+        globalSettingsMap.put("compatibility_mode",null);
+        globalSettingsMap.put("foreground_service_starts_logging_enabled",null);
+        globalSettingsMap.put("wifi_on",random.nextBoolean()?"0":"1");
+        globalSettingsMap.put("euicc_factory_reset_timeout_millis",null);
+        globalSettingsMap.put("wifi_country_code",null);
+        globalSettingsMap.put("wireless_charging_started_sound","content://"+randomPackageName("/"));
+        globalSettingsMap.put("netstats_uid_persist_bytes",null);
+        globalSettingsMap.put("storage_benchmark_interval",null);
+        globalSettingsMap.put("device_provisioned",random.nextBoolean()?"0":"1");
+        globalSettingsMap.put("roaming_settings",null);
+        globalSettingsMap.put("anomaly_config",null);
+        globalSettingsMap.put("emergency_affordance_needed",null);
+        globalSettingsMap.put("battery_saver_constants",null);
+        globalSettingsMap.put("wifi_score_params",null);
+        globalSettingsMap.put("user_absent_touch_off_for_small_battery_enabled",null);
+        globalSettingsMap.put("wifi_display_certification_on",random.nextBoolean()?"0":"1");
+        globalSettingsMap.put("default_dns_server",null);
+        globalSettingsMap.put("netstats_uid_delete_age",null);
+        globalSettingsMap.put("apn_db_content_url",null);
+        globalSettingsMap.put("battery_tip_constants",null);
+        globalSettingsMap.put("data_activity_timeout_mobile",null);
+        globalSettingsMap.put("settings_use_external_provider_api",null);
+        globalSettingsMap.put("max_notification_enqueue_rate",null);
+        globalSettingsMap.put("time_only_mode_constants",null);
+        globalSettingsMap.put("low_power_mode_suggestion_params",null);
+        globalSettingsMap.put("bluetooth_headset_priority_",null);
+        globalSettingsMap.put("intent_firewall_metadata_url",null);
+        globalSettingsMap.put("verify_integrity_for_rule_provider",null);
+        globalSettingsMap.put("enable_ephemeral_feature",null);
+        globalSettingsMap.put("encoded_surround_output_enabled_formats",null);
+        globalSettingsMap.put("dynamic_power_savings_enabled",null);
+        globalSettingsMap.put("min_duration_between_recovery_steps",null);
+        globalSettingsMap.put("wifi_on_when_proxy_disconnected",null);
+        globalSettingsMap.put("updatable_driver_sphal_libraries",null);
+        globalSettingsMap.put("netstats_global_alert_bytes",null);
+        globalSettingsMap.put("sms_short_code_confirmation",null);
+        globalSettingsMap.put("wfc_ims_roaming_enabled",null);
+        globalSettingsMap.put("bcast_offload_constants",null);
+        globalSettingsMap.put("hdmi_control_auto_device_off_enabled",random.nextBoolean()?"0":"1");
+        globalSettingsMap.put("captive_portal_mode",null);
+        globalSettingsMap.put("angle_egl_features",null);
+        globalSettingsMap.put("forced_app_standby_for_small_battery_enabled",null);
+        globalSettingsMap.put("wifi_device_owner_configs_lockdown",null);
+        globalSettingsMap.put("auto_time",random.nextBoolean()?"0":"1");
+        globalSettingsMap.put("bluetooth_interoperability_list",null);
+        globalSettingsMap.put("netstats_uid_tag_persist_bytes",null);
+        StringBuilder sb = new StringBuilder();
+        int packages = random.nextInt(5)+1;
+        for (int i=0;i<packages;i++){
+            sb.append(randomPackageName(".")).append("[url_bar]:");
+        }
+        packages = random.nextInt(5)+1;
+        for (int i=0;i<packages;i++){
+            sb.append(randomPackageName(".")).append("[location_bar_edit_text]:");
+        }sb.append(randomPackageName(".")).append("[url_bar]");
+
+        globalSettingsMap.put("autofill_compat_mode_allowed_packages", sb.toString());
+        globalSettingsMap.put("netpolicy_quota_unlimited",null);
+        globalSettingsMap.put("fancy_ime_animations",null);
+        globalSettingsMap.put("enable_cache_quota_calculation",null);
+        globalSettingsMap.put("multi_sim_voice_prompt",null);
+        globalSettingsMap.put("set_global_http_proxy",null);
+        globalSettingsMap.put("install_non_market_apps",random.nextBoolean()?"0":"1");
+        globalSettingsMap.put("recommended_network_evaluator_cache_expiry_ms",null);
+        globalSettingsMap.put("bluetooth_hearing_aid_priority_",null);
+        globalSettingsMap.put("logcat_for_",null);
+        globalSettingsMap.put("disable_window_blurs",null);
+        globalSettingsMap.put("bluetooth_a2dp_optional_codecs_enabled_",random.nextBoolean()?"0":"1");
+        globalSettingsMap.put("chained_battery_attribution_enabled",random.nextBoolean()?"0":"1");
+        globalSettingsMap.put("usb_mass_storage_enabled",random.nextBoolean()?"0":"1");
+        globalSettingsMap.put("wifi_num_open_networks_kept",null);
+        globalSettingsMap.put("sys_uidcpupower",null);
+        globalSettingsMap.put("battery_charging_state_update_delay",null);
+        globalSettingsMap.put("use_google_mail",null);
+    }
+    public static String randomPackageName(String split){
+        int dots = random.nextInt(6)+1;
+        StringBuilder sb = new StringBuilder();
+        for (int i=0;i<dots;i++){
+            sb.append(getRandomString(random.nextInt(5)+3)).append(split);
+        }
+        sb.append(getRandomString(random.nextInt(5)+3));
+        return sb.toString();
     }
 }

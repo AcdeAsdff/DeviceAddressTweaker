@@ -64,6 +64,7 @@ public class SettingsGUI extends Activity {
         DefaultResult.add(new Pair<>("HookFile", true));
         DefaultResult.add(new Pair<>("HookIO_HookInputStream", true));
         DefaultResult.add(new Pair<>("HookIO_HookOutputStream", true));//
+        DefaultResult.add(new Pair<>("HookAccessibility",true));
         DefaultResult.add(new Pair<>("HookAccountClass_HookAccounts",true));
         DefaultResult.add(new Pair<>("HookAccountClass_HookAccount", true));
         DefaultResult.add(new Pair<>("HookAccountClass_HookAccountManager", true));
@@ -85,6 +86,7 @@ public class SettingsGUI extends Activity {
         DefaultResult.add(new Pair<>("HookContentClass_HookIntentFilter", true));
         DefaultResult.add(new Pair<>("HookContentClass_HookContextWrapper", true));
         DefaultResult.add(new Pair<>("HookContentClass_HookSharedPreferences", true));
+        DefaultResult.add(new Pair<>("HookDrm", true));
         DefaultResult.add(new Pair<>("HookHardwareClass_HookHardware", true));
         DefaultResult.add(new Pair<>("HookHardwareClass_HookSensor", true));
         DefaultResult.add(new Pair<>("HookHardwareClass_HookSensorManager", true));
@@ -97,6 +99,7 @@ public class SettingsGUI extends Activity {
         DefaultResult.add(new Pair<>("HookHardwareClass_HookBiometrics",true));
         DefaultResult.add(new Pair<>("HookHardwareClass_HookLights",true));
         DefaultResult.add(new Pair<>("HookHardwareClass_HookFingerprints",true));
+        DefaultResult.add(new Pair<>("HookHardwareClass_ConsumerIrManager",true));
         DefaultResult.add(new Pair<>("HookLocationClass_HookLocation", true));
         DefaultResult.add(new Pair<>("HookMTPClass", true));
         DefaultResult.add(new Pair<>("HookNetClass_HookNet", true));
@@ -149,7 +152,8 @@ public class SettingsGUI extends Activity {
         DefaultResult.add(new Pair<>("HookProviderClass_HookMediaStore", true));
         DefaultResult.add(new Pair<>("HookProviderClass_HookSettings", true));
         DefaultResult.add(new Pair<>("HookProviderClass_HookSettings_System", true));
-        DefaultResult.add(new Pair<>("HookProviderClass_HookSecure", true));
+        DefaultResult.add(new Pair<>("HookProviderClass_HookSettings_Secure", true));
+        DefaultResult.add(new Pair<>("HookTelecom", true));
         DefaultResult.add(new Pair<>("HookTelephonyClass_HookTelephony", true));
         DefaultResult.add(new Pair<>("HookTelephonyClass_HookTelephonyManager", true));
         DefaultResult.add(new Pair<>("HookTelephonyClass_HookGSM", true));

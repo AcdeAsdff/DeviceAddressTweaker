@@ -1,5 +1,6 @@
 package com.linearity.utils.FakeClass.FakeReturnClasses;
 
+import static com.linearity.utils.ReturnReplacements.returnIntegerZero;
 import static com.linearity.utils.ReturnReplacements.returnNull;
 
 import android.util.Pair;
@@ -22,6 +23,9 @@ public class FakeReturnClassMap {
         fakeObjects.put("java.lang.Object",nullPair);
         fakeObjects.put("java.lang.Cloneable",nullPair);
         fakeObjects.put("java.io.Serializable",nullPair);
+        fakeObjects.put("java.lang.Class",nullPair);
+        fakeObjects.put("java.lang.Integer",new Pair<>(returnIntegerZero,0));
+        fakeObjects.put("java.lang.Thread",nullPair);
     }
     public static XC_MethodReplacement GenerateMethodReplacement_FindObjectFromMap(String className){
         return new XC_MethodReplacement() {

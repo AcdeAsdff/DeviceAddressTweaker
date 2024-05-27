@@ -104,7 +104,7 @@ public class HookOsClass {
                                     "getSerial",
                                     new XC_MethodReplacement(114514) {
                                         @Override
-                                        protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                        protected Object replaceHookedMethod(MethodHookParam param) {
                                             return ReturnReplacements.getRandomString(50);
                                         }
                                     }
@@ -113,7 +113,7 @@ public class HookOsClass {
                                     "getString",
                                     new XC_MethodReplacement(114514) {
                                         @Override
-                                        protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                        protected Object replaceHookedMethod(MethodHookParam param) {
                                             return infoMap.get((String) param.args[0]);
                                         }
                                     }
@@ -147,7 +147,7 @@ public class HookOsClass {
                                     "getRootDirectory",
                                     new XC_MethodReplacement(114514) {
                                         @Override
-                                        protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                        protected Object replaceHookedMethod(MethodHookParam param) {
                                             return new File(ReturnReplacements.getRandomString(50));
                                         }
                                     }
@@ -158,7 +158,7 @@ public class HookOsClass {
                                     "getStorageDirectory",
                                     new XC_MethodReplacement(114514) {
                                         @Override
-                                        protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                        protected Object replaceHookedMethod(MethodHookParam param) {
                                             return new File(ReturnReplacements.getRandomString(50));
                                         }
                                     }
@@ -170,7 +170,7 @@ public class HookOsClass {
                                     "getExternalStorageDirectory",
                                     new XC_MethodHook() {
                                         @Override
-                                        protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                                        protected void afterHookedMethod(MethodHookParam param) {
 //                                    super.afterHookedMethod(param);
                                             String result = ((File) param.getResult()).getAbsolutePath();
                                             if (!result.endsWith( "/")){result += "/";}
@@ -195,14 +195,13 @@ public class HookOsClass {
                         {
                             HookUtils.findAndHookMethodIfExists(hookClass,
                                     "getExternalStoragePublicDirectory",
-                                    String.class,
-                                    new XC_MethodReplacement(114514) {
+                                    String.class, new XC_MethodReplacement(114514) {
                                         @Override
-                                        protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                        protected Object replaceHookedMethod(MethodHookParam param) {
+
                                             return new File(ReturnReplacements.getRandomString(30));
                                         }
-                                    }
-                            );
+                                    });
                         }
                         {
                             HookUtils.findAndHookMethodIfExists(hookClass,
@@ -210,7 +209,7 @@ public class HookOsClass {
                                     File.class,
                                     new XC_MethodReplacement(114514) {
                                         @Override
-                                        protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                        protected Object replaceHookedMethod(MethodHookParam param) {
                                             return ReturnReplacements.getRandomString(6);
                                         }
                                     }
@@ -222,7 +221,7 @@ public class HookOsClass {
                                     File.class,
                                     new XC_MethodReplacement(114514) {
                                         @Override
-                                        protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                        protected Object replaceHookedMethod(MethodHookParam param) {
                                             return ReturnReplacements.getRandomString(6);
                                         }
                                     }
@@ -233,7 +232,7 @@ public class HookOsClass {
                                     "getExternalStorageState",
                                     new XC_MethodReplacement(114514) {
                                         @Override
-                                        protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                        protected Object replaceHookedMethod(MethodHookParam param) {
                                             return Environment.MEDIA_MOUNTED;
                                         }
                                     }
@@ -297,7 +296,7 @@ public class HookOsClass {
                             "doStat",
                             new XC_MethodReplacement(114514) {
                                 @Override
-                                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                protected Object replaceHookedMethod(MethodHookParam param) {
                                     return generateStructStatVfs();
                                 }
                             }
@@ -410,7 +409,7 @@ public class HookOsClass {
                                     "getBatteryDischargePrediction",
                                     new XC_MethodReplacement(114514) {
                                         @Override
-                                        protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                        protected Object replaceHookedMethod(MethodHookParam param) {
                                             return Duration.ZERO;
                                         }
                                     }
@@ -518,7 +517,7 @@ public class HookOsClass {
                                     "getThermalHeadroom",
                                     new XC_MethodReplacement(114514) {
                                         @Override
-                                        protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                        protected Object replaceHookedMethod(MethodHookParam param) {
                                             return Float.MAX_VALUE;
                                         }
                                     }
