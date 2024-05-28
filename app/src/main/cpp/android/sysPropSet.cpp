@@ -11,7 +11,6 @@
 #include "sysPropSet.h"
 #include "../datutils.h"
 #include "android/log.h"
-#define  LOGD(...)  __android_log_print(ANDROID_LOG_DEBUG,TAG,__VA_ARGS__)
 #define  TAG    "[linearity-Native-sysPropSet]"
 template<typename Functor>
 void ReadProperty(const prop_info* prop, Functor&& functor)
@@ -61,7 +60,7 @@ jstring fake_SystemProperties_getSS(JNIEnv* env, jclass clazz, jstring keyJ,
 //    const char* ch1 = env->GetStringUTFChars(keyJ, datutils::toJavaBoolean(true));
 //    const char* ch2 = env->GetStringUTFChars(defJ, datutils::toJavaBoolean(true));
 //    const char* ch3 = env->GetStringUTFChars(ret, datutils::toJavaBoolean(true));
-//    LOGD("%s %s %s",ch1,ch2,ch3);
+//    LOGD_SYSPROP("%s %s %s",ch1,ch2,ch3);
     return ret;
 }
 void fake_SystemProperties_add_change_callback(JNIEnv *env, jobject clazz){ return;}

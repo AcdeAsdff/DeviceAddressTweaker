@@ -31,15 +31,22 @@
 #include "android/nativehelper/ScopedUtfChars.h"
 #include "android/sysPropSet.h"
 #include "media/NdkMediaDrm.h"
-#include "dobby/dobby.h"
+#include "Dobby-master/include/dobby.h"
 #include "Utils.h"
+#include "proot/src/tracee/tracee.h"
+#include "proot/src/tracee/event.h"
 #include <arpa/inet.h>
+#include "/proot/src/cli/cli.h"
+
 #define  TAG    "[linearity-Native]"
 #define  LOGD(...)  __android_log_print(ANDROID_LOG_DEBUG,TAG,__VA_ARGS__)
 using namespace datutils;
 static HookFunType hook_func = nullptr;
 uint8_t nop[4] = {0xD5,0x3,0x20,0x1F};
 uint8_t * nop_ptr = nop;
+
+extern "C" int initPRoot(int argc, char *const argv[]);
+extern "C" int event_loop_clone();
 
 int (*backup__system_property_get)(const char* __name, char* __value);
 int fake__system_property_get(const char* __name, char* __value){
@@ -112,7 +119,6 @@ static jbyteArray fake_android_media_MediaDrm_getPropertyByteArray(JNIEnv *env, 
 //    LOGD("called method:android_media_MediaDrm_getPropertyByteArray");
     return getRandomByteArray(env,32);
 }
-
 
 static const JNINativeMethod gMethods[] = {
         { "getPropertyByteArray", "(Ljava/lang/String;)[B",(void *)fake_android_media_MediaDrm_getPropertyByteArray },
@@ -214,7 +220,11 @@ FILE *fake_fopen(const char *filename, const char *mode) {
 //        return nullptr;
 //    }
 //    if (strstr(filename, "banned")) return nullptr;
-    if (str.find("/system/fonts") != -1) {return backup_fopen("/system/fonts/NotoSansSharada-Regular.otf",mode);}
+
+//maybe u want some font mapping?works for com.tencent.tim
+    if (str.find("/system/fonts") != -1) {
+        return backup_fopen(filename,mode);
+    }
     LOGD("[fopen]%s", filename);
 
     return backup_fopen(filename, mode);
@@ -305,6 +315,7 @@ int fake_getifaddrs(ifaddrs** out){
 }
 
 void on_library_loaded(const char *name, void *handle) {
+
     if (name == nullptr){ return;}
     // hooks on `libtarget.so`
     void* target = nullptr;
@@ -352,5 +363,9 @@ NativeOnModuleLoaded native_init(const NativeAPIEntries *entries) {
     hook_func((void*)__system_property_get,(void*) fake__system_property_get,(void**) &backup__system_property_get);
     hook_func((void*)getifaddrs, (void *) fake_getifaddrs, (void **) &backup_getifaddrs);
 
+//    char* const argv[] = { (char* const)"",(char* const)"" };
+//    initPRoot ( 0 , argv ) ;//failed
+//    exit();
+//    event_loop_clone();
     return on_library_loaded;
 }

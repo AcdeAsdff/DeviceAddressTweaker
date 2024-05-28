@@ -3,16 +3,14 @@ package com.linearity.deviceaddresstweaker.TIM;
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 import static android.telephony.TelephonyManager.NETWORK_TYPE_LTE;
 import static com.linearity.deviceaddresstweaker.AndroidHooks.android.net.HookNetClass.byteArray114514;
-import static com.linearity.deviceaddresstweaker.DeviceAddressTweaker.*;
+import static com.linearity.deviceaddresstweaker.DeviceAddressTweaker.fakeLocation;
+import static com.linearity.deviceaddresstweaker.DeviceAddressTweaker.fakeWifiInfo;
 import static com.linearity.utils.FakeClass.java.util.EmptyArrays.EMPTY_BYTE_ARRAY;
 import static com.linearity.utils.FakeClass.java.util.EmptyArrays.EMPTY_INT_ARRAY;
 import static com.linearity.utils.FakeInfo.FakeProcInfoGenerator.random;
 import static com.linearity.utils.HookUtils.disableClass;
-import static com.linearity.utils.HookUtils.disableMethod;
 import static com.linearity.utils.LoggerUtils.LoggerLog;
-import static com.linearity.utils.LoggerUtils.showStackTraceBefore;
 import static com.linearity.utils.ReturnReplacements.getRandomString;
-import static com.linearity.utils.LoggerUtils.showObjectFields;
 import static com.linearity.utils.ReturnReplacements.returnFalse;
 import static com.linearity.utils.ReturnReplacements.returnIntegerZero;
 import static com.linearity.utils.ReturnReplacements.returnNull;
@@ -20,7 +18,7 @@ import static com.linearity.utils.ReturnReplacements.returnTrue;
 
 import android.annotation.SuppressLint;
 import android.app.PendingIntent;
-import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.res.XModuleResources;
 import android.content.res.XResForwarder;
 import android.content.res.XResources;
@@ -32,6 +30,20 @@ import android.graphics.drawable.StateListDrawable;
 import android.net.ConnectivityManager;
 import android.telephony.NetworkScan;
 import android.telephony.UiccCardInfo;
+import android.util.SparseArray;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+
+import com.linearity.deviceaddresstweaker.DeviceAddressTweaker;
+import com.linearity.deviceaddresstweaker.R;
+import com.linearity.deviceaddresstweaker.TIM.TIMUtils.QQConcurrentHashMap;
+import com.linearity.utils.HookUtils;
+import com.linearity.utils.HookerThread;
+import com.linearity.utils.ReturnReplacements;
+
+import org.json.JSONObject;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -45,24 +57,6 @@ import java.util.Objects;
 
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XC_MethodReplacement;
-import android.content.SharedPreferences;
-import android.util.SparseArray;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
-
-import com.linearity.deviceaddresstweaker.DeviceAddressTweaker;
-import com.linearity.deviceaddresstweaker.TIM.TIMUtils.QQConcurrentHashMap;
-import com.linearity.utils.HookUtils;
-import com.linearity.utils.HookerThread;
-import com.linearity.deviceaddresstweaker.R;
-import com.linearity.utils.ListenerUtils.ListenerHashMap;
-import com.linearity.utils.ReturnReplacements;
-
-import org.json.JSONObject;
-
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LayoutInflated;
@@ -117,13 +111,7 @@ public class HookTIMClass {
                         HookUtils.findAndHookMethodIfExists(
                                 "moai.core.utilities.appstate.AppStatuses",
                                 lpparam.classLoader,
-                                "isAppOnBackGround",
-                                new XC_MethodReplacement(114514) {
-                                    @Override
-                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                        return false;
-                                    }
-                                }
+                                "isAppOnBackGround",returnFalse
                         );
                     }
                 } catch (Exception e) {
@@ -138,12 +126,7 @@ public class HookTIMClass {
                                 "com.tencent.qqmail.utilities.AppStatusUtil",
                                 lpparam.classLoader,
                                 "isAppOnForeground",
-                                new XC_MethodReplacement(114514) {
-                                    @Override
-                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                        return true;
-                                    }
-                                }
+                                returnTrue
                         );
                     }
                 } catch (Exception e) {
@@ -157,13 +140,7 @@ public class HookTIMClass {
                         HookUtils.findAndHookMethodIfExists(
                                 "com.tencent.qqmail.utilities.AppStatusUtil",
                                 lpparam.classLoader,
-                                "isAppOnBackGround",
-                                new XC_MethodReplacement(114514) {
-                                    @Override
-                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                        return false;
-                                    }
-                                }
+                                "isAppOnBackGround",returnFalse
                         );
                     }
                 } catch (Exception e) {
@@ -177,14 +154,7 @@ public class HookTIMClass {
                         HookUtils.findAndHookMethodIfExists(
                                 "com.tencent.av.smallscreen.BaseSmallScreenService",
                                 lpparam.classLoader,
-                                "isAppOnForeground",
-
-                                new XC_MethodReplacement(114514) {
-                                    @Override
-                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                        return true;
-                                    }
-                                }
+                                "isAppOnForeground",returnTrue
                         );
                     }
                 } catch (Exception e) {
@@ -199,12 +169,7 @@ public class HookTIMClass {
                                 "com.tencent.av.smallscreen.SmallScreenService",
                                 lpparam.classLoader,
                                 "isAppOnForeground",
-                                new XC_MethodReplacement(114514) {
-                                    @Override
-                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                        return true;
-                                    }
-                                }
+                                returnTrue
                         );
                     }
                 } catch (Exception e) {
@@ -219,12 +184,7 @@ public class HookTIMClass {
                                 "aljz",
                                 lpparam.classLoader,
                                 "isAppOnForeground",
-                                new XC_MethodReplacement(114514) {
-                                    @Override
-                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                        return true;
-                                    }
-                                }
+                                returnTrue
                         );
                     }
                 } catch (Exception e) {
@@ -239,12 +199,7 @@ public class HookTIMClass {
                                 "aktz",
                                 lpparam.classLoader,
                                 "isAppOnForeground",
-                                new XC_MethodReplacement(114514) {
-                                    @Override
-                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                        return true;
-                                    }
-                                }
+                                returnTrue
                         );
                     }
                 } catch (Exception e) {
@@ -259,12 +214,7 @@ public class HookTIMClass {
                                 "iue",
                                 lpparam.classLoader,
                                 "isAppOnForeground",
-                                new XC_MethodReplacement(114514) {
-                                    @Override
-                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                        return true;
-                                    }
-                                }
+                                returnTrue
                         );
                     }
                 } catch (Exception e) {
@@ -279,12 +229,7 @@ public class HookTIMClass {
                                 "kvv",
                                 lpparam.classLoader,
                                 "isAppOnForeground",
-                                new XC_MethodReplacement(114514) {
-                                    @Override
-                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                        return true;
-                                    }
-                                }
+                                returnTrue
                         );
                     }
                 } catch (Exception e) {
@@ -299,12 +244,7 @@ public class HookTIMClass {
                                 "aktz",
                                 lpparam.classLoader,
                                 "isAppOnForeground",
-                                new XC_MethodReplacement(114514) {
-                                    @Override
-                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                        return true;
-                                    }
-                                }
+                                returnTrue
                         );
                     }
                 } catch (Exception e) {
@@ -328,12 +268,7 @@ public class HookTIMClass {
                         XposedBridge.hookAllMethods(
                                 tencentAppInterface,
                                 "isAppOnForeground",
-                                new XC_MethodReplacement(114514) {
-                                    @Override
-                                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                                        return true;
-                                    }
-                                }
+                                returnTrue
                         );
                     }
                 }
@@ -1236,7 +1171,7 @@ public class HookTIMClass {
 //                                            setTIMPBField("missions", tencentAppInterface, lpparam, param.thisObject, new ArrayList<>());
 //                                            setTIMPBField("modify_ts", tencentAppInterface, lpparam, param.thisObject, 0);
 //                                            setTIMPBField("num", tencentAppInterface, lpparam, param.thisObject, 0);
-//                                            setTIMPBField("path", tencentAppInterface, lpparam, param.thisObject, "");
+//                                            setTIMPBField("/../path", tencentAppInterface, lpparam, param.thisObject, "");
 //                                            setTIMPBField("preload_ts", tencentAppInterface, lpparam, param.thisObject, 0L);
 //                                            setTIMPBField("push_red_ts", tencentAppInterface, lpparam, param.thisObject, 0);
 ////                                            solveTIMPBField("red_display_info", tencentAppInterface, lpparam, param.thisObject);
