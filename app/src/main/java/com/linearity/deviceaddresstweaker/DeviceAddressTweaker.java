@@ -4,20 +4,12 @@ import static com.linearity.deviceaddresstweaker.AndroidHooks.android.net.HookNe
 import static com.linearity.utils.FakeInfo.FakeProcInfoGenerator.random;
 import static com.linearity.utils.LoggerUtils.LoggerLog;
 
-import android.accounts.Account;
-import android.accounts.AccountAuthenticatorResponse;
 import android.accounts.AccountManagerFuture;
-import android.accounts.AuthenticatorDescription;
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.location.Location;
-import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiInfo;
-import android.os.Parcel;
-import android.os.Parcelable;
-import android.provider.Settings;
 
 import com.linearity.deviceaddresstweaker.AndroidHooks.android.accessibilityservice.HookAccessibilityClass;
 import com.linearity.deviceaddresstweaker.AndroidHooks.android.accounts.HookAccountClass;
@@ -45,7 +37,6 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
 import de.robv.android.xposed.IXposedHookInitPackageResources;
 import de.robv.android.xposed.IXposedHookLoadPackage;
@@ -62,15 +53,6 @@ public class DeviceAddressTweaker implements IXposedHookLoadPackage, IXposedHook
     public String processHead;
     public String modulePath;
 
-    public static Parcelable.Creator<AccountAuthenticatorResponse> CREATOR_AccountAuthenticatorResponse = new Parcelable.Creator<>() {
-        public AccountAuthenticatorResponse createFromParcel(Parcel source) {
-            return new AccountAuthenticatorResponse(source);
-        }
-
-        public AccountAuthenticatorResponse[] newArray(int size) {
-            return EmptyAccountAuthenticatorResponse;
-        }
-    };
     public static WifiInfo fakeWifiInfo =
             new WifiInfo.Builder()
                     .setBssid(ReturnReplacements.getRandomString(20))
@@ -78,89 +60,15 @@ public class DeviceAddressTweaker implements IXposedHookLoadPackage, IXposedHook
                     .setCurrentSecurityType(random.nextInt())
                     .build();
     public static Location fakeLocation = new Location("jerk");
-    public static AccountAuthenticatorResponse[] EmptyAccountAuthenticatorResponse = new AccountAuthenticatorResponse[0];
     public static Intent EmptyIntent = new Intent();
-    public static Future2Task<Account[]> EmptyFuture2TaskOfAccountArray = new Future2Task<>() {
-        @Override
-        public boolean cancel(boolean mayInterruptIfRunning) {
-            return true;
-        }
 
-        @Override
-        public boolean isCancelled() {
-            return true;
-        }
-
-        @Override
-        public boolean isDone() {
-            return true;
-        }
-
-        @Override
-        public Account[] getResult() {
-            return HookAccountClass.EmptyAccountArray;
-        }
-
-        @Override
-        public Account[] getResult(long timeout, TimeUnit unit) {
-            return HookAccountClass.EmptyAccountArray;
-        }
-    };
-    public static Future2Task<Boolean> EmptyFuture2TaskOBoolean = new Future2Task<>() {
-        @Override
-        public boolean cancel(boolean mayInterruptIfRunning) {
-            return random.nextBoolean();
-        }
-
-        @Override
-        public boolean isCancelled() {
-            return random.nextBoolean();
-        }
-
-        @Override
-        public boolean isDone() {
-            return random.nextBoolean();
-        }
-
-        @Override
-        public Boolean getResult() {
-            return random.nextBoolean();
-        }
-
-        @Override
-        public Boolean getResult(long timeout, TimeUnit unit) {
-            return random.nextBoolean();
-        }
-    };
     static {
-        FakeReturnClassMap.registerInstance(AccountManagerFuture.class,EmptyFuture2TaskOBoolean);
+        FakeReturnClassMap.registerInstance(AccountManagerFuture.class, HookAccountClass.EmptyFuture2TaskOBoolean);
     }
     public static UUID uuid = UUID.randomUUID();
     SharedPreferences sharedPreferences;
 
 
-    public static final  Parcelable.Creator<Account> CREATOR = new Parcelable.Creator<>() {
-        public Account createFromParcel(Parcel source) {
-//            return new Account(source);
-            return null;
-        }
-
-        public Account[] newArray(int size) {
-//            return new Account[size];
-            return null;
-        }
-    };
-    public static Parcelable.Creator<AuthenticatorDescription> CREATOR_AuthenticatorDescription = new Parcelable.Creator<>() {
-        public AuthenticatorDescription createFromParcel(Parcel source) {
-//            return new Account(source);
-            return null;
-        }
-
-        public AuthenticatorDescription[] newArray(int size) {
-//            return new Account[size];
-            return null;
-        }
-    };
     public XC_InitPackageResources.InitPackageResourcesParam resparam;
 
     //a looooooooooong way 2 go
@@ -190,19 +98,6 @@ public class DeviceAddressTweaker implements IXposedHookLoadPackage, IXposedHook
     public void initZygote(StartupParam startupParam) {
         this.modulePath = startupParam.modulePath;
     }
-
-
-    //empty,implements AccountManagerFuture
- public static abstract class Future2Task<T>
-     implements AccountManagerFuture<T> {
-        Account account;
-        public Future2Task() {
-        }
-        public Future2Task(Account account) {
-            this.account = account;
-        }
-    }
-
 
 
     public static void startHookMethods(XC_LoadPackage.LoadPackageParam lpparam, String processHead, SharedPreferences sharedPreferences) throws Exception{

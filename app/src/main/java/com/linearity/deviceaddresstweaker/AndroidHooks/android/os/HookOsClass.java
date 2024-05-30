@@ -143,30 +143,39 @@ public class HookOsClass {
                 if (hookClass != null){
                     try{
                         {
-                            HookUtils.findAndHookMethodIfExists(hookClass,
+                            XposedBridge.hookAllMethods(hookClass,
                                     "getRootDirectory",
-                                    new XC_MethodReplacement(114514) {
+                                    new XC_MethodReplacement() {
                                         @Override
-                                        protected Object replaceHookedMethod(MethodHookParam param) {
-                                            return new File(ReturnReplacements.getRandomString(50));
+                                        protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                            return Environment.getExternalStorageDirectory();
+                                        }
+                                    }
+                            );
+                            XposedBridge.hookAllMethods(hookClass,
+                                    "getDataDirectory",
+                                    new XC_MethodReplacement() {
+                                        @Override
+                                        protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                            return Environment.getExternalStorageDirectory();
                                         }
                                     }
                             );
                         }
                         {
-                            HookUtils.findAndHookMethodIfExists(hookClass,
+                            XposedBridge.hookAllMethods(hookClass,
                                     "getStorageDirectory",
-                                    new XC_MethodReplacement(114514) {
+                                    new XC_MethodReplacement() {
                                         @Override
-                                        protected Object replaceHookedMethod(MethodHookParam param) {
-                                            return new File(ReturnReplacements.getRandomString(50));
+                                        protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                            return Environment.getExternalStorageDirectory();
                                         }
                                     }
                             );
                         }
                         //getDataDirectory
                         {
-                            HookUtils.findAndHookMethodIfExists(hookClass,
+                            XposedBridge.hookAllMethods(hookClass,
                                     "getExternalStorageDirectory",
                                     new XC_MethodHook() {
                                         @Override
@@ -181,25 +190,23 @@ public class HookOsClass {
                             );
                         }
                         {
-                            HookUtils.findAndHookMethodIfExists(hookClass,
+                            XposedBridge.hookAllMethods(hookClass,
                                     "hasInterestingFiles",
-                                    File.class, returnFalse
+                                     returnFalse
                             );
                         }
                         {
-                            HookUtils.findAndHookMethodIfExists(hookClass,
+                            XposedBridge.hookAllMethods(hookClass,
                                     "isInterestingFile",
-                                    File.class, returnFalse
+                                     returnFalse
                             );
                         }
                         {
-                            HookUtils.findAndHookMethodIfExists(hookClass,
-                                    "getExternalStoragePublicDirectory",
-                                    String.class, new XC_MethodReplacement(114514) {
+                            XposedBridge.hookAllMethods(hookClass,
+                                    "getExternalStoragePublicDirectory", new XC_MethodReplacement() {
                                         @Override
-                                        protected Object replaceHookedMethod(MethodHookParam param) {
-
-                                            return new File(ReturnReplacements.getRandomString(30));
+                                        protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                                            return Environment.getExternalStorageDirectory();
                                         }
                                     });
                         }
@@ -216,9 +223,8 @@ public class HookOsClass {
                             );
                         }
                         {
-                            HookUtils.findAndHookMethodIfExists(hookClass,
+                            XposedBridge.hookAllMethods(hookClass,
                                     "getStorageState",
-                                    File.class,
                                     new XC_MethodReplacement(114514) {
                                         @Override
                                         protected Object replaceHookedMethod(MethodHookParam param) {
@@ -228,7 +234,7 @@ public class HookOsClass {
                             );
                         }
                         {
-                            HookUtils.findAndHookMethodIfExists(hookClass,
+                            XposedBridge.hookAllMethods(hookClass,
                                     "getExternalStorageState",
                                     new XC_MethodReplacement(114514) {
                                         @Override
@@ -239,47 +245,28 @@ public class HookOsClass {
                             );
                         }
                         {
-                            HookUtils.findAndHookMethodIfExists(hookClass,
+                            XposedBridge.hookAllMethods(hookClass,
                                     "isExternalStorageRemovable", returnFalse
                             );
                         }
                         {
-                            HookUtils.findAndHookMethodIfExists(hookClass,
-                                    "isExternalStorageRemovable",
-                                    File.class, returnFalse
+                            XposedBridge.hookAllMethods(hookClass,
+                                    "isExternalStorageRemovable", returnFalse
                             );
                         }
                         {
-                            HookUtils.findAndHookMethodIfExists(hookClass,
+                            XposedBridge.hookAllMethods(hookClass,
                                     "isExternalStorageEmulated", returnFalse
                             );
                         }
                         {
-                            HookUtils.findAndHookMethodIfExists(hookClass,
-                                    "isExternalStorageEmulated",
-                                    File.class, returnFalse
-                            );
-                        }
-                        {
-                            HookUtils.findAndHookMethodIfExists(hookClass,
+                            XposedBridge.hookAllMethods(hookClass,
                                     "isExternalStorageLegacy", returnFalse
                             );
                         }
                         {
-                            HookUtils.findAndHookMethodIfExists(hookClass,
-                                    "isExternalStorageLegacy",
-                                    File.class, returnFalse
-                            );
-                        }
-                        {
-                            HookUtils.findAndHookMethodIfExists(hookClass,
+                            XposedBridge.hookAllMethods(hookClass,
                                     "isExternalStorageManager", returnFalse
-                            );
-                        }
-                        {
-                            HookUtils.findAndHookMethodIfExists(hookClass,
-                                    "isExternalStorageManager",
-                                    File.class, returnFalse
                             );
                         }
                         //getDirectory

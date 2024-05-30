@@ -19,7 +19,7 @@ namespace datutils {
     char* getRandomCharPointer(int length){
         char* result = (char *)(malloc(sizeof(char) * (length+1)));
         for (int i=0;i<length;i++){
-            result[i] = fromChar[abs(rand())%62];
+            result[i] = fromChar[abs(rand()%62)];
         }result[length]='\0';
 
         return result;
@@ -27,7 +27,7 @@ namespace datutils {
 
     void setRandomCharPointer(char* charPointer, int length){
         for (int i=0;i<length;i++){
-            charPointer[i] = fromChar[abs(rand())%62];
+            charPointer[i] = fromChar[abs(rand()%62)];
         }charPointer[length]='\0';
 
     }
@@ -40,7 +40,7 @@ namespace datutils {
     }
     void setRandomCharPointerWithInt(char* charPointer, int length){
         for (int i=0;i<length;i++){
-            charPointer[i] = fromChar[abs(rand())%10];
+            charPointer[i] = fromChar[abs(rand()%10)];
         }charPointer[length]='\0';
 
     }
@@ -49,7 +49,7 @@ namespace datutils {
         jbyte a[size];
         srand(time(NULL));
         for (int i=0;i<size;i++){
-            a[i]=(char)rand();
+            a[i]=(char)abs(rand()%255);
         }
         jbyteArray ret = env->NewByteArray(size);
         env->SetByteArrayRegion (ret, 0, size, a);
@@ -62,4 +62,30 @@ namespace datutils {
         *jfalse = 0;
         return (value?jtrue:jfalse);
     };
+
+    bool strStartWith(const char* target,const char* expectStart){
+        int length = strlen(expectStart);
+        if (strlen(target) < length){return false;}
+        for (int i=0;i<length;i++){
+            if (target[i] != expectStart[i]){return false;}
+        }
+        return true;
+    }
+    bool strEndWith(const char* target,const char* expectEnd){
+        int length = strlen(expectEnd);
+        int targetLength = strlen(target);
+        if (targetLength < length){return false;}
+        for (int i=0;i<length;i++){
+            if (target[targetLength-length+i] != expectEnd[i]){return false;}
+        }
+        return true;
+    }
+    bool strEqual(const char* A,const char* B){
+        int length = strlen(A);
+        if (length != strlen(B)){return false;}
+        for (int i=0;i<length;i++){
+            if (A[i] != B[i]){return false;}
+        }
+        return true;
+    }
 } // datutils

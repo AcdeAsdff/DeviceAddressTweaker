@@ -48,67 +48,83 @@ uint8_t * nop_ptr = nop;
 extern "C" int initPRoot(int argc, char *const argv[]);
 extern "C" int event_loop_clone();
 
+bool SHOW_FOPEN = false;
+bool SHOW_SYSPROP_GET = false;
+bool SHOW_CANCELLED = false;
+bool SHOW_FAKE_IP_INFO = false;
 int (*backup__system_property_get)(const char* __name, char* __value);
 int fake__system_property_get(const char* __name, char* __value){
+    if (__name == nullptr){return 0;}
     std::string namestr = std::string(__name);
-    if (std::equal(namestr.begin(), namestr.end(),"ro.build.version.sdk")){
-        setRandomCharPointerWithInt(__value,2);
-        return 2;
-    }else if(std::equal(namestr.begin(), namestr.end(),"ro.product.model")){
-        setRandomCharPointer(__value,10);return 10;
-    }else if(std::equal(namestr.begin(), namestr.end(),"ro.build.date.utc")){
-        setRandomCharPointerWithInt(__value,10);return 10;
-    }else if(std::equal(namestr.begin(), namestr.end(),"sys.usb.state")){
+    if (strStartWith(__name,"ro.")){
+        if (strStartWith(__name,"ro.build")){
+            if (strEqual(__name,"ro.build.version.sdk")){
+                setRandomCharPointerWithInt(__value,2);
+                __value[0]= '0' + abs(rand()%2)+1;
+                __value[1]= '0' + abs(rand()%10);
+                __value[2]='\0';
+                return 2;
+            }else if(strEqual(__name,"ro.build.date.utc")){
+                setRandomCharPointerWithInt(__value,10);return 10;
+            }else if(strEqual(__name,"ro.build.version.release")){
+                setRandomCharPointerWithInt(__value,2);return 10;
+            }else if(strEqual(__name,"ro.build.version.codename")){
+                setRandomCharPointer(__value,5);return 5;
+            }else if(strEqual(__name,"ro.build.tags")){
+                setCharPointerFromCharPointer(__value,12,"release-keys");return 12;
+            }else if(strEqual(__name,"ro.build.version.release_or_codename")){
+                setRandomCharPointerWithInt(__value,2);return 10;
+            }
+        }
+        if (strStartWith(__name,"ro.product")) {
+            if(strEqual(__name,"ro.product.model")){
+                setRandomCharPointer(__value,10);return 10;
+            }else if(strEqual(__name,"ro.product.first_api_level")){
+                setRandomCharPointerWithInt(__value,2);return 10;
+            }else if(strEqual(__name,"ro.product.board")){
+                setRandomCharPointer(__value,5);return 5;
+            }else if(strEqual(__name,"ro.product.device")){
+                setRandomCharPointer(__value,8);return 8;
+            }
+        }
+        if(strEqual(__name,"ro.hardware")){
+            setRandomCharPointer(__value,5);return 5;
+        }else if(strEqual(__name,"ro.board.platform")){
+            setRandomCharPointer(__value,5);return 5;
+        }else if(strEndWith(__name,".debuggable")){
+            __value[0]='0';__value[1]='\0';return 1;
+        }else if(strEndWith(__name,".serialno")){
+            setRandomCharPointer(__value,8);return 8;
+        }else if(strEqual(__name,"ro.boot.hardware")){
+            setRandomCharPointer(__value,8);return 8;
+        }else if(strEqual(__name,"ro.arch")){
+            setRandomCharPointer(__value,8);return 8;
+        }else if(strEndWith(__name,".chipname")){
+            setRandomCharPointer(__value,8);return 8;
+        }else if(strEqual(__name,"ro.mediatek.platform")){
+            setRandomCharPointer(__value,8);return 8;
+        }
+    }
+    if(strEqual(__name,"sys.usb.state")){
         setRandomCharPointer(__value,8);return 8;
-    }else if(std::equal(namestr.begin(), namestr.end(),"ro.hardware")){
-        setRandomCharPointer(__value,5);return 5;
-    }else if(std::equal(namestr.begin(), namestr.end(),"ro.product.first_api_level")){
-        setRandomCharPointerWithInt(__value,2);return 10;
-    }else if(std::equal(namestr.begin(), namestr.end(),"ro.build.version.release")){
-        setRandomCharPointerWithInt(__value,2);return 10;
-    }else if(std::equal(namestr.begin(), namestr.end(),"ro.board.platform")){
-        setRandomCharPointer(__value,5);return 5;
-    }else if(std::equal(namestr.begin(), namestr.end(),"ro.product.board")){
-        setRandomCharPointer(__value,5);return 5;
-    }else if(std::equal(namestr.begin(), namestr.end(),"ro.build.version.codename")){
-        setRandomCharPointer(__value,5);return 5;
-    }else if(std::equal(namestr.begin(), namestr.end(),"ro.debuggable")){
-        __value[0]='0';__value[1]='\0';return 1;
-    }else if(std::equal(namestr.begin(), namestr.end(),"ro.serialno")
-    || std::equal(namestr.begin(), namestr.end(),"ro.boot.serialno")){
-        setRandomCharPointer(__value,8);return 8;
-    }else if(std::equal(namestr.begin(), namestr.end(),"ro.boot.hardware")){
-        setRandomCharPointer(__value,8);return 8;
-    }else if(std::equal(namestr.begin(), namestr.end(),"ro.product.device")){
-        setRandomCharPointer(__value,8);return 8;
-    }else if(std::equal(namestr.begin(), namestr.end(),"ro.build.tags")){
-        setCharPointerFromCharPointer(__value,12,"release-keys");return 12;
-    }else if(std::equal(namestr.begin(), namestr.end(),"gsm.sim.state")){
+    }else if(strEqual(__name,"gsm.sim.state")){
         setCharPointerFromCharPointer(__value,13,"LOADED,ABSENT");return 13;
-    }else if(std::equal(namestr.begin(), namestr.end(),"persist.sys.country")){
+    }else if(strEqual(__name,"persist.sys.country")){
         setCharPointerFromCharPointer(__value,2,"CN");return 2;
-    }else if(std::equal(namestr.begin(), namestr.end(),"persist.sys.language")){
+    }else if(strEqual(__name,"persist.sys.language")){
         setCharPointerFromCharPointer(__value,5,"zh-CN");return 5;
-    }else if(std::equal(namestr.begin(), namestr.end(),"debug.atrace.tags.enableflags")){
+    }else if(strEqual(__name,"debug.atrace.tags.enableflags")){
         setCharPointerFromCharPointer(__value,1,"0");return 1;
-    }else if(namestr.find("debug.") != -1){
+    }else if(strStartWith(__name,"debug.")){
         __value[0]='\0';
         return 0;
-    }else if(std::equal(namestr.begin(), namestr.end(),"ro.arch")){
-        setRandomCharPointer(__value,8);return 8;
-    }else if(std::equal(namestr.begin(), namestr.end(),"ro.hardware.chipname")){
-        setRandomCharPointer(__value,8);return 8;
-    }else if(std::equal(namestr.begin(), namestr.end(),"ro.chipname")){
-        setRandomCharPointer(__value,8);return 8;
-    }else if(std::equal(namestr.begin(), namestr.end(),"ro.mediatek.platform")){
-        setRandomCharPointer(__value,8);return 8;
-    }else if(std::equal(namestr.begin(), namestr.end(),"ro.build.version.release_or_codename")){
-        setRandomCharPointerWithInt(__value,2);return 10;
-    }else if(std::equal(namestr.begin(), namestr.end(),"gsm.network.type")){
+    }else if(strEqual(__name,"gsm.network.type")){
         setCharPointerFromCharPointer(__value,3,"LTE");return 3;
     }
     int result = backup__system_property_get(__name,__value);
-//    LOGD("%s %s", __name,__value);
+    if(SHOW_SYSPROP_GET){
+        LOGD("[linearity-system_property_get]%s %s %d", __name, __value, result);
+    }
     return result;
 };
 static jstring fake_android_media_MediaDrm_getPropertyString(JNIEnv *env, jobject thiz, jstring jname){
@@ -116,7 +132,6 @@ static jstring fake_android_media_MediaDrm_getPropertyString(JNIEnv *env, jobjec
     return result;
 }
 static jbyteArray fake_android_media_MediaDrm_getPropertyByteArray(JNIEnv *env, jobject thiz, jstring jname) {
-//    LOGD("called method:android_media_MediaDrm_getPropertyByteArray");
     return getRandomByteArray(env,32);
 }
 
@@ -137,6 +152,13 @@ ssize_t fake_recvfrom(int fd, void* const buf , size_t len, int flags, struct so
 
 
 FILE *(*backup_fopen)(const char *filename, const char *mode);
+FILE *replace_fopen_proc(const char *filename,const char *childFilename, const char *mode){
+    std::string pathstr("/proc/");
+    pathstr.append(std::to_string(getpid())).append("/").append(childFilename);
+    const char* result = pathstr.c_str();
+    if(SHOW_CANCELLED){ LOGD("[fopen-cancelled]%s -> %s", filename, result); }
+    return backup_fopen(result, mode);
+};
 FILE *(*backup_popen)(const char *filename, const char *mode);
 void* (*backup_dlsym)(void* __handle, const char* __symbol);
 void* fake_dlsym(void* __handle, const char* __symbol){
@@ -147,7 +169,6 @@ void* fake_dlsym(void* __handle, const char* __symbol){
 //    }
     return backup_dlsym(__handle,__symbol);
 }
-bool showCancelled = false;
 FILE *fake_popen(const char *command, const char *mode) {
     if (command== nullptr){return nullptr;}
     std::string str(command);
@@ -158,74 +179,68 @@ FILE *fake_popen(const char *command, const char *mode) {
         std::string pathstr("ls /proc/");
         pathstr.append(std::to_string(getpid()));
         const char* replace = pathstr.c_str();
-        if (showCancelled){LOGD("[popen-cancelled]%s -> %s", command,replace);}
+        if (SHOW_CANCELLED){LOGD("[popen-cancelled]%s -> %s", command, replace);}
         return backup_popen(replace,mode);
     }
     LOGD("[popen]%s", command);
     return backup_popen(command, mode);
 }
 FILE *fake_fopen(const char *filename, const char *mode) {
-    if (filename== nullptr){return nullptr;}
-    std::string str(filename);
-    if (strstr(filename,"su")!=0){return nullptr;}
-    if (str.find("/proc") == 0){
-        std::string pathstr("/proc/");
-        if (str.find("/maps") != -1){
-            pathstr.append(std::to_string(getpid())).append("/maps");
-            const char* result = pathstr.c_str();
-            if(showCancelled){ LOGD("[fopen-cancelled]%s -> %s",filename, result); }
-            return backup_fopen(result, mode);
-        }
-        if (str.find("/smaps") != -1){
-            pathstr.append(std::to_string(getpid())).append("/smaps");
-            const char* result = pathstr.c_str();
-            if(showCancelled){ LOGD("[fopen-cancelled]%s -> %s",filename, result); }
-            return backup_fopen(result, mode);
-        }
-        if (str.find("/stat") != -1){
-            pathstr.append(std::to_string(getpid())).append("/stat");
-            const char* result = pathstr.c_str();
-            if(showCancelled){ LOGD("[fopen-cancelled]%s -> %s",filename, result); }
-            return backup_fopen(result, mode);
-        }
-        if (str.find("/cmdline") != -1){
-            pathstr.append(std::to_string(getpid())).append("/cmdline");
-            const char* result = pathstr.c_str();
-            if(showCancelled){ LOGD("[fopen-cancelled]%s -> %s",filename, result); }
-            return backup_fopen(result, mode);
-        }
-        pathstr.append(std::to_string(getpid())).append("/cmdline");
-        const char* result = pathstr.c_str();
-        if(showCancelled){ LOGD("[fopen-cancelled]%s -> %s",filename, result); }
-        return backup_fopen(result, mode);
+    if (filename== nullptr){
+        return nullptr;
     }
-    if (str.find("/sys/devices") == 0
-    || str.find("/product/overlay/")==0
-    || str.find("/system/etc")==0
-    || std::equal(str.begin(), str.end(),"/dev/urandom"))
-    {
-        std::string pathstr("/proc/");
-        pathstr.append(std::to_string(getpid()).append("/cmdline").c_str());
-        const char* result = pathstr.c_str();
-        if(showCancelled){ LOGD("[fopen-cancelled]%s -> %s",filename, result); }
-        return backup_fopen(result, mode);
-    }
-//    if ((str.find("cpufreq") != -1)
-//    ||(str.find("/proc") != -1)
-//    ||str.find("/product") != -1
-//    ||str.find("/sys/devices") != -1
-//    ||str.find("/su") != -1
-//    ){
-//        LOGD("[fopen-cancelled]%s", filename);
-//        return nullptr;
-//    }
-//    if (strstr(filename, "banned")) return nullptr;
-
-//maybe u want some font mapping?works for com.tencent.tim
-    if (str.find("/system/fonts") != -1) {
+    if (strStartWith(filename,"/system/fonts")
+    || strEqual(filename,"/system/etc/fonts.xml")
+    ) {
         return backup_fopen(filename,mode);
     }
-    LOGD("[fopen]%s", filename);
+    if (strEndWith(filename,"/su")){// endswith"/su"
+        if (SHOW_CANCELLED) {
+            LOGD("[fopen-cancelled]%s -> nullptr", filename);
+        }
+        return nullptr;
+    }
+    if (strStartWith(filename,"/proc")){
+        if (strEndWith(filename,"/smaps")){
+            return replace_fopen_proc(filename,"smaps",mode);
+        }
+        if (strEndWith(filename,"/maps")){
+            return replace_fopen_proc(filename,"maps",mode);
+        }
+        if (strEndWith(filename,"/stat")){
+            return replace_fopen_proc(filename,"stat",mode);
+        }
+        if (strEndWith(filename,"/status")){
+            return replace_fopen_proc(filename,"status",mode);
+        }
+        if (strEndWith(filename,"/cmdline")){
+            return replace_fopen_proc(filename,"cmdline",mode);
+        }
+        if (strEndWith(filename,"/auxv")){
+            return replace_fopen_proc(filename,"auxv",mode);
+        }
+        if (strEndWith(filename,"/net/tcp")){
+            return replace_fopen_proc(filename,"net/tcp",mode);
+        }
+        if (strEndWith(filename,"/net/route")){
+            return replace_fopen_proc(filename,"net/route",mode);
+        }
+        return replace_fopen_proc(filename,"cmdline",mode);
+    }
+    if (
+        strStartWith(filename,"/sys/devices")
+        || strStartWith(filename,"/product/overlay/")
+        || strStartWith(filename,"/system/etc")
+        || strEqual(filename,"/dev/urandom")
+        || strStartWith(filename,"/data/vendor/gpu/")
+        || strStartWith(filename,"/data/misc/gpu/")
+        || strStartWith(filename,"/sys/class/kgsl/kgsl-3d0/gpu_model")
+    ){
+        return replace_fopen_proc(filename,"cmdline",mode);
+    }
+    if(SHOW_FOPEN){
+        LOGD("[fopen]%s", filename);
+    }
 
     return backup_fopen(filename, mode);
 }
@@ -256,7 +271,6 @@ media_status_t fake__AMediaDrm_getPropertyByteArray(AMediaDrm *mObj,
 }
 int (*backup_getifaddrs)(ifaddrs** out);
 
-bool SHOW_FAKE_IP_INFO = false;
 int fake_getifaddrs(ifaddrs** out){
     if (out== nullptr){return -1;}
     int result = backup_getifaddrs(out);

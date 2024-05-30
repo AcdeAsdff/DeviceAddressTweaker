@@ -45,6 +45,7 @@ public class HookIO {
 //                                            LoggerLog("caught " + param.args[0]);
                                             String prefix = "/sdcard/Android/data/";
                                             if (param.args[0] instanceof String){
+//                                                LoggerLog(param.args[0]);
                                                 param.args[0] = prefix+lpparam.packageName+param.args[0];
                                             }
                                             else if(param.args[0] instanceof File){
@@ -79,7 +80,9 @@ public class HookIO {
 //                                        return;
                                         }
                                     }
-                                });
+                                }
+
+                                );
                     } catch (Exception e) {
                         LoggerLog(e);
                     }
@@ -276,6 +279,30 @@ public class HookIO {
                     } catch (Exception e) {
                         LoggerLog(e);
                     }
+                    {
+                        XposedBridge.hookAllMethods(hookClass, "exists", new XC_MethodHook() {
+                            @Override
+                            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                                super.beforeHookedMethod(param);
+                                String absPath = ((File)param.thisObject).getAbsolutePath();
+                                for (String s:whiteListContains){
+                                    if (absPath.contains(s)){return;}
+                                }
+                                for (String s:whiteListHead){
+                                    if (absPath.startsWith(s)){return;}
+                                }
+                                for (String s:bannedFileContains){
+                                    if (absPath.contains(s)){param.setResult(false);return;}
+                                }
+                                for (String s:bannedFileHead){
+                                    if (absPath.startsWith(s)){param.setResult(false);return;}
+                                }
+                                for (String s:bannedFileExact){
+                                    if (absPath.equals(s)){param.setResult(false);return;}
+                                }
+                            }
+                        });
+                    }
                 }
             }//not finished
             if (HookOutputStream){
@@ -321,19 +348,23 @@ public class HookIO {
                                             path = name != null ? (String) name : "";
                                             path = checkReplaceFile(path, lpparam);
                                             if (!checkBannedInFile(path, lpparam)) {
-                                                param.args[0] = path;
+                                                param.args[0] = ("/sdcard/Android/data/"+lpparam.packageName+param.args[0]);
                                             }
                                         }
                                        else if (param.args[0] instanceof File){
-                                           if (param.args[0].toString().contains("/proc")
-                                                   ||param.args[0].toString().contains("/system/cpu/")
-                                                   ||param.args[0].toString().contains("/sys/block/")
+                                           if (param.args[0].toString().startsWith("/proc/cpuinfo")
+                                                   ||param.args[0].toString().startsWith("/system/cpu/")
+                                                   ||param.args[0].toString().startsWith("/sys/block/")
+                                                   ||param.args[0].toString().contains("/su")
                                            ){
                                                File f = ((File)param.args[0]);
+//                                               LoggerLog("caught:"+f.getAbsolutePath());
+                                               f = new File("/sdcard/Android/data/"+lpparam.packageName+f.getAbsolutePath());
                                                if (!f.exists()) {
                                                    f.getParentFile().mkdirs();
                                                    f.createNewFile();
                                                }
+                                               param.args[0] = f;
                                                return;
                                            }
 
@@ -360,6 +391,12 @@ public class HookIO {
             "/data/misc",
             "/system",
     };
+    public static String[] bannedFileContains = new String[]{
+            "/su",
+    };
+    public static String[] whiteListContains = new String[]{
+            "/lib64",
+    };
     @SuppressLint("SdCardPath")
     public static String[] bannedFileHead = new String[]{
             "/acct",
@@ -368,7 +405,7 @@ public class HookIO {
             "/bugreports",
             "/cache",
             "/config",
-            "/proc",
+            "/proc/self",
             "/sys/devices/system",
             "/etc",
             "/data/misc",
@@ -381,6 +418,9 @@ public class HookIO {
             "/data/local/xbin/su",
             "/sbin/su",
             "/data/local/bin/su",
+            "/sys/class/",
+            "/sys/bus"
+
     };
     public static String[] whiteListHead = new String[]{
             "/system/lib",
@@ -391,8 +431,16 @@ public class HookIO {
             "/system/lib64",
             "/system_ext/lib64",
             "/storage/emulated/",
-//            ".dmpvedpogjhejs.cfg",
-//            ".imprint",
+            "/proc/0",
+            "/proc/1",
+            "/proc/2",
+            "/proc/3",
+            "/proc/4",
+            "/proc/5",
+            "/proc/6",
+            "/proc/7",
+            "/proc/8",
+            "/proc/9",
     };
 
     public static String[] tweakPathExact = new String[]{
@@ -440,12 +488,17 @@ public class HookIO {
                     break;
                 }
             }
+            for (String checker:bannedFileContains){
+                if (path.contains(checker)){
+                    return false;
+                }
+            }
         }
         return mark;
     }
     public static String checkReplaceFile(String path, XC_LoadPackage.LoadPackageParam lpparam){
         if (path == null){return null;}
-        if (path.equals("")){return "";}
+        if (path.isEmpty()){return "";}
         String procHead = lpparam.processName.split(":")[0];
         if (path.contains("/" + procHead + "/Android")){
             path = path.replace("/" + procHead + "/Android","/Android");
@@ -495,9 +548,6 @@ public class HookIO {
         String procHead = lpparam.processName.split(":")[0];
         if (path.contains(procHead)
                 ||path.contains(lpparam.packageName)){return true;}
-//        else {
-//                    LoggerLog(path);
-//        }
         if ((path.contains("WeiXin") || path.contains("tencent")) && procHead.contains("tencent")) {
             return true;
         }
@@ -514,16 +564,13 @@ public class HookIO {
                     break;
                 }
                 if (path.startsWith(checker)) {
-//                            param.args[0] = getRandomString(14);
-                    mark = false;
-                    break;
+                    return false;
                 }
             }
             for (String checker : bannedFileExact) {
                 if (path.equals(checker)) {
 //                            param.args[0] = getRandomString(14);
-                    mark = false;
-                    break;
+                    return false;
                 }
             }
         }

@@ -1,46 +1,45 @@
 package com.linearity.deviceaddresstweaker.AndroidHooks.android.accounts;
 
-import static com.linearity.deviceaddresstweaker.DeviceAddressTweaker.*;
+import static com.linearity.utils.FakeInfo.FakeProcInfoGenerator.random;
 import static com.linearity.utils.HookUtils.disableClass_random;
 import static com.linearity.utils.LoggerUtils.LoggerLog;
-import static com.linearity.utils.ReturnReplacements.returnIntegerZero;
-import static com.linearity.utils.ReturnReplacements.returnNull;
-import static com.linearity.utils.ReturnReplacements.returnRandomStr20;
 import static com.linearity.utils.ReturnReplacements.returnTrue;
 
 import android.accounts.Account;
-import android.accounts.AccountManager;
-import android.accounts.AccountManagerCallback;
+import android.accounts.AccountAuthenticatorResponse;
 import android.accounts.AccountManagerFuture;
 import android.accounts.AuthenticatorDescription;
 import android.accounts.AuthenticatorException;
-import android.accounts.OnAccountsUpdateListener;
 import android.accounts.OperationCanceledException;
-import android.app.Activity;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.Parcel;
-import android.os.UserHandle;
+import android.os.Parcelable;
 
-import com.linearity.deviceaddresstweaker.DeviceAddressTweaker;
 import com.linearity.utils.HookUtils;
 import com.linearity.utils.ReturnReplacements;
 
 import java.io.IOException;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XC_MethodReplacement;
 import android.content.SharedPreferences;
 
-import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
 public class HookAccountClass {
+    public static final  Parcelable.Creator<Account> CREATOR = new Parcelable.Creator<>() {
+        public Account createFromParcel(Parcel source) {
+//            return new Account(source);
+            return null;
+        }
+
+        public Account[] newArray(int size) {
+//            return new Account[size];
+            return null;
+        }
+    };
     public static boolean HookAccounts = true;
     public static boolean HookAccount = true;
     public static boolean HookAccountManager = true;
@@ -88,11 +87,84 @@ public class HookAccountClass {
         }
     };
     public static Account[] EmptyAccountArray = new Account[0];
+    public static Future2Task<Account[]> EmptyFuture2TaskOfAccountArray = new Future2Task<>() {
+        @Override
+        public boolean cancel(boolean mayInterruptIfRunning) {
+            return true;
+        }
+
+        @Override
+        public boolean isCancelled() {
+            return true;
+        }
+
+        @Override
+        public boolean isDone() {
+            return true;
+        }
+
+        @Override
+        public Account[] getResult() {
+            return EmptyAccountArray;
+        }
+
+        @Override
+        public Account[] getResult(long timeout, TimeUnit unit) {
+            return EmptyAccountArray;
+        }
+    };
     public static XC_MethodReplacement returnEmptyAccountArray = new XC_MethodReplacement(114514) {
         @Override
         protected Object replaceHookedMethod(XC_MethodHook.MethodHookParam
                                                      param) throws Throwable {
             return EmptyAccountArray;
+        }
+    };
+    public static Parcelable.Creator<AccountAuthenticatorResponse> CREATOR_AccountAuthenticatorResponse = new Parcelable.Creator<>() {
+        public AccountAuthenticatorResponse createFromParcel(Parcel source) {
+            return new AccountAuthenticatorResponse(source);
+        }
+
+        public AccountAuthenticatorResponse[] newArray(int size) {
+            return EmptyAccountAuthenticatorResponse;
+        }
+    };
+    public static AccountAuthenticatorResponse[] EmptyAccountAuthenticatorResponse = new AccountAuthenticatorResponse[0];
+    public static Future2Task<Boolean> EmptyFuture2TaskOBoolean = new Future2Task<>() {
+        @Override
+        public boolean cancel(boolean mayInterruptIfRunning) {
+            return random.nextBoolean();
+        }
+
+        @Override
+        public boolean isCancelled() {
+            return random.nextBoolean();
+        }
+
+        @Override
+        public boolean isDone() {
+            return random.nextBoolean();
+        }
+
+        @Override
+        public Boolean getResult() {
+            return random.nextBoolean();
+        }
+
+        @Override
+        public Boolean getResult(long timeout, TimeUnit unit) {
+            return random.nextBoolean();
+        }
+    };
+    public static Parcelable.Creator<AuthenticatorDescription> CREATOR_AuthenticatorDescription = new Parcelable.Creator<>() {
+        public AuthenticatorDescription createFromParcel(Parcel source) {
+//            return new Account(source);
+            return null;
+        }
+
+        public AuthenticatorDescription[] newArray(int size) {
+//            return new Account[size];
+            return null;
         }
     };
 
@@ -269,6 +341,17 @@ public class HookAccountClass {
                     LoggerLog(e);
                 }
             }
+        }
+    }
+
+    //empty,implements AccountManagerFuture
+ public static abstract class Future2Task<T>
+     implements AccountManagerFuture<T> {
+        Account account;
+        public Future2Task() {
+        }
+        public Future2Task(Account account) {
+            this.account = account;
         }
     }
 }
