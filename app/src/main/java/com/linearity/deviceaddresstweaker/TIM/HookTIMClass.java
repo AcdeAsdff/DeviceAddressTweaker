@@ -2349,4 +2349,9 @@ public class HookTIMClass {
             }
         }
     }
+
+
+    public static void hookFromNative(){
+
+    }
 }

@@ -4,6 +4,8 @@
         <string name="refresh">refresh</string>
         <string-array name="scope">
 <!--        <item>cn.gov.tax.its</item>-->
+<!--        <item>system</item>-->
+<!--        <item>system_server</item>-->
         <item>tv.danmaku.bili</item>
         <item>com.bankofbejing.mobilebanking</item>
         <item>com.autonavi.minimap</item>

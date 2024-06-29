@@ -2,9 +2,19 @@ package com.linearity.deviceaddresstweaker.AndroidHooks.android.content.pm;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
 import android.content.pm.ApplicationInfo;
+import android.content.pm.Attribution;
+import android.content.pm.ConfigurationInfo;
+import android.content.pm.FeatureGroupInfo;
+import android.content.pm.FeatureInfo;
+import android.content.pm.InstrumentationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.content.pm.PermissionInfo;
+import android.content.pm.ProviderInfo;
+import android.content.pm.Signature;
+import android.content.pm.SigningInfo;
 import android.util.SparseArray;
 
 import de.robv.android.xposed.XC_MethodHook;
@@ -25,8 +35,11 @@ import static com.linearity.utils.ReturnReplacements.returnTrue;
 
 import com.linearity.utils.FakeClass.java.util.CantUseArrayList;
 
+import java.lang.reflect.Constructor;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 public class HookPmClass {
@@ -41,9 +54,44 @@ public class HookPmClass {
                     if (hookClass != null){
                         XposedHelpers.setStaticIntField(PackageManager.class,"PERMISSION_DENIED",PackageManager.PERMISSION_GRANTED);
                     }
+                    Constructor<?> sliceConstructor = XposedHelpers.findConstructorExact("android.content.pm.ParceledListSlice",lpparam.classLoader,List.class);
+                    Class<?> signingDetailClass = XposedHelpers.findClass(" android.content.pm.PackageParser$SigningDetails",lpparam.classLoader);
+//                    hookClass = XposedHelpers.findClassIfExists("com.android.server.pm.PackageManagerService$ComputerEngine",lpparam.classLoader);
+
+
                     hookClass = XposedHelpers.findClassIfExists("android.app.ApplicationPackageManager",lpparam.classLoader);
                     if (hookClass != null){
-//                        LoggerLog("found ApplicationPackageManager");
+
+                        XposedBridge.hookAllConstructors(hookClass, new XC_MethodHook() {
+                            @Override
+                            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                                super.beforeHookedMethod(param);
+                                Object toHook = param.args[1];
+//                                toHook = XposedHelpers.getObjectField(toHook,"mSnapshotComputer");
+                                Class<?> hookClass = toHook.getClass();
+                                {
+                                    XposedBridge.hookAllMethods(hookClass, "getInstalledApplications", new XC_MethodHook() {
+                                        @Override
+                                        protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                                            LoggerLog("c");
+                                            super.afterHookedMethod(param);
+                                            Object slice = param.getResult();
+                                            List<PackageInfo> pkgInfoList = (List<PackageInfo>) XposedHelpers.callMethod(slice,"getList");
+                                            List<PackageInfo> filtedList = new LinkedList<>();
+                                            for (PackageInfo p:pkgInfoList){
+                                                if (p.applicationInfo.packageName.equals(lpparam.packageName)){
+                                                    filtedList.add(p);
+                                                }else if(p.applicationInfo.packageName.contains("alipay") || p.applicationInfo.packageName.contains("tencent")){
+                                                    filtedList.add(confusePackageInfo(p,signingDetailClass));
+                                                }
+                                            }
+                                            param.setResult(sliceConstructor.newInstance(filtedList));
+                                        }
+                                    });
+                                }
+                            }
+                        });
+                        LoggerLog("found ApplicationPackageManager");
                         XposedBridge.hookAllMethods(hookClass, "getApplicationInfoAsUser", new XC_MethodHook() {
                             @Override
                             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
@@ -59,6 +107,10 @@ public class HookPmClass {
                                 super.afterHookedMethod(param);
                                 String inputPackage = (String) param.args[0];
                                 if (inputPackage.equals(lpparam.packageName)){return;}
+                                if (inputPackage.contains("alipay") || inputPackage.contains("tencent")){
+                                    param.setResult(confusePackageInfo((PackageInfo) param.getResult(),signingDetailClass));
+                                    return;
+                                }
                                 param.setResult(null);
                             }
                         });
@@ -68,7 +120,7 @@ public class HookPmClass {
                                 super.afterHookedMethod(param);
                                 String inputPackage = (String) param.args[0];
                                 if (inputPackage.equals(lpparam.packageName)){return;}
-                                ApplicationInfo result = (ApplicationInfo) param.getResult();
+//                                ApplicationInfo result = (ApplicationInfo) param.getResult();
                                 param.setResult(Integer.MAX_VALUE);
                             }
                         });
@@ -79,7 +131,7 @@ public class HookPmClass {
                                 List<ApplicationInfo> result = new ArrayList<>();
                                 for (ApplicationInfo applicationInfo:(List<ApplicationInfo>)param.getResult()){
                                     if (applicationInfo.packageName.contains("tencent") || applicationInfo.packageName.contains("alipay")){
-//                                        result.add(confuseApplicationInfo(applicationInfo));
+                                        result.add(confuseApplicationInfo(applicationInfo));
                                     }else if(applicationInfo.packageName.equals(lpparam.packageName)){
                                         result.add(applicationInfo);
                                     }
@@ -94,17 +146,6 @@ public class HookPmClass {
                                 LoggerLog("called getInstalledPackagesAsUser");
                                 param.setResult(null);
                             }
-                            //                            @Override
-//                            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-//                                super.afterHookedMethod(param);
-//                                List<PackageInfo> result = new ArrayList<>();
-//                                for (PackageInfo applicationInfo:(List<PackageInfo>)param.getResult()){
-//                                    if (applicationInfo.packageName.contains("tencent") || applicationInfo.packageName.contains("alipay") || applicationInfo.packageName.equals(lpparam.packageName)){
-//                                        result.add(applicationInfo);
-//                                    }
-//                                }
-//                                param.setResult(result);
-//                            }
                         });
                         XposedHelpers.findAndHookMethod(hookClass, "isInstantApp",String.class, new XC_MethodReplacement() {
                             @Override
@@ -123,16 +164,17 @@ public class HookPmClass {
                         XposedBridge.hookAllMethods(hookClass, "setInstantAppCookie", returnTrue);//not finished!
 
                     }
-//                    hookClass = XposedHelpers.findClassIfExists("com.android.server.pm.PackageManagerService",lpparam.classLoader);
-//                    if (hookClass != null){
-//                        XposedBridge.hookAllMethods(hookClass, "addForInitLI", new XC_MethodHook() {
-//                            @Override
-//                            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-//                                super.beforeHookedMethod(param);
-//                                LoggerLog(new Exception(param.args[0].toString()));
-//                            }
-//                        });
-//                    }
+                    hookClass = XposedHelpers.findClassIfExists("com.android.server.pm.PackageManagerService",lpparam.classLoader);
+                    if (hookClass != null){
+                        LoggerLog("found PackageManagerService!");
+                        XposedBridge.hookAllMethods(hookClass, "addForInitLI", new XC_MethodHook() {
+                            @Override
+                            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                                super.beforeHookedMethod(param);
+                                LoggerLog(new Exception(param.args[0].toString()));
+                            }
+                        });
+                    }
                 }catch (Exception e){
                     LoggerLog(e);
                 }
@@ -141,6 +183,20 @@ public class HookPmClass {
         }
     }
 
+
+    public static final ActivityInfo[] emptyActivityInfo = new ActivityInfo[0];
+    public static final ProviderInfo[] emptyProviderInfo = new ProviderInfo[0];
+    public static final InstrumentationInfo[] emptyInstrumentationInfo = new InstrumentationInfo[0];
+    public static final PermissionInfo[] emptyPermissionInfo = new PermissionInfo[0];
+    public static final Attribution[] emptyAttributions = new Attribution[0];
+    public static final Signature[] emptySignatures = new Signature[0];
+    public static final ConfigurationInfo[] emptyConfigurationInfos = new ConfigurationInfo[0];
+    public static final FeatureInfo[] emptyFeatureInfo = new FeatureInfo[0];
+    public static final FeatureGroupInfo[] emptyFeatureGroupInfo = new FeatureGroupInfo[0];
+    public static PackageInfo confusePackagePath(PackageInfo toConfuse,Class<?> signingDetailClass){
+
+        return toConfuse;
+    }
     public static ApplicationInfo confuseApplicationInfo(ApplicationInfo toConfuse){
 //        XposedHelpers.setObjectField(toConfuse,"targetActivity",null);
         XposedHelpers.setObjectField(toConfuse,"processName",getRandomString(20));
@@ -205,6 +261,54 @@ public class HookPmClass {
         XposedHelpers.setObjectField(toConfuse,"zygotePreloadName", getRandomString(random.nextInt(10)+5));
         XposedHelpers.setObjectField(toConfuse,"gwpAsanMode", 0);
         XposedHelpers.setObjectField(toConfuse,"mHiddenApiPolicy", 0);
+        return toConfuse;
+    }
+    public static PackageInfo confusePackageInfo(PackageInfo toConfuse,Class<?> signingDetailClass){
+
+        XposedHelpers.setIntField(toConfuse,"versionCode", random.nextInt());
+        XposedHelpers.setIntField(toConfuse,"versionCodeMajor", random.nextInt());
+        XposedHelpers.setIntField(toConfuse,"versionCodeMajor", random.nextInt());
+        XposedHelpers.setObjectField(toConfuse,"versionName", getRandomString(10));
+        XposedHelpers.setIntField(toConfuse,"baseRevisionCode", random.nextInt());
+        XposedHelpers.setObjectField(toConfuse,"splitRevisionCodes", random.randomIntArr(random.nextInt(5)+2));
+        XposedHelpers.setObjectField(toConfuse,"sharedUserId", "0");
+        XposedHelpers.setIntField(toConfuse,"sharedUserLabel", 0);
+        XposedHelpers.setObjectField(toConfuse,"applicationInfo", confuseApplicationInfo(toConfuse.applicationInfo));
+        XposedHelpers.setLongField(toConfuse,"firstInstallTime", random.nextLong());
+        XposedHelpers.setLongField(toConfuse,"lastUpdateTime", random.nextLong());
+        XposedHelpers.setObjectField(toConfuse,"gids", random.randomIntArr(random.nextInt(5)+2));
+        XposedHelpers.setObjectField(toConfuse,"activities", emptyActivityInfo);
+        XposedHelpers.setObjectField(toConfuse,"receivers", emptyActivityInfo);
+        XposedHelpers.setObjectField(toConfuse,"services", emptyActivityInfo);
+        XposedHelpers.setObjectField(toConfuse,"providers", emptyProviderInfo);
+        XposedHelpers.setObjectField(toConfuse,"instrumentation", emptyInstrumentationInfo);
+        XposedHelpers.setObjectField(toConfuse,"permissions", emptyPermissionInfo);
+        int l = random.nextInt(5)+1;
+        XposedHelpers.setObjectField(toConfuse,"requestedPermissions", random.randomStrArr(l));
+        XposedHelpers.setObjectField(toConfuse,"requestedPermissionsFlags", random.randomIntArr(l));
+        XposedHelpers.setObjectField(toConfuse,"attributions", emptyAttributions);
+        XposedHelpers.setObjectField(toConfuse,"signatures", emptySignatures);
+        SigningInfo signingInfo = new SigningInfo();
+        Object signingDetail = XposedHelpers.newInstance(signingDetailClass,emptySignatures,random.nextInt());
+        XposedHelpers.setObjectField(signingInfo,"mSigningDetails", signingDetail);
+        XposedHelpers.setObjectField(toConfuse,"signingInfo", signingInfo);
+        XposedHelpers.setObjectField(toConfuse,"configPreferences", emptyConfigurationInfos);
+        XposedHelpers.setObjectField(toConfuse,"reqFeatures", emptyFeatureInfo);
+        XposedHelpers.setObjectField(toConfuse,"featureGroups", emptyFeatureGroupInfo);
+        XposedHelpers.setBooleanField(toConfuse,"isStub", random.nextBoolean());
+        XposedHelpers.setBooleanField(toConfuse,"coreApp", false);
+        XposedHelpers.setBooleanField(toConfuse,"requiredForAllUsers", false);
+        XposedHelpers.setObjectField(toConfuse,"restrictedAccountType", getRandomString(random.nextInt(5)+2));
+        XposedHelpers.setObjectField(toConfuse,"requiredAccountType", getRandomString(random.nextInt(5)+2));
+        XposedHelpers.setObjectField(toConfuse,"overlayTarget", getRandomString(random.nextInt(5)+2));
+        XposedHelpers.setObjectField(toConfuse,"targetOverlayableName", getRandomString(random.nextInt(5)+2));
+        XposedHelpers.setObjectField(toConfuse,"overlayCategory", getRandomString(random.nextInt(5)+2));
+        XposedHelpers.setIntField(toConfuse,"overlayPriority", random.nextInt());
+        XposedHelpers.setBooleanField(toConfuse,"mOverlayIsStatic", random.nextBoolean());
+        XposedHelpers.setIntField(toConfuse,"compileSdkVersion", random.nextInt(32));
+        XposedHelpers.setObjectField(toConfuse,"overlayCategory", getRandomString(random.nextInt(5)+2));
+        XposedHelpers.setObjectField(toConfuse,"compileSdkVersionCodename", getRandomString(random.nextInt(5)+2));
+        XposedHelpers.setBooleanField(toConfuse,"isApex", random.nextBoolean());
 
 
         return toConfuse;

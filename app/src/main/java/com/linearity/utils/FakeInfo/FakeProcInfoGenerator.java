@@ -6,6 +6,7 @@ import static com.linearity.utils.ReturnReplacements.getRandomString;
 
 import android.text.format.DateFormat;
 
+import com.linearity.utils.ExtendedSecureRandom;
 import com.linearity.utils.ListenerUtils.ListenerByteArrayOutputStream;
 
 import java.io.ByteArrayInputStream;
@@ -15,12 +16,13 @@ import java.io.OutputStream;
 import java.security.SecureRandom;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 import java.util.UUID;
 
 public class FakeProcInfoGenerator {
 
     public static final FakeProcInfoGenerator INSTANCE = new FakeProcInfoGenerator();
-    public static final  SecureRandom random = new SecureRandom();
+    public static final ExtendedSecureRandom random = new ExtendedSecureRandom();
     public static final  HashMap<String,String> infoMap = new HashMap<>();
     static {//not finished
         infoMap.put("aaudio.hw_burst_min_usec","2000");

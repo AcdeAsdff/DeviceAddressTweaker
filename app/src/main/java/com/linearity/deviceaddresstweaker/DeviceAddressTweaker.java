@@ -10,7 +10,9 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.location.Location;
 import android.net.wifi.WifiInfo;
+import android.system.Os;
 
+import com.linearity.deviceaddresstweaker.AndroidHooks.android.HookForSystem;
 import com.linearity.deviceaddresstweaker.AndroidHooks.android.accessibilityservice.HookAccessibilityClass;
 import com.linearity.deviceaddresstweaker.AndroidHooks.android.accounts.HookAccountClass;
 import com.linearity.deviceaddresstweaker.AndroidHooks.android.app.HookAppClass;
@@ -77,9 +79,14 @@ public class DeviceAddressTweaker implements IXposedHookLoadPackage, IXposedHook
             return;
         }
 
-        System.loadLibrary("deviceaddresstweaker");
         if (lpparam.processName == null){return;}
+        if (lpparam.packageName.startsWith("system") || lpparam.processName.equals("android")){
+//            HookForSystem.DoHook(lpparam,processHead,sharedPreferences);
+            return;
+        }
         LoggerLog("Load app processName:" + lpparam.processName);
+//        if (!lpparam.processName.contains(".")){return;}
+        System.loadLibrary("deviceaddresstweaker");
         processHead = lpparam.processName.split(":")[0];
         ProcHead2Context.put(processHead, null);
         File spFile = new File("/data/local/tmp/linearity_dat/shared_prefs/" + processHead + "_linearity_dat_settings.xml");
@@ -91,7 +98,7 @@ public class DeviceAddressTweaker implements IXposedHookLoadPackage, IXposedHook
     @Override
     public void handleInitPackageResources(XC_InitPackageResources.InitPackageResourcesParam resparam) {
         this.resparam = resparam;
-        HookTIMClass.DoColor(this);
+//        HookTIMClass.DoColor(this);
     }
 
     @Override
@@ -101,7 +108,6 @@ public class DeviceAddressTweaker implements IXposedHookLoadPackage, IXposedHook
 
 
     public static void startHookMethods(XC_LoadPackage.LoadPackageParam lpparam, String processHead, SharedPreferences sharedPreferences) throws Exception{
-        if (lpparam.packageName.equals("system")){return;}
 
         HookJavaNetClass.DoHook(lpparam, sharedPreferences);//not finished
         HookLang.DoHook(lpparam,processHead,sharedPreferences);//not finished
@@ -154,7 +160,7 @@ public class DeviceAddressTweaker implements IXposedHookLoadPackage, IXposedHook
 
         HookWechatClass.DoHook(lpparam,processHead,sharedPreferences);
 
-        HookTIMClass.DoHook(lpparam,processHead,sharedPreferences);
+//        HookTIMClass.DoHook(lpparam,processHead,sharedPreferences);
 
     }
 

@@ -44,6 +44,7 @@ using namespace datutils;
 static HookFunType hook_func = nullptr;
 uint8_t nop[4] = {0xD5,0x3,0x20,0x1F};
 uint8_t * nop_ptr = nop;
+JNIEnv *env = nullptr;
 
 extern "C" int initPRoot(int argc, char *const argv[]);
 extern "C" int event_loop_clone();
@@ -134,12 +135,13 @@ static jstring fake_android_media_MediaDrm_getPropertyString(JNIEnv *env, jobjec
 static jbyteArray fake_android_media_MediaDrm_getPropertyByteArray(JNIEnv *env, jobject thiz, jstring jname) {
     return getRandomByteArray(env,32);
 }
-
 static const JNINativeMethod gMethods[] = {
         { "getPropertyByteArray", "(Ljava/lang/String;)[B",(void *)fake_android_media_MediaDrm_getPropertyByteArray },
         { "getPropertyString", "(Ljava/lang/String;)Ljava/lang/String;",(void *)fake_android_media_MediaDrm_getPropertyString },
 };
-
+static const JNINativeMethod DATMethods[] = {
+        { "getPropertyByteArray", "(Ljava/lang/String;)[B",(void *)fake_android_media_MediaDrm_getPropertyByteArray },
+};
 ssize_t (*backup_recvfrom)(int fd, void* const buf , size_t len, int flags, struct sockaddr* src_addr, socklen_t* addr_len);
 ssize_t fake_recvfrom(int fd, void* const buf , size_t len, int flags, struct sockaddr* src_addr, socklen_t* addr_len){
     ssize_t result = backup_recvfrom(fd,buf, len, flags,src_addr, addr_len);
@@ -345,11 +347,20 @@ void on_library_loaded(const char *name, void *handle) {
         DobbyCodePatch((void*)targAbs,nop_ptr,4);
         targAbs = getAbsoluteAddress(name,0x1A858);
         DobbyCodePatch((void*)targAbs,nop_ptr,4);
-
     }else if (namestr.find("libmediandk.so") != -1) {
         target = dlsym(handle, "AMediaDrm_getPropertyByteArray");
         hook_func(target, (void *) fake__AMediaDrm_getPropertyByteArray, (void **) backup__AMediaDrm_getPropertyByteArray);
     }
+
+//    if (strEndWith(name,"qzone_plugin.odex") && env != nullptr){
+//        LOGD("found qzone_plugin.odex");
+//        jclass hookTIMClass = env->FindClass("com/linearity/deviceaddresstweaker/TIM/HookTIMClass");
+//        if (hookTIMClass != nullptr){
+//            jmethodID methodID = env->GetStaticMethodID(hookTIMClass,"hookFromNative", "()V");
+//            LOGD("calling method:com/linearity/deviceaddresstweaker/TIM/HookTIMClass hookFromNative");
+//            env->CallStaticVoidMethod(hookTIMClass,methodID);
+//        }
+//    }
 
 //    target = dlsym(handle, "getifaddrs");
 //    if (target==0){ return;}
@@ -359,7 +370,6 @@ void on_library_loaded(const char *name, void *handle) {
 
 extern "C" [[gnu::visibility("default")]] [[gnu::used]]
 jint JNI_OnLoad(JavaVM *jvm, void*) {
-    JNIEnv *env = nullptr;
     jvm->GetEnv((void **)&env, JNI_VERSION_1_6);
     hook_func((void *)env->functions->FindClass, (void *)fake_FindClass, (void **)&backup_FindClass);
     env->RegisterNatives( env->FindClass("android/media/MediaDrm"),gMethods, (sizeof(gMethods)/sizeof(gMethods[0])));
