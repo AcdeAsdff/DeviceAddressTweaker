@@ -102,7 +102,7 @@ public class HookAppClass {
                             Class<?> ActivityClientClass = XposedHelpers.findClass("android.app.ActivityClient",lpparam.classLoader);
                             Class<?> RequestFinishCallbackClass = XposedHelpers.findClass("android.app.Activity$RequestFinishCallback",lpparam.classLoader);
                             Constructor<?> RequestFinishCallbackConstructor = XposedHelpers.findConstructorExact(RequestFinishCallbackClass, WeakReference.class);
-                            Class<?> androidxFragmentControllerClass = XposedHelpers.findClassIfExists(androidx.fragment.app.FragmentController.class.getName(),lpparam.classLoader);
+                            Class<?> androidxFragmentControllerClass = XposedHelpers.findClassIfExists(FragmentController.class.getName(),lpparam.classLoader);
                             Class<?> FragmentControllerClass = XposedHelpers.findClassIfExists("android.support.v4.app.FragmentController",lpparam.classLoader);
                             {
                                 findAndHookMethodIfExists(hookClass,
@@ -557,19 +557,32 @@ public class HookAppClass {
                                         }
                                 );
                             }
-                            {
-                                XposedBridge.hookAllMethods(
-                                        Activity.class,
-                                        "onPause",
-                                        new XC_MethodHook(114514) {
-                                            @Override
-                                            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                                                super.beforeHookedMethod(param);
-                                                LoggerLog("[linearity-activityLifeListener]",param.thisObject.getClass().getName() + " | onPause");
-                                            }
-                                        }
-                                );
-                            }
+//                            {
+//                                XposedBridge.hookAllMethods(
+//                                        Activity.class,
+//                                        "onPause",
+//                                        new XC_MethodHook(114514) {
+//                                            @Override
+//                                            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+//                                                super.beforeHookedMethod(param);
+//                                                LoggerLog("[linearity-activityLifeListener]",new Exception(param.thisObject.getClass().getName() + " | onPause"));
+//                                            }
+//                                        }
+//                                );
+//                            }
+//                            {
+//                                XposedBridge.hookAllMethods(
+//                                        Activity.class,
+//                                        "onResume",
+//                                        new XC_MethodHook(114514) {
+//                                            @Override
+//                                            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+//                                                super.beforeHookedMethod(param);
+//                                                LoggerLog("[linearity-activityLifeListener]",new Exception(param.thisObject.getClass().getName() + " | onResume"));
+//                                            }
+//                                        }
+//                                );
+//                            }
                         }
                     }catch (Exception e){
                         LoggerLog(e);

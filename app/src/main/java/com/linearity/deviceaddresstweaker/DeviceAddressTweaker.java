@@ -119,6 +119,7 @@ public class DeviceAddressTweaker implements IXposedHookLoadPackage, IXposedHook
         //animation
         //annotation(NO)
         HookAppClass.DoHook(lpparam,processHead,sharedPreferences);//not finished
+//        HookActivityThreadClass.DoHook(lpparam,processHead,sharedPreferences);//warning:not safe
         //appwidget
         HookBluetoothClass.DoHook(lpparam,processHead,sharedPreferences);//not finished
         //companion
