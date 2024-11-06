@@ -33,10 +33,7 @@
 #include "media/NdkMediaDrm.h"
 #include "Dobby-master/include/dobby.h"
 #include "Utils.h"
-#include "proot/src/tracee/tracee.h"
-#include "proot/src/tracee/event.h"
 #include <arpa/inet.h>
-#include "/proot/src/cli/cli.h"
 
 #define  TAG    "[linearity-Native]"
 #define  LOGD(...)  __android_log_print(ANDROID_LOG_DEBUG,TAG,__VA_ARGS__)
@@ -46,8 +43,6 @@ uint8_t nop[4] = {0xD5,0x3,0x20,0x1F};
 uint8_t * nop_ptr = nop;
 JNIEnv *env = nullptr;
 
-extern "C" int initPRoot(int argc, char *const argv[]);
-extern "C" int event_loop_clone();
 
 bool SHOW_FOPEN = false;
 bool SHOW_SYSPROP_GET = false;

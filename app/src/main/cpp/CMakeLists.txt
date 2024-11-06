@@ -11,10 +11,10 @@ cmake_minimum_required(VERSION 3.22.1)
 # with ${CMAKE_PROJECT_NAME} (both CMake variables are in-sync within the top level
 # build script scope).
 project("deviceaddresstweaker")
-set_property(SOURCE proot/src/loader/assembly-arm.h APPEND PROPERTY COMPILE_OPTIONS "-x" "assembler-with-cpp")
-set_property(SOURCE proot/src/loader/assembly-arm64.h APPEND PROPERTY COMPILE_OPTIONS "-x" "assembler-with-cpp")
-set_property(SOURCE proot/src/loader/assembly-x86.h APPEND PROPERTY COMPILE_OPTIONS "-x" "assembler-with-cpp")
-set_property(SOURCE proot/src/loader/assembly-x86_64.h APPEND PROPERTY COMPILE_OPTIONS "-x" "assembler-with-cpp")
+#set_property(SOURCE proot/src/loader/assembly-arm.h APPEND PROPERTY COMPILE_OPTIONS "-x" "assembler-with-cpp")
+#set_property(SOURCE proot/src/loader/assembly-arm64.h APPEND PROPERTY COMPILE_OPTIONS "-x" "assembler-with-cpp")
+#set_property(SOURCE proot/src/loader/assembly-x86.h APPEND PROPERTY COMPILE_OPTIONS "-x" "assembler-with-cpp")
+#set_property(SOURCE proot/src/loader/assembly-x86_64.h APPEND PROPERTY COMPILE_OPTIONS "-x" "assembler-with-cpp")
 
 find_library(ANDROID_LIBS log)
 
@@ -61,50 +61,50 @@ add_library(${CMAKE_PROJECT_NAME} SHARED
         android/nativehelper/ScopedPrimitiveArray.h
         android/nativehelper/JniConstants.cpp android/nativehelper/JniConstants.h
         android/nativehelper/ALog-priv.h
-        talloc/talloc.h talloc/talloc.cpp
+#        talloc/talloc.h talloc/talloc.cpp
 
-        proot/src/cli/care.c proot/src/cli/care.h
-        proot/src/cli/cli.c
-        proot/src/cli/cli.h
-        proot/src/cli/note.c
-        proot/src/cli/note.h
-        proot/src/cli/proot.c
-        proot/src/cli/proot.h
-        proot/src/execve/aoxp.c
-        proot/src/execve/aoxp.h proot/src/execve/auxv.c proot/src/execve/auxv.h
-        proot/src/execve/elf.c proot/src/execve/elf.h
-        proot/src/execve/enter.c
-        proot/src/execve/execve.h proot/src/execve/exit.c proot/src/execve/ldso.c
-        proot/src/execve/ldso.h proot/src/execve/shebang.c proot/src/execve/shebang.h
-        proot/src/extension/care/archive.c proot/src/extension/care/archive.h
-        proot/src/extension/care/care.c proot/src/extension/care/care.h
-        proot/src/extension/care/extract.c proot/src/extension/care/extract.h
-        proot/src/extension/care/final.c proot/src/extension/care/final.h proot/src/extension/fake_id0/fake_id0.c
-        proot/src/extension/kompat/kompat.c proot/src/extension/link2symlink/link2symlink.c proot/src/extension/portmap/map.c
-        proot/src/extension/portmap/portmap.c proot/src/extension/portmap/portmap.h
-        proot/src/extension/extension.c proot/src/extension/extension.h
-        proot/src/loader/assembly.S proot/src/loader/assembly-arm.h proot/src/loader/assembly-arm64.h
-        proot/src/loader/assembly-x86.h proot/src/loader/assembly-x86_64.h proot/src/loader/loader.c
-        proot/src/loader/script.h proot/src/path/binding.c proot/src/path/binding.h
-        proot/src/path/canon.c proot/src/path/canon.h proot/src/path/glue.c
-        proot/src/path/glue.h proot/src/path/path.c proot/src/path/path.h
-        proot/src/path/proc.c proot/src/path/proc.h proot/src/path/temp.c
-        proot/src/path/temp.h proot/src/ptrace/ptrace.c proot/src/ptrace/ptrace.h
-        proot/src/ptrace/user.c proot/src/ptrace/user.h proot/src/ptrace/wait.c
-        proot/src/ptrace/wait.h proot/src/syscall/chain.c proot/src/syscall/chain.h
-
-        proot/src/syscall/enter.c proot/src/syscall/exit.c proot/src/syscall/heap.c
-        proot/src/syscall/heap.h proot/src/syscall/rlimit.c proot/src/syscall/rlimit.h
-        proot/src/syscall/seccomp.c proot/src/syscall/seccomp.h proot/src/syscall/socket.c
-        proot/src/syscall/socket.h proot/src/syscall/syscall.c proot/src/syscall/syscall.h
-        proot/src/syscall/sysnum.c proot/src/syscall/sysnum.h proot/src/syscall/sysnums.list
-        proot/src/syscall/sysnums-arm.h proot/src/syscall/sysnums-arm64.h proot/src/syscall/sysnums-i386.h
-        proot/src/syscall/sysnums-sh4.h proot/src/syscall/sysnums-x32.h proot/src/syscall/sysnums-x86_64.h
-        proot/src/tracee/abi.h proot/src/tracee/event.c proot/src/tracee/event.h
-        proot/src/tracee/mem.c proot/src/tracee/mem.h proot/src/tracee/reg.c
-        proot/src/tracee/reg.h proot/src/tracee/tracee.c proot/src/tracee/tracee.h
-        proot/src/.check_process_vm.c proot/src/.check_seccomp_filter.c proot/src/arch.h
-        proot/src/attribute.h proot/src/compat.h
+#        proot/src/cli/care.c proot/src/cli/care.h
+#        proot/src/cli/cli.c
+#        proot/src/cli/cli.h
+#        proot/src/cli/note.c
+#        proot/src/cli/note.h
+#        proot/src/cli/proot.c
+#        proot/src/cli/proot.h
+#        proot/src/execve/aoxp.c
+#        proot/src/execve/aoxp.h proot/src/execve/auxv.c proot/src/execve/auxv.h
+#        proot/src/execve/elf.c proot/src/execve/elf.h
+#        proot/src/execve/enter.c
+#        proot/src/execve/execve.h proot/src/execve/exit.c proot/src/execve/ldso.c
+#        proot/src/execve/ldso.h proot/src/execve/shebang.c proot/src/execve/shebang.h
+#        proot/src/extension/care/archive.c proot/src/extension/care/archive.h
+#        proot/src/extension/care/care.c proot/src/extension/care/care.h
+#        proot/src/extension/care/extract.c proot/src/extension/care/extract.h
+#        proot/src/extension/care/final.c proot/src/extension/care/final.h proot/src/extension/fake_id0/fake_id0.c
+#        proot/src/extension/kompat/kompat.c proot/src/extension/link2symlink/link2symlink.c proot/src/extension/portmap/map.c
+#        proot/src/extension/portmap/portmap.c proot/src/extension/portmap/portmap.h
+#        proot/src/extension/extension.c proot/src/extension/extension.h
+#        proot/src/loader/assembly.S proot/src/loader/assembly-arm.h proot/src/loader/assembly-arm64.h
+#        proot/src/loader/assembly-x86.h proot/src/loader/assembly-x86_64.h proot/src/loader/loader.c
+#        proot/src/loader/script.h proot/src/path/binding.c proot/src/path/binding.h
+#        proot/src/path/canon.c proot/src/path/canon.h proot/src/path/glue.c
+#        proot/src/path/glue.h proot/src/path/path.c proot/src/path/path.h
+#        proot/src/path/proc.c proot/src/path/proc.h proot/src/path/temp.c
+#        proot/src/path/temp.h proot/src/ptrace/ptrace.c proot/src/ptrace/ptrace.h
+#        proot/src/ptrace/user.c proot/src/ptrace/user.h proot/src/ptrace/wait.c
+#        proot/src/ptrace/wait.h proot/src/syscall/chain.c proot/src/syscall/chain.h
+#
+#        proot/src/syscall/enter.c proot/src/syscall/exit.c proot/src/syscall/heap.c
+#        proot/src/syscall/heap.h proot/src/syscall/rlimit.c proot/src/syscall/rlimit.h
+#        proot/src/syscall/seccomp.c proot/src/syscall/seccomp.h proot/src/syscall/socket.c
+#        proot/src/syscall/socket.h proot/src/syscall/syscall.c proot/src/syscall/syscall.h
+#        proot/src/syscall/sysnum.c proot/src/syscall/sysnum.h proot/src/syscall/sysnums.list
+#        proot/src/syscall/sysnums-arm.h proot/src/syscall/sysnums-arm64.h proot/src/syscall/sysnums-i386.h
+#        proot/src/syscall/sysnums-sh4.h proot/src/syscall/sysnums-x32.h proot/src/syscall/sysnums-x86_64.h
+#        proot/src/tracee/abi.h proot/src/tracee/event.c proot/src/tracee/event.h
+#        proot/src/tracee/mem.c proot/src/tracee/mem.h proot/src/tracee/reg.c
+#        proot/src/tracee/reg.h proot/src/tracee/tracee.c proot/src/tracee/tracee.h
+#        proot/src/.check_process_vm.c proot/src/.check_seccomp_filter.c proot/src/arch.h
+#        proot/src/attribute.h proot/src/compat.h
 
 )
 target_link_libraries(${CMAKE_PROJECT_NAME}
