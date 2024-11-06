@@ -1,3 +1,0 @@
-[submodule "lib/uthash"]
-	path = lib/uthash
-	url = https://github.com/proot-me/uthash
